@@ -19,7 +19,9 @@ export interface Question {
   category: QuestionCategory;
   type: QuestionType;
   wagonPart: string;
+  wagonPartEn: string;
   categoryLabel: string;
+  categoryLabelEn: string;
 }
 
 // 5段階評価のラベル
@@ -42,7 +44,9 @@ export const QUESTIONS: Question[] = [
     category: "landscape",
     type: "scale",
     wagonPart: "景色",
+    wagonPartEn: "Landscape",
     categoryLabel: "ミッション・ビジョン・バリュー",
+    categoryLabelEn: "Mission, Vision & Values",
   },
   {
     id: 2,
@@ -51,7 +55,9 @@ export const QUESTIONS: Question[] = [
     category: "landscape",
     type: "scale",
     wagonPart: "景色",
+    wagonPartEn: "Landscape",
     categoryLabel: "ミッション・ビジョン・バリュー",
+    categoryLabelEn: "Mission, Vision & Values",
   },
   // 道筋（戦略）
   {
@@ -61,7 +67,9 @@ export const QUESTIONS: Question[] = [
     category: "road",
     type: "scale",
     wagonPart: "道筋",
+    wagonPartEn: "Road",
     categoryLabel: "戦略",
+    categoryLabelEn: "Strategy",
   },
   // ロープ（リーダーシップ・コミュニケーション）
   {
@@ -71,7 +79,9 @@ export const QUESTIONS: Question[] = [
     category: "rope",
     type: "scale",
     wagonPart: "ロープ",
+    wagonPartEn: "Rope",
     categoryLabel: "リーダーシップ・コミュニケーション",
+    categoryLabelEn: "Leadership & Communication",
   },
   {
     id: 5,
@@ -80,7 +90,9 @@ export const QUESTIONS: Question[] = [
     category: "rope",
     type: "scale",
     wagonPart: "ロープ",
+    wagonPartEn: "Rope",
     categoryLabel: "リーダーシップ・コミュニケーション",
+    categoryLabelEn: "Leadership & Communication",
   },
   // タイヤ（仕組み・既成概念）
   {
@@ -90,7 +102,9 @@ export const QUESTIONS: Question[] = [
     category: "tire",
     type: "scale",
     wagonPart: "タイヤ",
+    wagonPartEn: "Tire",
     categoryLabel: "仕組み（既成概念）",
+    categoryLabelEn: "Systems & Mindset",
   },
   {
     id: 7,
@@ -99,7 +113,9 @@ export const QUESTIONS: Question[] = [
     category: "tire",
     type: "scale",
     wagonPart: "タイヤ",
+    wagonPartEn: "Tire",
     categoryLabel: "仕組み（既成概念）",
+    categoryLabelEn: "Systems & Mindset",
   },
   // 押す人の体（能力・意欲）
   {
@@ -109,7 +125,9 @@ export const QUESTIONS: Question[] = [
     category: "body",
     type: "scale",
     wagonPart: "押す人の体",
+    wagonPartEn: "Body",
     categoryLabel: "能力・意欲",
+    categoryLabelEn: "Capability & Motivation",
   },
   {
     id: 9,
@@ -118,7 +136,9 @@ export const QUESTIONS: Question[] = [
     category: "body",
     type: "scale",
     wagonPart: "押す人の体",
+    wagonPartEn: "Body",
     categoryLabel: "能力・意欲",
+    categoryLabelEn: "Capability & Motivation",
   },
   // 押す人の態度（風土・文化）
   {
@@ -128,7 +148,9 @@ export const QUESTIONS: Question[] = [
     category: "attitude",
     type: "scale",
     wagonPart: "押す人の態度",
+    wagonPartEn: "Attitude",
     categoryLabel: "風土・文化",
+    categoryLabelEn: "Culture & Ethos",
   },
   {
     id: 11,
@@ -137,7 +159,9 @@ export const QUESTIONS: Question[] = [
     category: "attitude",
     type: "scale",
     wagonPart: "押す人の態度",
+    wagonPartEn: "Attitude",
     categoryLabel: "風土・文化",
+    categoryLabelEn: "Culture & Ethos",
   },
   // 積荷（リソース・強みの認識）
   {
@@ -147,7 +171,9 @@ export const QUESTIONS: Question[] = [
     category: "cargo",
     type: "scale",
     wagonPart: "積荷",
+    wagonPartEn: "Cargo",
     categoryLabel: "リソース・強みの認識",
+    categoryLabelEn: "Resources & Strengths",
   },
   {
     id: 13,
@@ -156,7 +182,9 @@ export const QUESTIONS: Question[] = [
     category: "cargo",
     type: "scale",
     wagonPart: "積荷",
+    wagonPartEn: "Cargo",
     categoryLabel: "リソース・強みの認識",
+    categoryLabelEn: "Resources & Strengths",
   },
   // 多様性（ダイバーシティ）
   {
@@ -166,7 +194,9 @@ export const QUESTIONS: Question[] = [
     category: "diversity",
     type: "scale",
     wagonPart: "多様性",
+    wagonPartEn: "Diversity",
     categoryLabel: "ダイバーシティ",
+    categoryLabelEn: "Diversity",
   },
   {
     id: 15,
@@ -175,7 +205,9 @@ export const QUESTIONS: Question[] = [
     category: "diversity",
     type: "scale",
     wagonPart: "多様性",
+    wagonPartEn: "Diversity",
     categoryLabel: "ダイバーシティ",
+    categoryLabelEn: "Diversity",
   },
   // 幸福度
   {
@@ -185,7 +217,9 @@ export const QUESTIONS: Question[] = [
     category: "happiness",
     type: "scale",
     wagonPart: "幸福度",
+    wagonPartEn: "Happiness",
     categoryLabel: "チームの幸福度",
+    categoryLabelEn: "Team Happiness",
   },
 
   // === 組織質問（Q17-Q21）：5段階評価 ===
@@ -196,7 +230,9 @@ export const QUESTIONS: Question[] = [
     category: "management",
     type: "scale",
     wagonPart: "経営",
+    wagonPartEn: "Management",
     categoryLabel: "経営陣への信頼",
+    categoryLabelEn: "Trust in Management",
   },
   {
     id: 18,
@@ -205,7 +241,9 @@ export const QUESTIONS: Question[] = [
     category: "management",
     type: "scale",
     wagonPart: "経営",
+    wagonPartEn: "Management",
     categoryLabel: "経営陣への信頼",
+    categoryLabelEn: "Trust in Management",
   },
   {
     id: 19,
@@ -214,7 +252,9 @@ export const QUESTIONS: Question[] = [
     category: "management",
     type: "scale",
     wagonPart: "経営",
+    wagonPartEn: "Management",
     categoryLabel: "経営陣への信頼",
+    categoryLabelEn: "Trust in Management",
   },
   {
     id: 20,
@@ -223,7 +263,9 @@ export const QUESTIONS: Question[] = [
     category: "management",
     type: "scale",
     wagonPart: "経営",
+    wagonPartEn: "Management",
     categoryLabel: "経営陣への信頼",
+    categoryLabelEn: "Trust in Management",
   },
   {
     id: 21,
@@ -232,7 +274,9 @@ export const QUESTIONS: Question[] = [
     category: "management",
     type: "scale",
     wagonPart: "経営",
+    wagonPartEn: "Management",
     categoryLabel: "経営陣への信頼",
+    categoryLabelEn: "Trust in Management",
   },
 
   // === 自由記述（Q22-Q26） ===
@@ -243,7 +287,9 @@ export const QUESTIONS: Question[] = [
     category: "management",
     type: "freetext",
     wagonPart: "",
+    wagonPartEn: "",
     categoryLabel: "自由記述",
+    categoryLabelEn: "Free Text",
   },
   {
     id: 23,
@@ -252,7 +298,9 @@ export const QUESTIONS: Question[] = [
     category: "management",
     type: "freetext",
     wagonPart: "",
+    wagonPartEn: "",
     categoryLabel: "自由記述",
+    categoryLabelEn: "Free Text",
   },
   {
     id: 24,
@@ -261,7 +309,9 @@ export const QUESTIONS: Question[] = [
     category: "management",
     type: "freetext",
     wagonPart: "",
+    wagonPartEn: "",
     categoryLabel: "自由記述",
+    categoryLabelEn: "Free Text",
   },
   {
     id: 25,
@@ -270,7 +320,9 @@ export const QUESTIONS: Question[] = [
     category: "management",
     type: "freetext",
     wagonPart: "",
+    wagonPartEn: "",
     categoryLabel: "自由記述",
+    categoryLabelEn: "Free Text",
   },
   {
     id: 26,
@@ -279,7 +331,9 @@ export const QUESTIONS: Question[] = [
     category: "management",
     type: "freetext",
     wagonPart: "",
+    wagonPartEn: "",
     categoryLabel: "自由記述",
+    categoryLabelEn: "Free Text",
   },
 ];
 
@@ -301,16 +355,16 @@ export const FREETEXT_QUESTIONS = QUESTIONS.filter(
 // カテゴリごとの質問グループ
 export const CATEGORY_CONFIG: Record<
   QuestionCategory,
-  { label: string; wagonPart: string; questionIds: number[] }
+  { label: string; labelEn: string; wagonPart: string; wagonPartEn: string; questionIds: number[] }
 > = {
-  landscape:   { label: "ミッション・ビジョン・バリュー", wagonPart: "景色", questionIds: [1, 2] },
-  road:        { label: "戦略", wagonPart: "道筋", questionIds: [3] },
-  rope:        { label: "リーダーシップ・コミュニケーション", wagonPart: "ロープ", questionIds: [4, 5] },
-  tire:        { label: "仕組み（既成概念）", wagonPart: "タイヤ", questionIds: [6, 7] },
-  body:        { label: "能力・意欲", wagonPart: "押す人の体", questionIds: [8, 9] },
-  attitude:    { label: "風土・文化", wagonPart: "押す人の態度", questionIds: [10, 11] },
-  cargo:       { label: "リソース・強みの認識", wagonPart: "積荷", questionIds: [12, 13] },
-  diversity:   { label: "ダイバーシティ", wagonPart: "多様性", questionIds: [14, 15] },
-  happiness:   { label: "チームの幸福度", wagonPart: "幸福度", questionIds: [16] },
-  management:  { label: "経営陣への信頼", wagonPart: "経営", questionIds: [17, 18, 19, 20, 21] },
+  landscape:   { label: "ミッション・ビジョン・バリュー", labelEn: "Mission, Vision & Values", wagonPart: "景色", wagonPartEn: "Landscape", questionIds: [1, 2] },
+  road:        { label: "戦略", labelEn: "Strategy", wagonPart: "道筋", wagonPartEn: "Road", questionIds: [3] },
+  rope:        { label: "リーダーシップ・コミュニケーション", labelEn: "Leadership & Communication", wagonPart: "ロープ", wagonPartEn: "Rope", questionIds: [4, 5] },
+  tire:        { label: "仕組み（既成概念）", labelEn: "Systems & Mindset", wagonPart: "タイヤ", wagonPartEn: "Tire", questionIds: [6, 7] },
+  body:        { label: "能力・意欲", labelEn: "Capability & Motivation", wagonPart: "押す人の体", wagonPartEn: "Body", questionIds: [8, 9] },
+  attitude:    { label: "風土・文化", labelEn: "Culture & Ethos", wagonPart: "押す人の態度", wagonPartEn: "Attitude", questionIds: [10, 11] },
+  cargo:       { label: "リソース・強みの認識", labelEn: "Resources & Strengths", wagonPart: "積荷", wagonPartEn: "Cargo", questionIds: [12, 13] },
+  diversity:   { label: "ダイバーシティ", labelEn: "Diversity", wagonPart: "多様性", wagonPartEn: "Diversity", questionIds: [14, 15] },
+  happiness:   { label: "チームの幸福度", labelEn: "Team Happiness", wagonPart: "幸福度", wagonPartEn: "Happiness", questionIds: [16] },
+  management:  { label: "経営陣への信頼", labelEn: "Trust in Management", wagonPart: "経営", wagonPartEn: "Management", questionIds: [17, 18, 19, 20, 21] },
 };

@@ -13,9 +13,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "SQWサーベイ | スクエアホイールサーベイ",
+  title: "SQWサーベイ | Square Wheel Survey",
   description:
-    "チームの状態を可視化するスクエアホイールサーベイ。ワゴンのメタファーで組織の健全性を診断します。",
+    "チームの状態を可視化するスクエアホイールサーベイ。Visualize team health with the Square Wheel Survey.",
 };
 
 export default function RootLayout({
@@ -25,8 +25,8 @@ export default function RootLayout({
 }>) {
   return (
     <html
-      lang="ja"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      suppressHydrationWarning
     >
       <body className="min-h-full flex flex-col">{children}</body>
     </html>

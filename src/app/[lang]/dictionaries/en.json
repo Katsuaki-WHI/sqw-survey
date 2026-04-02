@@ -1,0 +1,29 @@
+{
+  "common": {
+    "langLabel": "English",
+    "langSwitch": "日本語"
+  },
+  "home": {
+    "title": "SQW Survey",
+    "description": "Visualize your team's health with the Square Wheel Survey. It takes about 5 minutes.",
+    "startButton": "Start Survey",
+    "footer": "Work Happiness"
+  },
+  "survey": {
+    "questionOf": "Question {current} / {total}",
+    "freetextLabel": "(Free Text)",
+    "freetextTitle": "Free Text",
+    "freetextPlaceholder": "Optional",
+    "submitButton": "Submit Answers",
+    "backButton": "Back to previous question",
+    "completedTitle": "Thank you for your response!",
+    "wagonForce": "Wagon Push Force",
+    "unit": "km",
+    "teamAvgLabel": "Team Average Score",
+    "backToTop": "Back to Top"
+  },
+  "metadata": {
+    "title": "SQW Survey | Square Wheel Survey",
+    "description": "Visualize team health with the Square Wheel Survey. Diagnose organizational wellness through the wagon metaphor."
+  }
+}
