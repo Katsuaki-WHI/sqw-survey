@@ -6,6 +6,7 @@ import { useLocale } from "@/lib/i18n/context";
 import { getTeamByInviteCode, joinTeam } from "@/lib/actions/team";
 import { submitSurvey } from "@/lib/actions/survey";
 import SurveyFlow, { type Answers } from "@/components/survey/SurveyFlow";
+import type { ResultsData } from "@/components/survey/ResultsView";
 import LanguageToggle from "@/components/LanguageToggle";
 import Link from "next/link";
 
@@ -28,6 +29,7 @@ export default function TeamJoinPage() {
   const [started, setStarted] = useState(false);
   const [expired, setExpired] = useState(false);
   const [alreadyDone, setAlreadyDone] = useState(false);
+  const [existingMemberToken, setExistingMemberToken] = useState<string | null>(null);
 
   const loadTeam = useCallback(async () => {
     const data = await getTeamByInviteCode(inviteCode);
@@ -46,7 +48,7 @@ export default function TeamJoinPage() {
     const existing = getCookie(`sqw_member_${data.id}`);
     if (existing) {
       setMemberToken(existing);
-      // Check if already completed
+      setExistingMemberToken(existing);
       const existingSession = getCookie(`sqw_completed_${data.id}`);
       if (existingSession) {
         setAlreadyDone(true);
@@ -68,14 +70,13 @@ export default function TeamJoinPage() {
       token = await joinTeam(team.id);
       if (!token) return;
       setMemberToken(token);
-      // Store member token in cookie (30 days)
       document.cookie = `sqw_member_${team.id}=${token}; path=/; max-age=${60 * 60 * 24 * 30}; SameSite=Lax`;
     }
 
     setStarted(true);
   }
 
-  async function handleSurveySubmit(answers: Answers) {
+  async function handleSurveySubmit(answers: Answers): Promise<ResultsData | void> {
     if (!team || !memberToken) return;
 
     const result = await submitSurvey({
@@ -91,6 +92,13 @@ export default function TeamJoinPage() {
 
     // Mark as completed in cookie
     document.cookie = `sqw_completed_${team.id}=1; path=/; max-age=${60 * 60 * 24 * 30}; SameSite=Lax`;
+
+    // Return results for immediate display
+    return {
+      teamAverage: result.teamAverage,
+      wagonSpeed: result.wagonSpeed,
+      categoryScores: result.categoryScores as Record<string, { avg: number; level: string }>,
+    };
   }
 
   if (loading) {
@@ -108,10 +116,7 @@ export default function TeamJoinPage() {
         <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
           Team not found
         </h1>
-        <Link
-          href={`/${locale}`}
-          className="mt-6 text-blue-600 hover:underline"
-        >
+        <Link href={`/${locale}`} className="mt-6 text-blue-600 hover:underline">
           {dict.survey.backToTop}
         </Link>
       </div>
@@ -119,7 +124,21 @@ export default function TeamJoinPage() {
   }
 
   if (started) {
-    return <SurveyFlow onSubmit={handleSurveySubmit} />;
+    return (
+      <SurveyFlow
+        onSubmit={handleSurveySubmit}
+        completedExtra={
+          memberToken ? (
+            <Link
+              href={`/${locale}/team/results/${memberToken}`}
+              className="text-sm text-blue-600 hover:underline"
+            >
+              {dict.survey.viewYourResults}
+            </Link>
+          ) : undefined
+        }
+      />
+    );
   }
 
   const deadlineStr = team.deadline
@@ -153,9 +172,25 @@ export default function TeamJoinPage() {
         )}
 
         {alreadyDone && (
-          <p className="text-green-600 font-medium mb-4">
-            {t.alreadyCompleted}
-          </p>
+          <div className="flex flex-col items-center gap-4">
+            <p className="text-green-600 font-medium">{t.alreadyCompleted}</p>
+            {existingMemberToken && (
+              <Link
+                href={`/${locale}/team/results/${existingMemberToken}`}
+                className="rounded-full bg-blue-600 px-6 py-3 text-white hover:bg-blue-500 transition-colors"
+              >
+                {dict.survey.viewYourResults}
+              </Link>
+            )}
+            {team.results_visible && (
+              <Link
+                href={`/${locale}/team/join/${inviteCode}/results`}
+                className="rounded-full border-2 border-blue-600 px-6 py-3 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-950 transition-colors"
+              >
+                {dict.survey.viewTeamResults}
+              </Link>
+            )}
+          </div>
         )}
 
         {!expired && !alreadyDone && (

@@ -10,9 +10,10 @@ import {
   getTeamResults,
 } from "@/lib/actions/team";
 import { CATEGORY_CONFIG, type QuestionCategory } from "@/lib/survey/questions";
-import { getScaleLevel, calcWagonSpeed, SCALE_LEVEL_LABELS } from "@/lib/survey/scoring";
+import { calcWagonSpeed } from "@/lib/survey/scoring";
 import LanguageToggle from "@/components/LanguageToggle";
 import CopyLinkButton from "@/components/ui/CopyLinkButton";
+import ResultsView, { type ResultsData } from "@/components/survey/ResultsView";
 import Link from "next/link";
 
 interface TeamData {
@@ -34,12 +35,47 @@ interface QuestionAvg {
   avg_score: number;
 }
 
-interface TeamResults {
+interface TeamResultsRaw {
   team_name: string;
   response_count: number;
   member_count: number;
   question_averages: QuestionAvg[] | null;
   results_visible: boolean;
+}
+
+function computeResultsData(questionAverages: QuestionAvg[]): ResultsData {
+  const qMap = new Map<number, number>();
+  for (const qa of questionAverages) {
+    qMap.set(qa.question_id, qa.avg_score);
+  }
+
+  const teamCategories: QuestionCategory[] = [
+    "landscape", "road", "rope", "tire", "body", "attitude", "cargo", "diversity", "happiness",
+  ];
+
+  const categoryScores: Record<string, { avg: number; level: string }> = {};
+  let totalSum = 0;
+  let totalCount = 0;
+
+  for (const cat of [...teamCategories, "management" as QuestionCategory]) {
+    const config = CATEGORY_CONFIG[cat];
+    const scores = config.questionIds.map((id) => qMap.get(id)).filter((v): v is number => v != null);
+    const avg = scores.length > 0 ? scores.reduce((a, b) => a + b, 0) / scores.length : 0;
+    const level =
+      avg >= 4.5 ? "excellent" : avg >= 3.5 ? "good" : avg >= 2.5 ? "average" : avg >= 1.5 ? "poor" : "critical";
+    categoryScores[cat] = { avg: Math.round(avg * 100) / 100, level };
+
+    if (teamCategories.includes(cat as QuestionCategory)) {
+      totalSum += scores.reduce((a, b) => a + b, 0);
+      totalCount += scores.length;
+    }
+  }
+
+  const teamAverage = totalCount > 0 ? Math.round((totalSum / totalCount) * 100) / 100 : 0;
+  const wagonSpeed = calcWagonSpeed(teamAverage);
+  const managementAverage = categoryScores.management?.avg ?? null;
+
+  return { teamAverage, wagonSpeed, categoryScores, managementAverage };
 }
 
 export default function AdminDashboardPage() {
@@ -51,7 +87,7 @@ export default function AdminDashboardPage() {
 
   const [team, setTeam] = useState<TeamData | null>(null);
   const [stats, setStats] = useState<TeamStats | null>(null);
-  const [results, setResults] = useState<TeamResults | null>(null);
+  const [rawResults, setRawResults] = useState<TeamResultsRaw | null>(null);
   const [loading, setLoading] = useState(true);
   const [toggling, setToggling] = useState(false);
 
@@ -68,7 +104,7 @@ export default function AdminDashboardPage() {
       getTeamResults(adminToken),
     ]);
     setStats(statsData);
-    if (resultsData) setResults(resultsData);
+    if (resultsData) setRawResults(resultsData as TeamResultsRaw);
     setLoading(false);
   }, [adminToken]);
 
@@ -97,12 +133,8 @@ export default function AdminDashboardPage() {
     return (
       <div className="flex flex-1 flex-col items-center justify-center px-6 py-16">
         <LanguageToggle />
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-          Team not found
-        </h1>
-        <Link href={`/${locale}`} className="mt-6 text-blue-600 hover:underline">
-          {dict.survey.backToTop}
-        </Link>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Team not found</h1>
+        <Link href={`/${locale}`} className="mt-6 text-blue-600 hover:underline">{dict.survey.backToTop}</Link>
       </div>
     );
   }
@@ -110,8 +142,10 @@ export default function AdminDashboardPage() {
   const origin = typeof window !== "undefined" ? window.location.origin : "";
   const inviteUrl = `${origin}/${locale}/team/join/${team.invite_code}`;
 
-  // Calculate category scores from question averages
-  const categoryScores = computeCategoryScores(results?.question_averages || []);
+  const hasResponses = stats && stats.responseCount > 0;
+  const resultsData = hasResponses && rawResults?.question_averages
+    ? computeResultsData(rawResults.question_averages)
+    : null;
 
   return (
     <div className="flex flex-1 flex-col bg-white dark:bg-black">
@@ -141,15 +175,11 @@ export default function AdminDashboardPage() {
             </div>
             <div>
               <p className="text-sm text-gray-500">{t.memberCount}</p>
-              <p className="font-semibold text-gray-900 dark:text-white">
-                {stats?.memberCount ?? 0}
-              </p>
+              <p className="font-semibold text-gray-900 dark:text-white">{stats?.memberCount ?? 0}</p>
             </div>
             <div>
               <p className="text-sm text-gray-500">{t.responseCount}</p>
-              <p className="font-semibold text-gray-900 dark:text-white">
-                {stats?.responseCount ?? 0}
-              </p>
+              <p className="font-semibold text-gray-900 dark:text-white">{stats?.responseCount ?? 0}</p>
             </div>
           </div>
         </div>
@@ -192,71 +222,14 @@ export default function AdminDashboardPage() {
           </div>
         </div>
 
-        {/* Team Results */}
-        {stats && stats.responseCount > 0 ? (
-          <div className="rounded-lg border border-gray-200 dark:border-gray-700 p-6">
-            <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-6">
-              {t.teamResults}
-            </h2>
-
-            {/* Overall wagon speed */}
-            {categoryScores.overallAvg > 0 && (
-              <div className="text-center mb-8">
-                <p className="text-lg text-gray-600 dark:text-gray-400">
-                  {dict.survey.wagonForce}
-                </p>
-                <p className="text-5xl font-bold text-blue-600 mt-2">
-                  {calcWagonSpeed(categoryScores.overallAvg)}{" "}
-                  <span className="text-2xl">{dict.survey.unit}</span>
-                </p>
-                <p className="text-sm text-gray-500 mt-1">
-                  {t.overallAverage}: {categoryScores.overallAvg.toFixed(2)} / 5.00
-                </p>
-              </div>
-            )}
-
-            {/* Category breakdown */}
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-              {t.categoryScores}
-            </h3>
-            <div className="flex flex-col gap-3">
-              {Object.entries(categoryScores.categories).map(([cat, data]) => {
-                const config = CATEGORY_CONFIG[cat as QuestionCategory];
-                const level = getScaleLevel(data.avg);
-                const levelLabel = SCALE_LEVEL_LABELS[level];
-                const widthPct = (data.avg / 5) * 100;
-
-                return (
-                  <div key={cat} className="flex flex-col gap-1">
-                    <div className="flex justify-between text-sm">
-                      <span className="text-gray-700 dark:text-gray-300">
-                        {isEn ? config.wagonPartEn : config.wagonPart} -{" "}
-                        {isEn ? config.labelEn : config.label}
-                      </span>
-                      <span className="text-gray-500">
-                        {data.avg.toFixed(2)} ({isEn ? levelLabel.en : levelLabel.ja})
-                      </span>
-                    </div>
-                    <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
-                      <div
-                        className={`h-2 rounded-full transition-all ${
-                          level === "excellent"
-                            ? "bg-green-500"
-                            : level === "good"
-                            ? "bg-blue-500"
-                            : level === "average"
-                            ? "bg-yellow-500"
-                            : level === "poor"
-                            ? "bg-orange-500"
-                            : "bg-red-500"
-                        }`}
-                        style={{ width: `${widthPct}%` }}
-                      />
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
+        {/* Team Results with Wagon Visualization */}
+        {resultsData ? (
+          <div className="mt-8">
+            <ResultsView
+              data={resultsData}
+              title={`${team.name} - ${t.teamResults}`}
+              mode="team"
+            />
           </div>
         ) : (
           <div className="rounded-lg border border-gray-200 dark:border-gray-700 p-6 text-center">
@@ -266,35 +239,4 @@ export default function AdminDashboardPage() {
       </div>
     </div>
   );
-}
-
-function computeCategoryScores(questionAverages: QuestionAvg[]) {
-  const qMap = new Map<number, number>();
-  for (const qa of questionAverages) {
-    qMap.set(qa.question_id, qa.avg_score);
-  }
-
-  const categories: Record<string, { avg: number }> = {};
-  const teamCategories: QuestionCategory[] = [
-    "landscape", "road", "rope", "tire", "body", "attitude", "cargo", "diversity", "happiness",
-  ];
-
-  let totalSum = 0;
-  let totalCount = 0;
-
-  for (const cat of [...teamCategories, "management" as QuestionCategory]) {
-    const config = CATEGORY_CONFIG[cat];
-    const scores = config.questionIds.map((id) => qMap.get(id)).filter((v): v is number => v != null);
-    const avg = scores.length > 0 ? scores.reduce((a, b) => a + b, 0) / scores.length : 0;
-    categories[cat] = { avg: Math.round(avg * 100) / 100 };
-
-    if (teamCategories.includes(cat as QuestionCategory)) {
-      totalSum += scores.reduce((a, b) => a + b, 0);
-      totalCount += scores.length;
-    }
-  }
-
-  const overallAvg = totalCount > 0 ? Math.round((totalSum / totalCount) * 100) / 100 : 0;
-
-  return { categories, overallAvg };
 }

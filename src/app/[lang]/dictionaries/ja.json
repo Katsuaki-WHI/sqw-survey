@@ -22,7 +22,16 @@
     "unit": "km",
     "teamAvgLabel": "チーム平均スコア",
     "backToTop": "トップに戻る",
-    "viewResults": "結果を確認する"
+    "viewResults": "結果を確認する",
+    "yourResults": "あなたのサーベイ結果",
+    "teamResultsTitle": "チームのサーベイ結果",
+    "viewTeamResults": "チーム結果を見る",
+    "viewYourResults": "あなたの結果を見る",
+    "resultsNotAvailable": "チーム結果はまだ公開されていません。",
+    "resultsWaiting": "管理者が結果を公開するまでお待ちください。",
+    "allResponded": "全員が回答しました",
+    "deadlinePassed": "回答期限を過ぎました",
+    "privateNotice": "この結果はあなただけに表示されています。他のメンバーには公開されません。"
   },
   "team": {
     "createTitle": "チームサーベイを作成",
@@ -61,7 +70,9 @@
     "teamResults": "チーム結果",
     "categoryScores": "カテゴリ別スコア",
     "overallAverage": "全体平均",
-    "inviteLinkLabel": "招待リンク"
+    "inviteLinkLabel": "招待リンク",
+    "viewTeamResultsButton": "チーム結果を見る",
+    "teamResultsAvailable": "チーム結果が公開されています"
   },
   "metadata": {
     "title": "SQWサーベイ | スクエアホイールサーベイ",

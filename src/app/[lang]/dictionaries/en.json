@@ -22,7 +22,16 @@
     "unit": "km",
     "teamAvgLabel": "Team Average Score",
     "backToTop": "Back to Top",
-    "viewResults": "View Results"
+    "viewResults": "View Results",
+    "yourResults": "Your Survey Results",
+    "teamResultsTitle": "Team Survey Results",
+    "viewTeamResults": "View Team Results",
+    "viewYourResults": "View Your Results",
+    "resultsNotAvailable": "Team results are not yet available.",
+    "resultsWaiting": "Please wait until the admin makes the results visible.",
+    "allResponded": "Everyone has responded",
+    "deadlinePassed": "The deadline has passed",
+    "privateNotice": "These results are visible only to you. They are not shared with other members."
   },
   "team": {
     "createTitle": "Create Team Survey",
@@ -61,7 +70,9 @@
     "teamResults": "Team Results",
     "categoryScores": "Category Scores",
     "overallAverage": "Overall Average",
-    "inviteLinkLabel": "Invite Link"
+    "inviteLinkLabel": "Invite Link",
+    "viewTeamResultsButton": "View Team Results",
+    "teamResultsAvailable": "Team results are now available"
   },
   "metadata": {
     "title": "SQW Survey | Square Wheel Survey",

@@ -130,3 +130,89 @@ export async function getTeamResults(adminToken: string) {
 
   return data;
 }
+
+export async function getTeamByMemberToken(memberToken: string) {
+  const supabase = await createSupabaseServer();
+
+  const { data: member } = await supabase
+    .from("team_members")
+    .select("team_id")
+    .eq("member_token", memberToken)
+    .single();
+
+  if (!member) return null;
+
+  const { data: team } = await supabase
+    .from("teams")
+    .select("invite_code, results_visible")
+    .eq("id", member.team_id)
+    .single();
+
+  if (!team) return null;
+
+  return {
+    inviteCode: team.invite_code as string,
+    resultsVisible: team.results_visible as boolean,
+  };
+}
+
+export async function getTeamResultsByInviteCode(inviteCode: string) {
+  const supabase = await createSupabaseServer();
+
+  const { data: team } = await supabase
+    .from("teams")
+    .select("id, name, results_visible, deadline")
+    .eq("invite_code", inviteCode)
+    .single();
+
+  if (!team) return null;
+
+  // Check if results should be visible (admin toggled OR deadline passed)
+  const deadlinePassed = team.deadline && new Date(team.deadline) < new Date();
+  if (!team.results_visible && !deadlinePassed) {
+    return { team, visible: false, questionAverages: null, responseCount: 0 };
+  }
+
+  // Get response count
+  const { count: responseCount } = await supabase
+    .from("survey_sessions")
+    .select("*", { count: "exact", head: true })
+    .eq("team_id", team.id)
+    .not("completed_at", "is", null);
+
+  // Get all answers for completed sessions in this team
+  const { data: answers } = await supabase
+    .from("survey_answers")
+    .select("question_id, score, session_id")
+    .not("score", "is", null);
+
+  // Get completed session IDs for this team
+  const { data: sessions } = await supabase
+    .from("survey_sessions")
+    .select("id")
+    .eq("team_id", team.id)
+    .not("completed_at", "is", null);
+
+  const sessionIds = new Set((sessions || []).map((s) => s.id));
+
+  // Filter and aggregate
+  const qMap = new Map<number, number[]>();
+  for (const a of answers || []) {
+    if (!sessionIds.has(a.session_id) || a.score == null) continue;
+    const scores = qMap.get(a.question_id) || [];
+    scores.push(a.score);
+    qMap.set(a.question_id, scores);
+  }
+
+  const questionAverages = Array.from(qMap.entries()).map(([qId, scores]) => ({
+    question_id: qId,
+    avg_score: Math.round((scores.reduce((a, b) => a + b, 0) / scores.length) * 100) / 100,
+  }));
+
+  return {
+    team,
+    visible: true,
+    questionAverages,
+    responseCount: responseCount ?? 0,
+  };
+}
