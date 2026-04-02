@@ -15,6 +15,7 @@ interface TeamInfo {
   name: string;
   deadline: string | null;
   results_visible: boolean;
+  release_mode: string;
 }
 
 export default function TeamJoinPage() {
@@ -182,7 +183,10 @@ export default function TeamJoinPage() {
                 {dict.survey.viewYourResults}
               </Link>
             )}
-            {team.results_visible && (
+            {(team.results_visible ||
+              team.release_mode === "immediate" ||
+              (team.release_mode === "on_deadline" && team.deadline && new Date(team.deadline) < new Date())
+            ) && (
               <Link
                 href={`/${locale}/team/join/${inviteCode}/results`}
                 className="rounded-full border-2 border-blue-600 px-6 py-3 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-950 transition-colors"

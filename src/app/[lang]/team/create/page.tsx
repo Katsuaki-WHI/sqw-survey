@@ -68,6 +68,31 @@ export default function TeamCreatePage() {
             />
           </div>
 
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              {t.releaseModeLabel}
+            </label>
+            <div className="flex flex-col gap-2">
+              {(["manual", "on_deadline", "immediate"] as const).map((mode) => (
+                <label
+                  key={mode}
+                  className="flex items-center gap-3 rounded-lg border border-gray-200 dark:border-gray-700 px-4 py-3 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                >
+                  <input
+                    type="radio"
+                    name="release_mode"
+                    value={mode}
+                    defaultChecked={mode === "manual"}
+                    className="text-blue-600"
+                  />
+                  <span className="text-sm text-gray-900 dark:text-white">
+                    {mode === "immediate" ? t.releaseModeImmediate : mode === "on_deadline" ? t.releaseModeOnDeadline : t.releaseModeManual}
+                  </span>
+                </label>
+              ))}
+            </div>
+          </div>
+
           {error && (
             <p className="text-sm text-red-600">{error}</p>
           )}

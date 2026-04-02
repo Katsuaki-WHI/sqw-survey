@@ -2,10 +2,14 @@
 
 import { createSupabaseServer } from "@/lib/supabase/server";
 import { generateInviteCode, generateAdminToken, generateMemberToken } from "@/lib/utils/tokens";
+import { isResultsEffectivelyVisible } from "@/lib/utils/visibility";
+
+export type ReleaseMode = "immediate" | "on_deadline" | "manual";
 
 export async function createTeam(formData: FormData) {
   const name = formData.get("name") as string;
   const deadlineStr = formData.get("deadline") as string;
+  const releaseMode = (formData.get("release_mode") as ReleaseMode) || "manual";
 
   if (!name || name.trim().length === 0) {
     return { error: "Team name is required" };
@@ -22,6 +26,7 @@ export async function createTeam(formData: FormData) {
     invite_code: inviteCode,
     admin_token: adminToken,
     deadline,
+    release_mode: releaseMode,
   });
 
   if (error) {
@@ -37,7 +42,7 @@ export async function getTeamByInviteCode(inviteCode: string) {
 
   const { data, error } = await supabase
     .from("teams")
-    .select("id, name, deadline, results_visible")
+    .select("id, name, deadline, results_visible, release_mode")
     .eq("invite_code", inviteCode)
     .single();
 
@@ -67,7 +72,7 @@ export async function getTeamByAdminToken(adminToken: string) {
 
   const { data, error } = await supabase
     .from("teams")
-    .select("id, name, invite_code, deadline, results_visible, created_at")
+    .select("id, name, invite_code, deadline, results_visible, release_mode, created_at")
     .eq("admin_token", adminToken)
     .single();
 
@@ -116,6 +121,56 @@ export async function toggleResultsVisibility(adminToken: string) {
   return { results_visible: !team.results_visible };
 }
 
+export async function updateDeadline(adminToken: string, newDeadline: string | null) {
+  const supabase = await createSupabaseServer();
+
+  const { data: team } = await supabase
+    .from("teams")
+    .select("id")
+    .eq("admin_token", adminToken)
+    .single();
+
+  if (!team) return { error: "Team not found" };
+
+  const deadline = newDeadline ? new Date(newDeadline).toISOString() : null;
+
+  const { error } = await supabase
+    .from("teams")
+    .update({ deadline })
+    .eq("id", team.id);
+
+  if (error) return { error: "Failed to update deadline" };
+
+  return { deadline };
+}
+
+export async function updateReleaseMode(adminToken: string, releaseMode: ReleaseMode) {
+  const supabase = await createSupabaseServer();
+
+  const { data: team } = await supabase
+    .from("teams")
+    .select("id")
+    .eq("admin_token", adminToken)
+    .single();
+
+  if (!team) return { error: "Team not found" };
+
+  // If switching to immediate, also set results_visible = true
+  const updates: Record<string, unknown> = { release_mode: releaseMode };
+  if (releaseMode === "immediate") {
+    updates.results_visible = true;
+  }
+
+  const { error } = await supabase
+    .from("teams")
+    .update(updates)
+    .eq("id", team.id);
+
+  if (error) return { error: "Failed to update release mode" };
+
+  return { release_mode: releaseMode, results_visible: releaseMode === "immediate" ? true : undefined };
+}
+
 export async function getTeamResults(adminToken: string) {
   const supabase = await createSupabaseServer();
 
@@ -144,15 +199,22 @@ export async function getTeamByMemberToken(memberToken: string) {
 
   const { data: team } = await supabase
     .from("teams")
-    .select("invite_code, results_visible")
+    .select("invite_code, results_visible, release_mode, deadline")
     .eq("id", member.team_id)
     .single();
 
   if (!team) return null;
 
+  // Determine effective visibility
+  const isVisible = isResultsEffectivelyVisible(
+    team.results_visible,
+    team.release_mode,
+    team.deadline,
+  );
+
   return {
     inviteCode: team.invite_code as string,
-    resultsVisible: team.results_visible as boolean,
+    resultsVisible: isVisible,
   };
 }
 
@@ -161,15 +223,20 @@ export async function getTeamResultsByInviteCode(inviteCode: string) {
 
   const { data: team } = await supabase
     .from("teams")
-    .select("id, name, results_visible, deadline")
+    .select("id, name, results_visible, deadline, release_mode")
     .eq("invite_code", inviteCode)
     .single();
 
   if (!team) return null;
 
-  // Check if results should be visible (admin toggled OR deadline passed)
-  const deadlinePassed = team.deadline && new Date(team.deadline) < new Date();
-  if (!team.results_visible && !deadlinePassed) {
+  // Check if results should be visible based on release_mode
+  const visible = isResultsEffectivelyVisible(
+    team.results_visible,
+    team.release_mode,
+    team.deadline,
+  );
+
+  if (!visible) {
     return { team, visible: false, questionAverages: null, responseCount: 0 };
   }
 

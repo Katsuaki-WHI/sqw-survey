@@ -12,6 +12,10 @@ create table if not exists teams (
   admin_token text unique not null,          -- 管理者アクセス用トークン
   deadline timestamptz,                      -- 回答期限（任意）
   results_visible boolean default false,     -- チーム結果の公開フラグ
+  release_mode text default 'manual' not null check (release_mode in ('immediate', 'on_deadline', 'manual')),
+  -- immediate: 個人回答完了後すぐにチーム結果も公開
+  -- on_deadline: 回答期限到来時に自動公開
+  -- manual: 管理者が手動で公開（デフォルト）
   created_at timestamptz default now() not null
 );
 
