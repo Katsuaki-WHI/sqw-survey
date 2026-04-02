@@ -23,12 +23,20 @@ export default async function Home({
         <p className="text-lg text-gray-600 dark:text-gray-400 max-w-md">
           {dict.home.description}
         </p>
-        <Link
-          href={`/${lang}/survey`}
-          className="rounded-full bg-blue-600 px-8 py-3 text-lg font-semibold text-white shadow-sm hover:bg-blue-500 transition-colors"
-        >
-          {dict.home.startButton}
-        </Link>
+        <div className="flex flex-col gap-4 sm:flex-row">
+          <Link
+            href={`/${lang}/survey`}
+            className="rounded-full bg-blue-600 px-8 py-3 text-lg font-semibold text-white shadow-sm hover:bg-blue-500 transition-colors"
+          >
+            {dict.home.startButton}
+          </Link>
+          <Link
+            href={`/${lang}/team/create`}
+            className="rounded-full border-2 border-blue-600 px-8 py-3 text-lg font-semibold text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-950 transition-colors"
+          >
+            {dict.home.createTeamButton}
+          </Link>
+        </div>
       </main>
       <footer className="w-full py-6 text-center text-sm text-gray-400">
         &copy; {dict.home.footer}

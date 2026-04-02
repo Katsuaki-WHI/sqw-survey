@@ -1,8 +1,31 @@
 -- SQWサーベイ データベーススキーマ
 
+-- ============================================
+-- チーム管理
+-- ============================================
+
+-- チームテーブル
+create table if not exists teams (
+  id uuid default gen_random_uuid() primary key,
+  name text not null,
+  invite_code text unique not null,          -- 招待URL用の短いコード
+  admin_token text unique not null,          -- 管理者アクセス用トークン
+  deadline timestamptz,                      -- 回答期限（任意）
+  results_visible boolean default false,     -- チーム結果の公開フラグ
+  created_at timestamptz default now() not null
+);
+
+create index if not exists idx_teams_invite_code on teams(invite_code);
+create index if not exists idx_teams_admin_token on teams(admin_token);
+
+-- ============================================
+-- サーベイセッション
+-- ============================================
+
 -- サーベイ回答セッション
 create table if not exists survey_sessions (
   id uuid default gen_random_uuid() primary key,
+  team_id uuid references teams(id) on delete set null,  -- チーム紐付け（任意）
   created_at timestamptz default now() not null,
   completed_at timestamptz,
   department text,          -- 所属部署
@@ -28,34 +51,127 @@ create table if not exists survey_answers (
   unique (session_id, question_id)
 );
 
+-- ============================================
+-- チームメンバー（匿名トラッキング）
+-- ============================================
+
+create table if not exists team_members (
+  id uuid default gen_random_uuid() primary key,
+  team_id uuid not null references teams(id) on delete cascade,
+  session_id uuid references survey_sessions(id) on delete set null,
+  member_token text unique not null,        -- Cookie保存用の識別トークン
+  created_at timestamptz default now() not null
+);
+
+create index if not exists idx_team_members_team on team_members(team_id);
+create index if not exists idx_team_members_token on team_members(member_token);
+
+-- ============================================
 -- インデックス
+-- ============================================
+
 create index if not exists idx_answers_session on survey_answers(session_id);
+create index if not exists idx_sessions_team on survey_sessions(team_id);
 create index if not exists idx_sessions_department on survey_sessions(department);
 create index if not exists idx_sessions_created on survey_sessions(created_at);
 
+-- ============================================
 -- Row Level Security
+-- ============================================
+
+alter table teams enable row level security;
 alter table survey_sessions enable row level security;
 alter table survey_answers enable row level security;
+alter table team_members enable row level security;
 
--- 匿名ユーザーの挿入を許可（サーベイ回答用）
+-- teams: 匿名ユーザーの作成・閲覧を許可
+create policy "Allow anonymous insert on teams"
+  on teams for insert with check (true);
+
+create policy "Allow select teams"
+  on teams for select using (true);
+
+create policy "Allow update teams"
+  on teams for update using (true);
+
+-- survey_sessions: 匿名ユーザーの挿入・閲覧・更新を許可
 create policy "Allow anonymous insert on sessions"
   on survey_sessions for insert
   with check (true);
 
-create policy "Allow anonymous insert on answers"
-  on survey_answers for insert
-  with check (true);
-
--- セッション所有者は自分の結果を閲覧可能
 create policy "Allow select own session"
   on survey_sessions for select
   using (true);
+
+create policy "Allow update own session"
+  on survey_sessions for update
+  using (true);
+
+-- survey_answers: 匿名ユーザーの挿入・閲覧を許可
+create policy "Allow anonymous insert on answers"
+  on survey_answers for insert
+  with check (true);
 
 create policy "Allow select own answers"
   on survey_answers for select
   using (true);
 
--- セッションの更新（完了時）
-create policy "Allow update own session"
-  on survey_sessions for update
-  using (true);
+-- team_members: 匿名ユーザーの挿入・閲覧・更新を許可
+create policy "Allow anonymous insert on team_members"
+  on team_members for insert with check (true);
+
+create policy "Allow select team_members"
+  on team_members for select using (true);
+
+create policy "Allow update team_members"
+  on team_members for update using (true);
+
+-- ============================================
+-- チーム結果集計用RPC関数
+-- ============================================
+
+create or replace function get_team_results(p_admin_token text)
+returns json
+language plpgsql
+security definer
+as $$
+declare
+  v_team teams;
+  v_result json;
+begin
+  select * into v_team from teams where admin_token = p_admin_token;
+  if v_team is null then
+    raise exception 'Invalid admin token';
+  end if;
+
+  select json_build_object(
+    'team_name', v_team.name,
+    'team_id', v_team.id,
+    'results_visible', v_team.results_visible,
+    'deadline', v_team.deadline,
+    'response_count', (
+      select count(*)
+      from survey_sessions
+      where team_id = v_team.id and completed_at is not null
+    ),
+    'member_count', (
+      select count(*)
+      from team_members
+      where team_id = v_team.id
+    ),
+    'question_averages', (
+      select coalesce(json_agg(
+        json_build_object('question_id', sa.question_id, 'avg_score', round(avg(sa.score)::numeric, 2))
+      ), '[]'::json)
+      from survey_answers sa
+      join survey_sessions ss on ss.id = sa.session_id
+      where ss.team_id = v_team.id
+        and ss.completed_at is not null
+        and sa.score is not null
+      group by sa.question_id
+    )
+  ) into v_result;
+
+  return v_result;
+end;
+$$;
