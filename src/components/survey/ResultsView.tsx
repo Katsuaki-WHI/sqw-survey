@@ -5,6 +5,7 @@ import type { QuestionCategory } from "@/lib/survey/questions";
 import { CATEGORY_CONFIG } from "@/lib/survey/questions";
 import { getScaleLevel, SCALE_LEVEL_LABELS } from "@/lib/survey/scoring";
 import { useLocale } from "@/lib/i18n/context";
+import WagonComposite from "./WagonComposite";
 import WagonIllustration from "./WagonIllustration";
 import ScoreRadarChart from "./ScoreRadarChart";
 
@@ -70,7 +71,14 @@ export default function ResultsView({ data, title, mode }: ResultsViewProps) {
         {title}
       </h1>
 
-      {/* Wagon illustration with real images */}
+      {/* Composite wagon illustration (1 layered picture) */}
+      <WagonComposite
+        categoryScores={data.categoryScores as Partial<Record<QuestionCategory, CategoryScore>>}
+        wagonSpeed={data.wagonSpeed}
+        teamAverage={data.teamAverage}
+      />
+
+      {/* Category illustrations grid */}
       <WagonIllustration
         categoryScores={data.categoryScores as Partial<Record<QuestionCategory, CategoryScore>>}
         wagonSpeed={data.wagonSpeed}
