@@ -33,9 +33,9 @@ export const SCALE_LABELS = [
   { value: 1, label: "全くそう思わない", labelEn: "Strongly Disagree" },
 ] as const;
 
-// 確定25問バージョン：チーム質問25問 + 組織質問5問 + 自由記述5問
+// 確定26問バージョン：チーム質問26問 + 組織質問5問 + 自由記述5問
 export const QUESTIONS: Question[] = [
-  // === チーム質問（Q1-Q25）：5段階評価 ===
+  // === チーム質問（Q1-Q26）：5段階評価 ===
 
   // ①景色（ミッション・ビジョン・バリュー）3問
   {
@@ -201,7 +201,7 @@ export const QUESTIONS: Question[] = [
     categoryLabelEn: "Capability & Motivation",
   },
 
-  // ⑥押す人の顔（風土・文化）4問
+  // ⑥押す人の顔（風土・文化）5問
   {
     id: 15,
     text: "あなたは、この一週間のうちに、良い仕事をしたと認められたり、褒められたりしましたか？",
@@ -246,12 +246,23 @@ export const QUESTIONS: Question[] = [
     categoryLabel: "風土・文化",
     categoryLabelEn: "Culture & Ethos",
   },
+  {
+    id: 19,
+    text: "あなたのチームは、必要なときにいつでも協力し合って仕事をしていますか？",
+    textEn: "Does your team always cooperate and work together when needed?",
+    category: "attitude",
+    type: "scale",
+    wagonPart: "押す人の態度",
+    wagonPartEn: "Attitude",
+    categoryLabel: "風土・文化",
+    categoryLabelEn: "Culture & Ethos",
+  },
 
   // ⑦積荷（リソース・強みの認識）3問
   {
-    id: 19,
-    text: "あなたは、新しいことにチャレンジすることが好きですか？",
-    textEn: "Do you enjoy taking on new challenges?",
+    id: 20,
+    text: "あなたのチームでは、チームの強みやリソースを活かして新しいことに挑戦していますか？",
+    textEn: "Does your team leverage its strengths and resources to take on new challenges?",
     category: "cargo",
     type: "scale",
     wagonPart: "積荷",
@@ -260,7 +271,7 @@ export const QUESTIONS: Question[] = [
     categoryLabelEn: "Resources & Strengths",
   },
   {
-    id: 20,
+    id: 21,
     text: "あなたのチームでは、自分の意見が尊重されていると思いますか？",
     textEn: "Do your opinions seem to count in your team?",
     category: "cargo",
@@ -271,7 +282,7 @@ export const QUESTIONS: Question[] = [
     categoryLabelEn: "Resources & Strengths",
   },
   {
-    id: 21,
+    id: 22,
     text: "あなたのチームでは、お互いに自分たちの強みや弱みを理解していると思いますか？",
     textEn: "Do your team members know each other's strengths and weaknesses?",
     category: "cargo",
@@ -284,7 +295,7 @@ export const QUESTIONS: Question[] = [
 
   // ⑧多様性（ダイバーシティ）3問
   {
-    id: 22,
+    id: 23,
     text: "あなたのチームでは、性別や年齢に関係なく、本人の考えや適性が活かされていると思いますか？",
     textEn: "Is your team able to make use of each member's aptitude regardless of gender or age?",
     category: "diversity",
@@ -295,7 +306,7 @@ export const QUESTIONS: Question[] = [
     categoryLabelEn: "Diversity",
   },
   {
-    id: 23,
+    id: 24,
     text: "あなたのチームでは、衝突を恐れずに異なる意見を言ったり聴いてもらえたりしていると思いますか？",
     textEn: "Is your team able to express different opinions without worrying about conflicts?",
     category: "diversity",
@@ -306,7 +317,7 @@ export const QUESTIONS: Question[] = [
     categoryLabelEn: "Diversity",
   },
   {
-    id: 24,
+    id: 25,
     text: "あなたは、職場に親しい友人と呼べる人がいますか？",
     textEn: "Do you have a close friend at work?",
     category: "diversity",
@@ -319,7 +330,7 @@ export const QUESTIONS: Question[] = [
 
   // ⑨幸福度（1問）
   {
-    id: 25,
+    id: 26,
     text: "あなたは、今いるチームで働いていて幸せですか？",
     textEn: "Do you feel happy working with your team?",
     category: "happiness",
@@ -330,9 +341,9 @@ export const QUESTIONS: Question[] = [
     categoryLabelEn: "Team Happiness",
   },
 
-  // === 組織質問（Q26-Q30）：5段階評価 ===
+  // === 組織質問（Q27-Q31）：5段階評価 ===
   {
-    id: 26,
+    id: 27,
     text: "あなたは、会社はお客様に喜ばれる製品・成果を提供できていると思いますか？",
     textEn: "Do you think your company provides value that pleases customers?",
     category: "management",
@@ -343,7 +354,7 @@ export const QUESTIONS: Question[] = [
     categoryLabelEn: "Trust in Management",
   },
   {
-    id: 27,
+    id: 28,
     text: "あなたの会社では、会社の目的や目標が共有されていると思いますか？",
     textEn: "Do you think your company shares its goals within the organization?",
     category: "management",
@@ -354,7 +365,7 @@ export const QUESTIONS: Question[] = [
     categoryLabelEn: "Trust in Management",
   },
   {
-    id: 28,
+    id: 29,
     text: "あなたの会社の経営陣は、会社の方針と一致した言動を取っていると思いますか？",
     textEn: "Do you think management behaves consistently with the company's policy?",
     category: "management",
@@ -365,7 +376,7 @@ export const QUESTIONS: Question[] = [
     categoryLabelEn: "Trust in Management",
   },
   {
-    id: 29,
+    id: 30,
     text: "あなたの会社には、会社の目標達成に向けた戦略があると思いますか？",
     textEn: "Do you think your company has a strategy to achieve its goals?",
     category: "management",
@@ -376,7 +387,7 @@ export const QUESTIONS: Question[] = [
     categoryLabelEn: "Trust in Management",
   },
   {
-    id: 30,
+    id: 31,
     text: "あなたは、会社の経営陣を信頼していますか？",
     textEn: "Do you trust the company's management team?",
     category: "management",
@@ -387,9 +398,9 @@ export const QUESTIONS: Question[] = [
     categoryLabelEn: "Trust in Management",
   },
 
-  // === 自由記述（Q31-Q35） ===
+  // === 自由記述（Q32-Q36） ===
   {
-    id: 31,
+    id: 32,
     text: "今の会社の好きなところ、誇りに思うところは？",
     textEn: "What do you like or feel proud of about your company?",
     category: "management",
@@ -400,7 +411,7 @@ export const QUESTIONS: Question[] = [
     categoryLabelEn: "Free Text",
   },
   {
-    id: 32,
+    id: 33,
     text: "今の会社の課題や残念に思うところは？",
     textEn: "What challenges or disappointments do you see in your company?",
     category: "management",
@@ -411,7 +422,7 @@ export const QUESTIONS: Question[] = [
     categoryLabelEn: "Free Text",
   },
   {
-    id: 33,
+    id: 34,
     text: "あなたの直属の上司の強みと感じるところは？",
     textEn: "What do you see as your direct supervisor's strengths?",
     category: "management",
@@ -422,7 +433,7 @@ export const QUESTIONS: Question[] = [
     categoryLabelEn: "Free Text",
   },
   {
-    id: 34,
+    id: 35,
     text: "あなたの直属の上司に期待すること、要望は？",
     textEn: "What do you expect or request from your direct supervisor?",
     category: "management",
@@ -433,7 +444,7 @@ export const QUESTIONS: Question[] = [
     categoryLabelEn: "Free Text",
   },
   {
-    id: 35,
+    id: 36,
     text: "最後に一言（会社への要望・提案・アドバイスなど）",
     textEn: "Any final words (requests, suggestions, or advice for the company)?",
     category: "management",
@@ -445,7 +456,7 @@ export const QUESTIONS: Question[] = [
   },
 ];
 
-// チーム質問のみ（ワゴン推進力計算用：Q1-Q25の25問）
+// チーム質問のみ（ワゴン推進力計算用：Q1-Q26の26問）
 export const TEAM_QUESTIONS = QUESTIONS.filter(
   (q) => q.type === "scale" && q.category !== "management"
 );
@@ -470,9 +481,9 @@ export const CATEGORY_CONFIG: Record<
   rope:        { label: "リーダーシップ・コミュニケーション", labelEn: "Leadership & Communication", wagonPart: "ロープ", wagonPartEn: "Rope", questionIds: [6, 7, 8] },
   tire:        { label: "仕組み（既成概念）", labelEn: "Systems & Mindset", wagonPart: "タイヤ", wagonPartEn: "Tire", questionIds: [9, 10, 11] },
   body:        { label: "能力・意欲", labelEn: "Capability & Motivation", wagonPart: "押す人の体", wagonPartEn: "Body", questionIds: [12, 13, 14] },
-  attitude:    { label: "風土・文化", labelEn: "Culture & Ethos", wagonPart: "押す人の態度", wagonPartEn: "Attitude", questionIds: [15, 16, 17, 18] },
-  cargo:       { label: "リソース・強みの認識", labelEn: "Resources & Strengths", wagonPart: "積荷", wagonPartEn: "Cargo", questionIds: [19, 20, 21] },
-  diversity:   { label: "ダイバーシティ", labelEn: "Diversity", wagonPart: "多様性", wagonPartEn: "Diversity", questionIds: [22, 23, 24] },
-  happiness:   { label: "チームの幸福度", labelEn: "Team Happiness", wagonPart: "幸福度", wagonPartEn: "Happiness", questionIds: [25] },
-  management:  { label: "経営陣への信頼", labelEn: "Trust in Management", wagonPart: "経営", wagonPartEn: "Management", questionIds: [26, 27, 28, 29, 30] },
+  attitude:    { label: "風土・文化", labelEn: "Culture & Ethos", wagonPart: "押す人の態度", wagonPartEn: "Attitude", questionIds: [15, 16, 17, 18, 19] },
+  cargo:       { label: "リソース・強みの認識", labelEn: "Resources & Strengths", wagonPart: "積荷", wagonPartEn: "Cargo", questionIds: [20, 21, 22] },
+  diversity:   { label: "ダイバーシティ", labelEn: "Diversity", wagonPart: "多様性", wagonPartEn: "Diversity", questionIds: [23, 24, 25] },
+  happiness:   { label: "チームの幸福度", labelEn: "Team Happiness", wagonPart: "幸福度", wagonPartEn: "Happiness", questionIds: [26] },
+  management:  { label: "経営陣への信頼", labelEn: "Trust in Management", wagonPart: "経営", wagonPartEn: "Management", questionIds: [27, 28, 29, 30, 31] },
 };
