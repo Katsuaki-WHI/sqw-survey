@@ -1,10 +1,11 @@
 "use client";
 
+import Image from "next/image";
 import type { QuestionCategory } from "@/lib/survey/questions";
 import { CATEGORY_CONFIG } from "@/lib/survey/questions";
-import { getScaleLevel, SCALE_LEVEL_LABELS, calcWagonSpeed } from "@/lib/survey/scoring";
+import { getScaleLevel, SCALE_LEVEL_LABELS } from "@/lib/survey/scoring";
 import { useLocale } from "@/lib/i18n/context";
-import WagonChart from "./WagonChart";
+import WagonIllustration from "./WagonIllustration";
 import ScoreRadarChart from "./ScoreRadarChart";
 
 interface CategoryScore {
@@ -22,7 +23,6 @@ export interface ResultsData {
 interface ResultsViewProps {
   data: ResultsData;
   title: string;
-  /** "individual" shows personal label, "team" shows team label */
   mode: "individual" | "team";
 }
 
@@ -33,6 +33,26 @@ function levelBarColor(avg: number): string {
   if (avg >= 1.5) return "bg-orange-500";
   return "bg-red-500";
 }
+
+function scoreToLevel(avg: number): number {
+  if (avg >= 4.5) return 1;
+  if (avg >= 3.5) return 2;
+  if (avg >= 2.5) return 3;
+  if (avg >= 1.5) return 4;
+  return 5;
+}
+
+const CATEGORY_IMAGE_PREFIX: Record<string, string> = {
+  landscape: "scenery",
+  road: "road",
+  rope: "rope",
+  tire: "tire",
+  body: "body",
+  attitude: "attitude",
+  cargo: "cargo",
+  diversity: "diversity",
+  happiness: "happiness",
+};
 
 export default function ResultsView({ data, title, mode }: ResultsViewProps) {
   const { locale, dict } = useLocale();
@@ -50,10 +70,11 @@ export default function ResultsView({ data, title, mode }: ResultsViewProps) {
         {title}
       </h1>
 
-      {/* Wagon visualization */}
-      <WagonChart
+      {/* Wagon illustration with real images */}
+      <WagonIllustration
         categoryScores={data.categoryScores as Partial<Record<QuestionCategory, CategoryScore>>}
         wagonSpeed={data.wagonSpeed}
+        teamAverage={data.teamAverage}
       />
 
       {/* Radar chart */}
@@ -63,12 +84,12 @@ export default function ResultsView({ data, title, mode }: ResultsViewProps) {
         />
       </div>
 
-      {/* Category breakdown bars */}
+      {/* Category breakdown bars with thumbnails */}
       <div className="w-full">
         <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
           {isEn ? "Category Scores" : "カテゴリ別スコア"}
         </h2>
-        <div className="flex flex-col gap-3">
+        <div className="flex flex-col gap-4">
           {teamCategories.map((cat) => {
             const config = CATEGORY_CONFIG[cat];
             const score = data.categoryScores[cat];
@@ -76,22 +97,39 @@ export default function ResultsView({ data, title, mode }: ResultsViewProps) {
             const level = getScaleLevel(score.avg);
             const levelLabel = SCALE_LEVEL_LABELS[level];
             const widthPct = (score.avg / 5) * 100;
+            const imageLevel = scoreToLevel(score.avg);
+            const prefix = CATEGORY_IMAGE_PREFIX[cat];
+            const imagePath = `/images/${prefix}_${imageLevel}.png`;
 
             return (
-              <div key={cat} className="flex flex-col gap-1">
-                <div className="flex justify-between text-sm">
-                  <span className="text-gray-700 dark:text-gray-300">
-                    {isEn ? config.wagonPartEn : config.wagonPart} - {isEn ? config.labelEn : config.label}
-                  </span>
-                  <span className="text-gray-500 font-medium">
-                    {score.avg.toFixed(2)} ({isEn ? levelLabel.en : levelLabel.ja})
-                  </span>
-                </div>
-                <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5">
-                  <div
-                    className={`h-2.5 rounded-full transition-all ${levelBarColor(score.avg)}`}
-                    style={{ width: `${widthPct}%` }}
+              <div key={cat} className="flex items-center gap-3">
+                {/* Thumbnail */}
+                <div className="shrink-0 w-12 h-12 rounded-lg bg-gray-100 dark:bg-gray-800 flex items-center justify-center overflow-hidden">
+                  <Image
+                    src={imagePath}
+                    alt={isEn ? config.wagonPartEn : config.wagonPart}
+                    width={48}
+                    height={48}
+                    className="object-contain"
+                    unoptimized
                   />
+                </div>
+                {/* Score bar */}
+                <div className="flex-1 min-w-0">
+                  <div className="flex justify-between text-sm mb-1">
+                    <span className="text-gray-700 dark:text-gray-300 truncate">
+                      {isEn ? config.wagonPartEn : config.wagonPart} - {isEn ? config.labelEn : config.label}
+                    </span>
+                    <span className="text-gray-500 font-medium shrink-0 ml-2">
+                      {score.avg.toFixed(2)} ({isEn ? levelLabel.en : levelLabel.ja})
+                    </span>
+                  </div>
+                  <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5">
+                    <div
+                      className={`h-2.5 rounded-full transition-all ${levelBarColor(score.avg)}`}
+                      style={{ width: `${widthPct}%` }}
+                    />
+                  </div>
                 </div>
               </div>
             );
@@ -99,7 +137,7 @@ export default function ResultsView({ data, title, mode }: ResultsViewProps) {
         </div>
       </div>
 
-      {/* Management score (if available) */}
+      {/* Management score */}
       {data.managementAverage != null && data.managementAverage > 0 && (
         <div className="w-full">
           <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
