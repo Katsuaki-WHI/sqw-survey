@@ -1,9 +1,11 @@
 "use client";
 
+import { useState } from "react";
 import Image from "next/image";
 import type { QuestionCategory } from "@/lib/survey/questions";
 import { CATEGORY_CONFIG } from "@/lib/survey/questions";
 import { getScaleLevel, SCALE_LEVEL_LABELS } from "@/lib/survey/scoring";
+import { getComment, type ScaleLevel as CommentLevel } from "@/lib/survey/comments";
 import { useLocale } from "@/lib/i18n/context";
 import WagonComposite from "./WagonComposite";
 import WagonIllustration from "./WagonIllustration";
@@ -95,58 +97,12 @@ export default function ResultsView({ data, title, mode }: ResultsViewProps) {
         />
       </div>
 
-      {/* Category breakdown bars with thumbnails */}
-      <div className="w-full">
-        <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-          {isEn ? "Category Scores" : "カテゴリ別スコア"}
-        </h2>
-        <div className="flex flex-col gap-4">
-          {teamCategories.map((cat) => {
-            const config = CATEGORY_CONFIG[cat];
-            const score = data.categoryScores[cat];
-            if (!score) return null;
-            const level = getScaleLevel(score.avg);
-            const levelLabel = SCALE_LEVEL_LABELS[level];
-            const widthPct = (score.avg / 5) * 100;
-            const imageLevel = scoreToLevel(score.avg);
-            const prefix = CATEGORY_IMAGE_PREFIX[cat];
-            const imagePath = `/images/${prefix}_${imageLevel}.png`;
-
-            return (
-              <div key={cat} className="flex items-center gap-3">
-                {/* Thumbnail */}
-                <div className="shrink-0 w-12 h-12 rounded-lg bg-gray-100 dark:bg-gray-800 flex items-center justify-center overflow-hidden">
-                  <Image
-                    src={imagePath}
-                    alt={isEn ? config.wagonPartEn : config.wagonPart}
-                    width={48}
-                    height={48}
-                    className="object-contain"
-                    unoptimized
-                  />
-                </div>
-                {/* Score bar */}
-                <div className="flex-1 min-w-0">
-                  <div className="flex justify-between text-sm mb-1">
-                    <span className="text-gray-700 dark:text-gray-300 truncate">
-                      {isEn ? config.wagonPartEn : config.wagonPart} - {isEn ? config.labelEn : config.label}
-                    </span>
-                    <span className="text-gray-500 font-medium shrink-0 ml-2">
-                      {score.avg.toFixed(2)} ({isEn ? levelLabel.en : levelLabel.ja})
-                    </span>
-                  </div>
-                  <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5">
-                    <div
-                      className={`h-2.5 rounded-full transition-all ${levelBarColor(score.avg)}`}
-                      style={{ width: `${widthPct}%` }}
-                    />
-                  </div>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      </div>
+      {/* Category breakdown with comments */}
+      <CategoryBreakdown
+        teamCategories={teamCategories}
+        categoryScores={data.categoryScores}
+        isEn={isEn}
+      />
 
       {/* Management score */}
       {data.managementAverage != null && data.managementAverage > 0 && (
@@ -179,6 +135,116 @@ export default function ResultsView({ data, title, mode }: ResultsViewProps) {
         <p className="text-3xl font-bold text-gray-900 dark:text-white">
           {data.teamAverage.toFixed(2)} <span className="text-lg text-gray-500">/ 5.00</span>
         </p>
+      </div>
+    </div>
+  );
+}
+
+/** Category breakdown with comments - extracted for state management */
+function CategoryBreakdown({
+  teamCategories,
+  categoryScores,
+  isEn,
+}: {
+  teamCategories: QuestionCategory[];
+  categoryScores: Record<string, { avg: number; level: string }>;
+  isEn: boolean;
+}) {
+  const [expanded, setExpanded] = useState<Record<string, boolean>>({});
+
+  const toggle = (cat: string) =>
+    setExpanded((prev) => ({ ...prev, [cat]: !prev[cat] }));
+
+  return (
+    <div className="w-full">
+      <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+        {isEn ? "Category Scores" : "カテゴリ別スコア"}
+      </h2>
+      <div className="flex flex-col gap-4">
+        {teamCategories.map((cat) => {
+          const config = CATEGORY_CONFIG[cat];
+          const score = categoryScores[cat];
+          if (!score) return null;
+          const level = getScaleLevel(score.avg);
+          const levelLabel = SCALE_LEVEL_LABELS[level];
+          const widthPct = (score.avg / 5) * 100;
+          const imageLevel = scoreToLevel(score.avg);
+          const prefix = CATEGORY_IMAGE_PREFIX[cat];
+          const imagePath = `/images/${prefix}_${imageLevel}.png`;
+
+          // Get comment for this category and level
+          const comment = cat !== "management"
+            ? getComment(cat as Exclude<QuestionCategory, "management">, level as CommentLevel)
+            : null;
+          const shortComment = comment
+            ? (isEn ? comment.short.en : comment.short.ja)
+            : "";
+          const detailComment = comment
+            ? (isEn ? comment.detail.en : comment.detail.ja)
+            : "";
+          const isExpanded = expanded[cat] ?? false;
+
+          return (
+            <div key={cat} className="rounded-lg border border-gray-200 dark:border-gray-700 p-3">
+              <div className="flex items-center gap-3">
+                {/* Thumbnail */}
+                <div className="shrink-0 w-12 h-12 rounded-lg bg-gray-100 dark:bg-gray-800 flex items-center justify-center overflow-hidden">
+                  <Image
+                    src={imagePath}
+                    alt={isEn ? config.wagonPartEn : config.wagonPart}
+                    width={48}
+                    height={48}
+                    className="object-contain"
+                    unoptimized
+                  />
+                </div>
+                {/* Score bar */}
+                <div className="flex-1 min-w-0">
+                  <div className="flex justify-between text-sm mb-1">
+                    <span className="text-gray-700 dark:text-gray-300 truncate">
+                      {isEn ? config.wagonPartEn : config.wagonPart} - {isEn ? config.labelEn : config.label}
+                    </span>
+                    <span className="text-gray-500 font-medium shrink-0 ml-2">
+                      {score.avg.toFixed(2)} ({isEn ? levelLabel.en : levelLabel.ja})
+                    </span>
+                  </div>
+                  <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5">
+                    <div
+                      className={`h-2.5 rounded-full transition-all ${levelBarColor(score.avg)}`}
+                      style={{ width: `${widthPct}%` }}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Short comment */}
+              {shortComment && (
+                <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
+                  {shortComment}
+                </p>
+              )}
+
+              {/* Expand/collapse for detail */}
+              {detailComment && (
+                <>
+                  <button
+                    onClick={() => toggle(cat)}
+                    className="mt-1 text-xs text-blue-600 dark:text-blue-400 hover:underline"
+                  >
+                    {isExpanded
+                      ? (isEn ? "Hide details" : "詳細を閉じる")
+                      : (isEn ? "Show details" : "詳細を見る")}
+                  </button>
+                  {isExpanded && (
+                    <p className="mt-2 text-sm text-gray-500 dark:text-gray-400 leading-relaxed border-l-2 border-blue-300 pl-3">
+                      {detailComment}
+                    </p>
+                  )}
+                </>
+              )}
+            </div>
+          );
+        })}
       </div>
     </div>
   );
