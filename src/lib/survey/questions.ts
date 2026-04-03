@@ -22,6 +22,8 @@ export interface Question {
   wagonPartEn: string;
   categoryLabel: string;
   categoryLabelEn: string;
+  /** Q40（幸福度）との相関係数（実測値）。改善インパクト計算に使用 */
+  q40Correlation?: number;
 }
 
 // 5段階評価のラベル
@@ -48,6 +50,7 @@ export const QUESTIONS: Question[] = [
     wagonPartEn: "Landscape",
     categoryLabel: "ミッション・ビジョン・バリュー",
     categoryLabelEn: "Mission, Vision & Values",
+    q40Correlation: 0.469,
   },
   {
     id: 2,
@@ -59,6 +62,7 @@ export const QUESTIONS: Question[] = [
     wagonPartEn: "Landscape",
     categoryLabel: "ミッション・ビジョン・バリュー",
     categoryLabelEn: "Mission, Vision & Values",
+    q40Correlation: 0.756,
   },
   {
     id: 3,
@@ -70,6 +74,7 @@ export const QUESTIONS: Question[] = [
     wagonPartEn: "Landscape",
     categoryLabel: "ミッション・ビジョン・バリュー",
     categoryLabelEn: "Mission, Vision & Values",
+    q40Correlation: 0.611,
   },
 
   // ②道筋（戦略）2問
@@ -83,6 +88,7 @@ export const QUESTIONS: Question[] = [
     wagonPartEn: "Road",
     categoryLabel: "戦略",
     categoryLabelEn: "Strategy",
+    q40Correlation: 0.61,
   },
   {
     id: 5,
@@ -94,6 +100,7 @@ export const QUESTIONS: Question[] = [
     wagonPartEn: "Road",
     categoryLabel: "戦略",
     categoryLabelEn: "Strategy",
+    q40Correlation: 0.608,
   },
 
   // ③ロープ（リーダーシップ・コミュニケーション）3問
@@ -107,6 +114,7 @@ export const QUESTIONS: Question[] = [
     wagonPartEn: "Rope",
     categoryLabel: "リーダーシップ・コミュニケーション",
     categoryLabelEn: "Leadership & Communication",
+    q40Correlation: 0.567,
   },
   {
     id: 7,
@@ -118,6 +126,7 @@ export const QUESTIONS: Question[] = [
     wagonPartEn: "Rope",
     categoryLabel: "リーダーシップ・コミュニケーション",
     categoryLabelEn: "Leadership & Communication",
+    q40Correlation: 0.544,
   },
   {
     id: 8,
@@ -129,6 +138,7 @@ export const QUESTIONS: Question[] = [
     wagonPartEn: "Rope",
     categoryLabel: "リーダーシップ・コミュニケーション",
     categoryLabelEn: "Leadership & Communication",
+    q40Correlation: 0.54,
   },
 
   // ④タイヤ（仕組み・既成概念）3問
@@ -142,6 +152,7 @@ export const QUESTIONS: Question[] = [
     wagonPartEn: "Tire",
     categoryLabel: "仕組み（既成概念）",
     categoryLabelEn: "Systems & Mindset",
+    q40Correlation: 0.487,
   },
   {
     id: 10,
@@ -153,6 +164,7 @@ export const QUESTIONS: Question[] = [
     wagonPartEn: "Tire",
     categoryLabel: "仕組み（既成概念）",
     categoryLabelEn: "Systems & Mindset",
+    q40Correlation: 0.562,
   },
   {
     id: 11,
@@ -164,6 +176,7 @@ export const QUESTIONS: Question[] = [
     wagonPartEn: "Tire",
     categoryLabel: "仕組み（既成概念）",
     categoryLabelEn: "Systems & Mindset",
+    q40Correlation: 0.511,
   },
 
   // ⑤押す人の体（能力・意欲）4問
@@ -177,6 +190,7 @@ export const QUESTIONS: Question[] = [
     wagonPartEn: "Body",
     categoryLabel: "能力・意欲",
     categoryLabelEn: "Capability & Motivation",
+    q40Correlation: 0.536,
   },
   {
     id: 13,
@@ -188,6 +202,7 @@ export const QUESTIONS: Question[] = [
     wagonPartEn: "Body",
     categoryLabel: "能力・意欲",
     categoryLabelEn: "Capability & Motivation",
+    q40Correlation: 0.556,
   },
   {
     id: 14,
@@ -199,6 +214,7 @@ export const QUESTIONS: Question[] = [
     wagonPartEn: "Body",
     categoryLabel: "能力・意欲",
     categoryLabelEn: "Capability & Motivation",
+    q40Correlation: 0.55,
   },
   {
     id: 15,
@@ -210,6 +226,7 @@ export const QUESTIONS: Question[] = [
     wagonPartEn: "Body",
     categoryLabel: "能力・意欲",
     categoryLabelEn: "Capability & Motivation",
+    q40Correlation: 0.548,
   },
 
   // ⑥押す人の顔（風土・文化）4問
@@ -223,6 +240,7 @@ export const QUESTIONS: Question[] = [
     wagonPartEn: "Attitude",
     categoryLabel: "風土・文化",
     categoryLabelEn: "Culture & Ethos",
+    q40Correlation: 0.571,
   },
   {
     id: 17,
@@ -234,6 +252,7 @@ export const QUESTIONS: Question[] = [
     wagonPartEn: "Attitude",
     categoryLabel: "風土・文化",
     categoryLabelEn: "Culture & Ethos",
+    q40Correlation: 0.587,
   },
   {
     id: 18,
@@ -245,6 +264,7 @@ export const QUESTIONS: Question[] = [
     wagonPartEn: "Attitude",
     categoryLabel: "風土・文化",
     categoryLabelEn: "Culture & Ethos",
+    q40Correlation: 0.551,
   },
   {
     id: 19,
@@ -256,6 +276,7 @@ export const QUESTIONS: Question[] = [
     wagonPartEn: "Attitude",
     categoryLabel: "風土・文化",
     categoryLabelEn: "Culture & Ethos",
+    q40Correlation: 0.568,
   },
 
   // ⑦積荷（リソース・強みの認識）3問
@@ -269,6 +290,7 @@ export const QUESTIONS: Question[] = [
     wagonPartEn: "Cargo",
     categoryLabel: "リソース・強みの認識",
     categoryLabelEn: "Resources & Strengths",
+    q40Correlation: 0.367,
   },
   {
     id: 21,
@@ -280,6 +302,7 @@ export const QUESTIONS: Question[] = [
     wagonPartEn: "Cargo",
     categoryLabel: "リソース・強みの認識",
     categoryLabelEn: "Resources & Strengths",
+    q40Correlation: 0.605,
   },
   {
     id: 22,
@@ -291,6 +314,7 @@ export const QUESTIONS: Question[] = [
     wagonPartEn: "Cargo",
     categoryLabel: "リソース・強みの認識",
     categoryLabelEn: "Resources & Strengths",
+    q40Correlation: 0.563,
   },
 
   // ⑧多様性（ダイバーシティ）3問
@@ -304,6 +328,7 @@ export const QUESTIONS: Question[] = [
     wagonPartEn: "Diversity",
     categoryLabel: "ダイバーシティ",
     categoryLabelEn: "Diversity",
+    q40Correlation: 0.557,
   },
   {
     id: 24,
@@ -315,6 +340,7 @@ export const QUESTIONS: Question[] = [
     wagonPartEn: "Diversity",
     categoryLabel: "ダイバーシティ",
     categoryLabelEn: "Diversity",
+    q40Correlation: 0.53,
   },
   {
     id: 25,
@@ -326,6 +352,7 @@ export const QUESTIONS: Question[] = [
     wagonPartEn: "Diversity",
     categoryLabel: "ダイバーシティ",
     categoryLabelEn: "Diversity",
+    q40Correlation: 0.448,
   },
 
   // ⑨幸福度（1問）

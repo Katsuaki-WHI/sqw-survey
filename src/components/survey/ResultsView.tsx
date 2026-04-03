@@ -10,6 +10,7 @@ import { useLocale } from "@/lib/i18n/context";
 import WagonComposite from "./WagonComposite";
 import WagonIllustration from "./WagonIllustration";
 import ScoreRadarChart from "./ScoreRadarChart";
+import InsightCards from "./InsightCards";
 
 interface CategoryScore {
   avg: number;
@@ -21,6 +22,10 @@ export interface ResultsData {
   wagonSpeed: number;
   categoryScores: Record<string, CategoryScore>;
   managementAverage?: number | null;
+  /** Per-question average scores (questionId -> avg). Used for insight cards. */
+  questionScores?: Record<number, number>;
+  /** Per-question within-team SD (questionId -> sd). Team results only. */
+  questionSDs?: Record<number, number>;
 }
 
 interface ResultsViewProps {
@@ -103,6 +108,15 @@ export default function ResultsView({ data, title, mode }: ResultsViewProps) {
         categoryScores={data.categoryScores}
         isEn={isEn}
       />
+
+      {/* Insight cards */}
+      {data.questionScores && (
+        <InsightCards
+          scores={data.questionScores}
+          teamSDs={data.questionSDs}
+          mode={mode}
+        />
+      )}
 
       {/* Management score */}
       {data.managementAverage != null && data.managementAverage > 0 && (

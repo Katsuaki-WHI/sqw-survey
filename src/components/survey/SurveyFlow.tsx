@@ -77,14 +77,20 @@ export default function SurveyFlow({ onSubmit, completedExtra }: SurveyFlowProps
         const categoryScores = calcCategoryScores(scaleAnswers);
 
         // Management average
-        const mgmtIds = [17, 18, 19, 20, 21];
+        const mgmtIds = [27, 28, 29, 30, 31];
         const mgmtScores = mgmtIds.map((id) => scaleAnswers[id]).filter((v) => v != null);
         const managementAverage =
           mgmtScores.length > 0
             ? Math.round((mgmtScores.reduce((a, b) => a + b, 0) / mgmtScores.length) * 100) / 100
             : null;
 
-        results = { teamAverage, wagonSpeed, categoryScores, managementAverage };
+        // Build per-question scores for insight cards
+        const questionScores: Record<number, number> = {};
+        for (const [key, val] of Object.entries(scaleAnswers)) {
+          questionScores[Number(key)] = val;
+        }
+
+        results = { teamAverage, wagonSpeed, categoryScores, managementAverage, questionScores };
       }
 
       setResultsData(results);
