@@ -80,24 +80,14 @@ function buildLayers(scores: Partial<Record<QuestionCategory, CategoryScore>>): 
     bottom: 39, left: 0, width: 660,
   });
 
-  // 3. Diversity staff (behind wagon)
+  // 3. Diversity staff (behind wagon, HTML order: staff1 → staff2 → staff4)
   //    stage1: 全員非表示
   //    stage2: staff1のみ
   //    stage3: staff1+2
-  //    stage4: staff1+2+3 (staff3 is foreground, added later)
+  //    stage4: staff1+2+3 (staff3 is foreground, added after pull)
   //    stage5: staff1+2+3+4
 
-  // staff4 (leftmost, behind pusher)
-  //    CSS: bottom: 216px; left: 45px; width: 100px
-  if (diversity >= 5) {
-    layers.push({
-      key: "staff4",
-      src: `${IMG_BASE}/result_staff4.png`,
-      bottom: 216, left: 45, width: 100,
-    });
-  }
-
-  // staff1 (right side, sweeping)
+  // staff1 (right side)
   //    CSS: bottom: 211px; left: 508px; width: 110px
   if (diversity >= 2) {
     layers.push({
@@ -107,13 +97,23 @@ function buildLayers(scores: Partial<Record<QuestionCategory, CategoryScore>>): 
     });
   }
 
-  // staff2 (far right, telescope)
+  // staff2 (far right)
   //    CSS: bottom: 160px; left: 594px; width: 100px
   if (diversity >= 3) {
     layers.push({
       key: "staff2",
       src: `${IMG_BASE}/result_staff2.png`,
       bottom: 160, left: 594, width: 100,
+    });
+  }
+
+  // staff4 (leftmost, behind pusher)
+  //    CSS: bottom: 216px; left: 45px; width: 100px
+  if (diversity >= 5) {
+    layers.push({
+      key: "staff4",
+      src: `${IMG_BASE}/result_staff4.png`,
+      bottom: 216, left: 45, width: 100,
     });
   }
 
