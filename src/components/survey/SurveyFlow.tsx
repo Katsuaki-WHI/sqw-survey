@@ -90,7 +90,16 @@ export default function SurveyFlow({ onSubmit, completedExtra }: SurveyFlowProps
           questionScores[Number(key)] = val;
         }
 
-        results = { teamAverage, wagonSpeed, categoryScores, managementAverage, questionScores };
+        // Build engagement map data (individual dot)
+        const direction = questionScores[2] ?? 0; // Q02: team pride
+        const q13 = questionScores[13] ?? 0; // Q13: do what you do best
+        const q19 = questionScores[19] ?? 0; // Q19: cooperate
+        const contribution = q13 && q19 ? (q13 + q19) / 2 : 0;
+        const engagementPoints = direction > 0 && contribution > 0
+          ? [{ direction, contribution, isSelf: true }]
+          : [];
+
+        results = { teamAverage, wagonSpeed, categoryScores, managementAverage, questionScores, engagementPoints };
       }
 
       setResultsData(results);

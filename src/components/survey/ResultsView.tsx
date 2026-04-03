@@ -11,6 +11,7 @@ import WagonComposite from "./WagonComposite";
 import WagonIllustration from "./WagonIllustration";
 import ScoreRadarChart from "./ScoreRadarChart";
 import InsightCards from "./InsightCards";
+import EngagementMap, { type EngagementPoint } from "./EngagementMap";
 
 interface CategoryScore {
   avg: number;
@@ -26,6 +27,10 @@ export interface ResultsData {
   questionScores?: Record<number, number>;
   /** Per-question within-team SD (questionId -> sd). Team results only. */
   questionSDs?: Record<number, number>;
+  /** Engagement map data points (all members). */
+  engagementPoints?: EngagementPoint[];
+  /** Team average engagement coordinates. */
+  engagementAverage?: { direction: number; contribution: number } | null;
 }
 
 interface ResultsViewProps {
@@ -87,6 +92,15 @@ export default function ResultsView({ data, title, mode }: ResultsViewProps) {
         wagonSpeed={data.wagonSpeed}
         teamAverage={data.teamAverage}
       />
+
+      {/* Engagement map */}
+      {data.engagementPoints && data.engagementPoints.length > 0 && (
+        <EngagementMap
+          points={data.engagementPoints}
+          teamAverage={data.engagementAverage}
+          mode={mode}
+        />
+      )}
 
       {/* Category illustrations grid */}
       <WagonIllustration
