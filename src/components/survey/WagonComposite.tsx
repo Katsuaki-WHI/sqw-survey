@@ -81,10 +81,11 @@ function buildLayers(scores: Partial<Record<QuestionCategory, CategoryScore>>): 
   });
 
   // 3. Diversity staff (behind wagon)
-  //    Staff appear based on diversity stage:
-  //    stage1: all silhouettes, stage2: staff1 only, stage3: staff1+2,
-  //    stage4: staff1+2+3, stage5: staff1+2+3+4
-  //    Silhouettes shown for stages that don't have the real person
+  //    stage1: 全員非表示
+  //    stage2: staff1のみ
+  //    stage3: staff1+2
+  //    stage4: staff1+2+3 (staff3 is foreground, added later)
+  //    stage5: staff1+2+3+4
 
   // staff4 (leftmost, behind pusher)
   //    CSS: bottom: 216px; left: 45px; width: 100px
@@ -92,12 +93,6 @@ function buildLayers(scores: Partial<Record<QuestionCategory, CategoryScore>>): 
     layers.push({
       key: "staff4",
       src: `${IMG_BASE}/result_staff4.png`,
-      bottom: 216, left: 45, width: 100,
-    });
-  } else {
-    layers.push({
-      key: "staff4_sil",
-      src: `${IMG_BASE}/result_staff4_silhouette.png`,
       bottom: 216, left: 45, width: 100,
     });
   }
@@ -110,12 +105,6 @@ function buildLayers(scores: Partial<Record<QuestionCategory, CategoryScore>>): 
       src: `${IMG_BASE}/result_staff1.png`,
       bottom: 211, left: 508, width: 110,
     });
-  } else {
-    layers.push({
-      key: "staff1_sil",
-      src: `${IMG_BASE}/result_staff1_silhouette.png`,
-      bottom: 211, left: 508, width: 110,
-    });
   }
 
   // staff2 (far right, telescope)
@@ -124,12 +113,6 @@ function buildLayers(scores: Partial<Record<QuestionCategory, CategoryScore>>): 
     layers.push({
       key: "staff2",
       src: `${IMG_BASE}/result_staff2.png`,
-      bottom: 160, left: 594, width: 100,
-    });
-  } else {
-    layers.push({
-      key: "staff2_sil",
-      src: `${IMG_BASE}/result_staff2_silhouette.png`,
       bottom: 160, left: 594, width: 100,
     });
   }
@@ -194,12 +177,6 @@ function buildLayers(scores: Partial<Record<QuestionCategory, CategoryScore>>): 
     layers.push({
       key: "staff3",
       src: `${IMG_BASE}/result_staff3.png`,
-      bottom: 176, left: 210, width: 100,
-    });
-  } else {
-    layers.push({
-      key: "staff3_sil",
-      src: `${IMG_BASE}/result_staff3_silhouette.png`,
       bottom: 176, left: 210, width: 100,
     });
   }
