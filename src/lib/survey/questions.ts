@@ -166,7 +166,7 @@ export const QUESTIONS: Question[] = [
     categoryLabelEn: "Systems & Mindset",
   },
 
-  // ⑤押す人の体（能力・意欲）3問
+  // ⑤押す人の体（能力・意欲）4問
   {
     id: 12,
     text: "この6ヶ月のうちに、あなたが成長したと周囲の誰かに言われましたか？",
@@ -200,10 +200,21 @@ export const QUESTIONS: Question[] = [
     categoryLabel: "能力・意欲",
     categoryLabelEn: "Capability & Motivation",
   },
-
-  // ⑥押す人の顔（風土・文化）5問
   {
     id: 15,
+    text: "あなたの成長を励ましてくれる人が職場にいますか？",
+    textEn: "Is there someone at work who encourages your growth?",
+    category: "body",
+    type: "scale",
+    wagonPart: "押す人の体",
+    wagonPartEn: "Body",
+    categoryLabel: "能力・意欲",
+    categoryLabelEn: "Capability & Motivation",
+  },
+
+  // ⑥押す人の顔（風土・文化）4問
+  {
+    id: 16,
     text: "あなたは、この一週間のうちに、良い仕事をしたと認められたり、褒められたりしましたか？",
     textEn: "Have you received recognition or praise for doing good work in the last seven days?",
     category: "attitude",
@@ -214,20 +225,9 @@ export const QUESTIONS: Question[] = [
     categoryLabelEn: "Culture & Ethos",
   },
   {
-    id: 16,
+    id: 17,
     text: "職場の誰かが、あなたを一人の人間として気にかけてくれていますか？",
     textEn: "Does someone at work care about you as a person?",
-    category: "attitude",
-    type: "scale",
-    wagonPart: "押す人の態度",
-    wagonPartEn: "Attitude",
-    categoryLabel: "風土・文化",
-    categoryLabelEn: "Culture & Ethos",
-  },
-  {
-    id: 17,
-    text: "あなたの成長を励ましてくれる人が職場にいますか？",
-    textEn: "Is there someone at work who encourages your growth?",
     category: "attitude",
     type: "scale",
     wagonPart: "押す人の態度",
@@ -480,8 +480,8 @@ export const CATEGORY_CONFIG: Record<
   road:        { label: "戦略", labelEn: "Strategy", wagonPart: "道筋", wagonPartEn: "Road", questionIds: [4, 5] },
   rope:        { label: "リーダーシップ・コミュニケーション", labelEn: "Leadership & Communication", wagonPart: "ロープ", wagonPartEn: "Rope", questionIds: [6, 7, 8] },
   tire:        { label: "仕組み（既成概念）", labelEn: "Systems & Mindset", wagonPart: "タイヤ", wagonPartEn: "Tire", questionIds: [9, 10, 11] },
-  body:        { label: "能力・意欲", labelEn: "Capability & Motivation", wagonPart: "押す人の体", wagonPartEn: "Body", questionIds: [12, 13, 14] },
-  attitude:    { label: "風土・文化", labelEn: "Culture & Ethos", wagonPart: "押す人の態度", wagonPartEn: "Attitude", questionIds: [15, 16, 17, 18, 19] },
+  body:        { label: "能力・意欲", labelEn: "Capability & Motivation", wagonPart: "押す人の体", wagonPartEn: "Body", questionIds: [12, 13, 14, 15] },
+  attitude:    { label: "風土・文化", labelEn: "Culture & Ethos", wagonPart: "押す人の態度", wagonPartEn: "Attitude", questionIds: [16, 17, 18, 19] },
   cargo:       { label: "リソース・強みの認識", labelEn: "Resources & Strengths", wagonPart: "積荷", wagonPartEn: "Cargo", questionIds: [20, 21, 22] },
   diversity:   { label: "ダイバーシティ", labelEn: "Diversity", wagonPart: "多様性", wagonPartEn: "Diversity", questionIds: [23, 24, 25] },
   happiness:   { label: "チームの幸福度", labelEn: "Team Happiness", wagonPart: "幸福度", wagonPartEn: "Happiness", questionIds: [26] },
