@@ -41,17 +41,17 @@ const CATEGORY_LABELS: Record<string, { ja: string; en: string }> = {
 };
 
 /** Convert avg score (1-5) to image file number (1-5).
- *  4.50〜5.00 → stage5（大変良い）→ _1.png
- *  4.00〜4.49 → stage4（良い）→ _2.png
- *  3.50〜3.99 → stage3（普通）→ _3.png
- *  2.50〜3.49 → stage2（悪い）→ _4.png
- *  1.00〜2.49 → stage1（とても悪い）→ _5.png
+ *  4.50〜5.00 → _1.png（大変良い）
+ *  3.75〜4.49 → _2.png（良い）
+ *  3.00〜3.74 → _3.png（普通）
+ *  2.00〜2.99 → _4.png（悪い）
+ *  1.00〜1.99 → _5.png（とても悪い）
  */
 function scoreToLevel(avg: number): number {
   if (avg >= 4.5) return 1;
-  if (avg >= 4.0) return 2;
-  if (avg >= 3.5) return 3;
-  if (avg >= 2.5) return 4;
+  if (avg >= 3.75) return 2;
+  if (avg >= 3.0) return 3;
+  if (avg >= 2.0) return 4;
   return 5;
 }
 

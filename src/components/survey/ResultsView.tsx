@@ -29,20 +29,20 @@ interface ResultsViewProps {
 
 function levelBarColor(avg: number): string {
   if (avg >= 4.5) return "bg-green-500";
-  if (avg >= 3.5) return "bg-blue-500";
-  if (avg >= 2.5) return "bg-yellow-500";
-  if (avg >= 1.5) return "bg-orange-500";
+  if (avg >= 3.75) return "bg-blue-500";
+  if (avg >= 3.0) return "bg-yellow-500";
+  if (avg >= 2.0) return "bg-orange-500";
   return "bg-red-500";
 }
 
 /** Score to image file number:
- *  4.50+ → _1.png, 4.00-4.49 → _2.png, 3.50-3.99 → _3.png, 2.50-3.49 → _4.png, <2.50 → _5.png
+ *  4.50+ → _1.png, 3.75-4.49 → _2.png, 3.00-3.74 → _3.png, 2.00-2.99 → _4.png, <2.00 → _5.png
  */
 function scoreToLevel(avg: number): number {
   if (avg >= 4.5) return 1;
-  if (avg >= 4.0) return 2;
-  if (avg >= 3.5) return 3;
-  if (avg >= 2.5) return 4;
+  if (avg >= 3.75) return 2;
+  if (avg >= 3.0) return 3;
+  if (avg >= 2.0) return 4;
   return 5;
 }
 

@@ -66,7 +66,7 @@ function computeResultsData(questionAverages: QuestionAvg[]): ResultsData {
     const scores = config.questionIds.map((id) => qMap.get(id)).filter((v): v is number => v != null);
     const avg = scores.length > 0 ? scores.reduce((a, b) => a + b, 0) / scores.length : 0;
     const level =
-      avg >= 4.5 ? "excellent" : avg >= 4.0 ? "good" : avg >= 3.5 ? "average" : avg >= 2.5 ? "poor" : "critical";
+      avg >= 4.5 ? "excellent" : avg >= 3.75 ? "good" : avg >= 3.0 ? "average" : avg >= 2.0 ? "poor" : "critical";
     categoryScores[cat] = { avg: Math.round(avg * 100) / 100, level };
 
     if (teamCategories.includes(cat as QuestionCategory)) {

@@ -17,17 +17,17 @@ interface WagonChartProps {
 // Map score level to color
 function levelColor(avg: number): string {
   if (avg >= 4.5) return "#22c55e"; // green
-  if (avg >= 3.5) return "#3b82f6"; // blue
-  if (avg >= 2.5) return "#eab308"; // yellow
-  if (avg >= 1.5) return "#f97316"; // orange
+  if (avg >= 3.75) return "#3b82f6"; // blue
+  if (avg >= 3.0) return "#eab308"; // yellow
+  if (avg >= 2.0) return "#f97316"; // orange
   return "#ef4444"; // red
 }
 
 function levelBg(avg: number): string {
   if (avg >= 4.5) return "#dcfce7";
-  if (avg >= 3.5) return "#dbeafe";
-  if (avg >= 2.5) return "#fef9c3";
-  if (avg >= 1.5) return "#ffedd5";
+  if (avg >= 3.75) return "#dbeafe";
+  if (avg >= 3.0) return "#fef9c3";
+  if (avg >= 2.0) return "#ffedd5";
   return "#fee2e2";
 }
 
@@ -126,7 +126,7 @@ export default function WagonChart({
                 y2={groundY}
                 stroke={roadColor}
                 strokeWidth="4"
-                strokeDasharray={roadScore >= 3.5 ? "none" : "8 4"}
+                strokeDasharray={roadScore >= 3.0 ? "none" : "8 4"}
               />
               <text
                 x={w - 8}

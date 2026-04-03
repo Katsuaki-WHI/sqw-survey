@@ -12,16 +12,16 @@ export const SCALE_LEVEL_LABELS: Record<ScaleLevel, { ja: string; en: string }> 
 
 /** 平均スコアから5段階レベルを判定
  *  4.50〜5.00 → excellent（大変良い）
- *  4.00〜4.49 → good（良い）
- *  3.50〜3.99 → average（普通）
- *  2.50〜3.49 → poor（悪い）
- *  1.00〜2.49 → critical（とても悪い）
+ *  3.75〜4.49 → good（良い）
+ *  3.00〜3.74 → average（普通）
+ *  2.00〜2.99 → poor（悪い）
+ *  1.00〜1.99 → critical（とても悪い）
  */
 export function getScaleLevel(avg: number): ScaleLevel {
   if (avg >= 4.5) return "excellent";
-  if (avg >= 4.0) return "good";
-  if (avg >= 3.5) return "average";
-  if (avg >= 2.5) return "poor";
+  if (avg >= 3.75) return "good";
+  if (avg >= 3.0) return "average";
+  if (avg >= 2.0) return "poor";
   return "critical";
 }
 

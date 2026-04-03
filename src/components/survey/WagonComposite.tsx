@@ -17,18 +17,18 @@ interface WagonCompositeProps {
 const IMG_BASE = "https://survey.workhappiness.co.jp/img/ancate";
 
 /**
- * Score → stage (matches reference site scoring):
+ * Score → stage:
  *  4.50〜5.00 → 5（大変良い）
- *  4.00〜4.49 → 4（良い）
- *  3.50〜3.99 → 3（普通）
- *  2.50〜3.49 → 2（悪い）← reference uses stage number directly
- *  1.00〜2.49 → 1（とても悪い）
+ *  3.75〜4.49 → 4（良い）
+ *  3.00〜3.74 → 3（普通）
+ *  2.00〜2.99 → 2（悪い）
+ *  1.00〜1.99 → 1（とても悪い）
  */
 function scoreToStage(avg: number): number {
   if (avg >= 4.5) return 5;
-  if (avg >= 4.0) return 4;
-  if (avg >= 3.5) return 3;
-  if (avg >= 2.5) return 2;
+  if (avg >= 3.75) return 4;
+  if (avg >= 3.0) return 3;
+  if (avg >= 2.0) return 2;
   return 1;
 }
 
