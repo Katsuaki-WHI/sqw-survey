@@ -25,7 +25,7 @@ export async function submitSurvey({ answers, teamId, memberToken }: SubmitSurve
   const categoryScores = calcCategoryScores(scaleAnswers);
 
   // Calculate management average
-  const mgmtIds = [17, 18, 19, 20, 21];
+  const mgmtIds = [26, 27, 28, 29, 30];
   const mgmtScores = mgmtIds.map((id) => scaleAnswers[id]).filter((v) => v != null);
   const managementAverage =
     mgmtScores.length > 0
