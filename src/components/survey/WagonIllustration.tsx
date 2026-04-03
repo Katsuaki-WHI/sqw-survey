@@ -40,14 +40,18 @@ const CATEGORY_LABELS: Record<string, { ja: string; en: string }> = {
   happiness: { ja: "幸福度", en: "Happiness" },
 };
 
-/** Convert avg score (1-5) to level number (1-5) for image selection.
- *  1 = とても良い (≥4.5), 2 = 良い (≥3.5), 3 = 普通 (≥2.5), 4 = 悪い (≥1.5), 5 = とても悪い (<1.5)
+/** Convert avg score (1-5) to image file number (1-5).
+ *  4.50〜5.00 → stage5（大変良い）→ _1.png
+ *  4.00〜4.49 → stage4（良い）→ _2.png
+ *  3.50〜3.99 → stage3（普通）→ _3.png
+ *  2.50〜3.49 → stage2（悪い）→ _4.png
+ *  1.00〜2.49 → stage1（とても悪い）→ _5.png
  */
 function scoreToLevel(avg: number): number {
   if (avg >= 4.5) return 1;
-  if (avg >= 3.5) return 2;
-  if (avg >= 2.5) return 3;
-  if (avg >= 1.5) return 4;
+  if (avg >= 4.0) return 2;
+  if (avg >= 3.5) return 3;
+  if (avg >= 2.5) return 4;
   return 5;
 }
 
@@ -72,7 +76,7 @@ function levelBadgeClass(level: number): string {
 }
 
 const LEVEL_LABELS = {
-  1: { ja: "とても良い", en: "Excellent" },
+  1: { ja: "大変良い", en: "Excellent" },
   2: { ja: "良い", en: "Good" },
   3: { ja: "普通", en: "Average" },
   4: { ja: "悪い", en: "Poor" },

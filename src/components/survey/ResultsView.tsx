@@ -35,11 +35,14 @@ function levelBarColor(avg: number): string {
   return "bg-red-500";
 }
 
+/** Score to image file number:
+ *  4.50+ → _1.png, 4.00-4.49 → _2.png, 3.50-3.99 → _3.png, 2.50-3.49 → _4.png, <2.50 → _5.png
+ */
 function scoreToLevel(avg: number): number {
   if (avg >= 4.5) return 1;
-  if (avg >= 3.5) return 2;
-  if (avg >= 2.5) return 3;
-  if (avg >= 1.5) return 4;
+  if (avg >= 4.0) return 2;
+  if (avg >= 3.5) return 3;
+  if (avg >= 2.5) return 4;
   return 5;
 }
 

@@ -3,19 +3,25 @@ import { CATEGORY_CONFIG, type QuestionCategory } from "./questions";
 type ScaleLevel = "excellent" | "good" | "average" | "poor" | "critical";
 
 export const SCALE_LEVEL_LABELS: Record<ScaleLevel, { ja: string; en: string }> = {
-  excellent: { ja: "とても良い", en: "Excellent" },
+  excellent: { ja: "大変良い", en: "Excellent" },
   good:      { ja: "良い", en: "Good" },
   average:   { ja: "普通", en: "Average" },
   poor:      { ja: "悪い", en: "Poor" },
   critical:  { ja: "とても悪い", en: "Critical" },
 };
 
-/** 平均スコアから5段階レベルを判定 */
+/** 平均スコアから5段階レベルを判定
+ *  4.50〜5.00 → excellent（大変良い）
+ *  4.00〜4.49 → good（良い）
+ *  3.50〜3.99 → average（普通）
+ *  2.50〜3.49 → poor（悪い）
+ *  1.00〜2.49 → critical（とても悪い）
+ */
 export function getScaleLevel(avg: number): ScaleLevel {
   if (avg >= 4.5) return "excellent";
-  if (avg >= 3.5) return "good";
-  if (avg >= 2.5) return "average";
-  if (avg >= 1.5) return "poor";
+  if (avg >= 4.0) return "good";
+  if (avg >= 3.5) return "average";
+  if (avg >= 2.5) return "poor";
   return "critical";
 }
 
