@@ -63,19 +63,25 @@ export default function EngagementMap({
         height={SIZE}
         className="max-w-full h-auto"
       >
-        {/* Background gradient: brighter toward top-right */}
+        {/* Background */}
         <defs>
-          <linearGradient id="mapGrad" x1="0" y1="1" x2="1" y2="0">
-            <stop offset="0%" stopColor="#fef2f2" />
-            <stop offset="50%" stopColor="#fffbeb" />
-            <stop offset="100%" stopColor="#f0fdf4" />
-          </linearGradient>
+          <clipPath id="mapClip">
+            <rect x={PAD} y={PAD} width={INNER} height={INNER} rx="4" />
+          </clipPath>
         </defs>
         <rect
           x={PAD} y={PAD} width={INNER} height={INNER}
-          fill="url(#mapGrad)"
+          fill="white"
           stroke="#e5e7eb" strokeWidth="1"
           rx="4"
+        />
+        {/* Background image — swap public/images/engagement-map-bg.png to change */}
+        <image
+          href="/images/engagement-map-bg.png"
+          x={PAD} y={PAD} width={INNER} height={INNER}
+          preserveAspectRatio="xMidYMid slice"
+          clipPath="url(#mapClip)"
+          opacity="0.3"
         />
 
         {/* Grid lines (light) */}
