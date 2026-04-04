@@ -24,3 +24,66 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* ===== Print styles for PDF export ===== */
+@media print {
+  /* Force light mode colors */
+  :root {
+    --background: #ffffff !important;
+    --foreground: #171717 !important;
+  }
+
+  body {
+    background: white !important;
+    color: black !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* A4 page setup */
+  @page {
+    size: A4 portrait;
+    margin: 10mm;
+  }
+
+  /* Hide non-content elements */
+  nav, footer,
+  .print\\:hidden,
+  button:not(.print\\:block) {
+    display: none !important;
+  }
+
+  /* Language toggle */
+  [aria-label="Switch language"] {
+    display: none !important;
+  }
+
+  /* Ensure images and SVGs print with colors */
+  svg, img, canvas {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* Prevent page breaks inside cards */
+  .rounded-xl, .rounded-lg {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  /* Max width for print */
+  .max-w-3xl, .max-w-2xl {
+    max-width: 100% !important;
+  }
+
+  /* Remove dark mode backgrounds */
+  .dark\\:bg-black, .dark\\:bg-gray-900, .dark\\:bg-gray-800,
+  .dark\\:bg-blue-950, .dark\\:bg-green-950, .dark\\:bg-orange-950,
+  .dark\\:bg-purple-950, .dark\\:bg-red-950, .dark\\:bg-yellow-950 {
+    background-color: transparent !important;
+  }
+
+  /* Ensure text is black */
+  .dark\\:text-white, .dark\\:text-gray-300, .dark\\:text-gray-400 {
+    color: #171717 !important;
+  }
+}

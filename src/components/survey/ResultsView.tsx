@@ -82,8 +82,6 @@ export default function ResultsView({ data, title, mode }: ResultsViewProps) {
 
   return (
     <div className="flex flex-col items-center gap-8 w-full max-w-3xl mx-auto">
-      {/* PDF capturable area */}
-      <div id="sqw-results-content" className="flex flex-col items-center gap-8 w-full bg-white dark:bg-black p-4">
       {/* Title */}
       <h1 className="text-3xl font-bold text-gray-900 dark:text-white text-center">
         {title}
@@ -172,10 +170,8 @@ export default function ResultsView({ data, title, mode }: ResultsViewProps) {
       <p className="text-xs text-gray-400 text-center">
         &copy; Work Happiness Inc.
       </p>
-      </div>{/* end sqw-results-content */}
-
-      {/* PDF download button (outside capture area) */}
-      <PdfDownloadButton targetId="sqw-results-content" />
+      {/* PDF download button */}
+      <PdfDownloadButton />
     </div>
   );
 }
