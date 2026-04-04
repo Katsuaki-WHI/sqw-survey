@@ -246,10 +246,8 @@ export default function AdminDashboardPage() {
                   ? t.responseProgressWithExpected
                       .replace("{responseCount}", String(stats?.responseCount ?? 0))
                       .replace("{expectedMembers}", String(team.expected_members))
-                      .replace("{memberCount}", String(stats?.memberCount ?? 0))
-                  : t.responseProgress
-                      .replace("{responseCount}", String(stats?.responseCount ?? 0))
-                      .replace("{memberCount}", String(stats?.memberCount ?? 0))}
+                  : t.responseProgressNoTarget
+                      .replace("{responseCount}", String(stats?.responseCount ?? 0))}
               </p>
               {team.expected_members && stats && (
                 <div className="mt-2 w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5">
