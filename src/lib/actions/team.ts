@@ -263,14 +263,19 @@ export async function getTeamResults(adminToken: string) {
     sessionAnswers.get(a.session_id)!.set(a.question_id, a.score);
   }
 
+  console.log(`[getTeamResults] sessions: ${sessionIds.length}, sessionAnswers: ${sessionAnswers.size}`);
+  for (const [sid, sa] of sessionAnswers.entries()) {
+    console.log(`  session ${sid.slice(0, 8)}: Q02=${sa.get(2)}, Q13=${sa.get(13)}, Q19=${sa.get(19)}, Q26=${sa.get(26)}`);
+  }
+
   const engagementPoints: { direction: number; contribution: number; happiness: number }[] = [];
   for (const sa of sessionAnswers.values()) {
     const dir = Math.max(1, sa.get(2) ?? 1);
     const q13 = sa.get(13) ?? 1;
     const q19 = sa.get(19) ?? 1;
-    const contrib = (q13 + q19) / 2;
+    const contrib = Math.max(1, (q13 + q19) / 2);
     const hap = sa.get(26) ?? 1;
-    engagementPoints.push({ direction: dir, contribution: Math.max(1, contrib), happiness: hap });
+    engagementPoints.push({ direction: dir, contribution: contrib, happiness: hap });
   }
 
   // Get member count
@@ -351,12 +356,6 @@ export async function getTeamResultsByInviteCode(inviteCode: string) {
     .eq("team_id", team.id)
     .not("completed_at", "is", null);
 
-  // Get all answers for completed sessions in this team
-  const { data: answers } = await supabase
-    .from("survey_answers")
-    .select("question_id, score, session_id")
-    .not("score", "is", null);
-
   // Get completed session IDs for this team
   const { data: sessions } = await supabase
     .from("survey_sessions")
@@ -364,12 +363,30 @@ export async function getTeamResultsByInviteCode(inviteCode: string) {
     .eq("team_id", team.id)
     .not("completed_at", "is", null);
 
-  const sessionIds = new Set((sessions || []).map((s) => s.id));
+  const sessionIdList = (sessions || []).map((s) => s.id);
+  const sessionIds = new Set(sessionIdList);
 
-  // Filter and aggregate
+  if (sessionIdList.length === 0) {
+    return {
+      team,
+      visible: true,
+      questionAverages: [],
+      questionSDs: {},
+      engagementPoints: [],
+      responseCount: responseCount ?? 0,
+    };
+  }
+
+  // Get answers only for this team's sessions
+  const { data: answers } = await supabase
+    .from("survey_answers")
+    .select("question_id, score, session_id")
+    .in("session_id", sessionIdList)
+    .not("score", "is", null);
+
+  // Aggregate by question
   const qMap = new Map<number, number[]>();
   for (const a of answers || []) {
-    if (!sessionIds.has(a.session_id) || a.score == null) continue;
     const scores = qMap.get(a.question_id) || [];
     scores.push(a.score);
     qMap.set(a.question_id, scores);
@@ -392,21 +409,23 @@ export async function getTeamResultsByInviteCode(inviteCode: string) {
   // Build per-session engagement data (Q2=direction, Q13+Q19/2=contribution, Q26=happiness)
   const sessionAnswers = new Map<string, Map<number, number>>();
   for (const a of answers || []) {
-    if (!sessionIds.has(a.session_id) || a.score == null) continue;
     if (!sessionAnswers.has(a.session_id)) sessionAnswers.set(a.session_id, new Map());
     sessionAnswers.get(a.session_id)!.set(a.question_id, a.score);
   }
 
+  console.log(`[getTeamResultsByInviteCode] sessions: ${sessionIdList.length}, sessionAnswers: ${sessionAnswers.size}`);
+  for (const [sid, sa] of sessionAnswers.entries()) {
+    console.log(`  session ${sid.slice(0, 8)}: Q02=${sa.get(2)}, Q13=${sa.get(13)}, Q19=${sa.get(19)}, Q26=${sa.get(26)}`);
+  }
+
   const engagementPoints: { direction: number; contribution: number; happiness: number }[] = [];
-  for (const qMap of sessionAnswers.values()) {
-    const dir = qMap.get(2) ?? 0;
-    const q13 = qMap.get(13) ?? 0;
-    const q19 = qMap.get(19) ?? 0;
-    const contrib = q13 && q19 ? (q13 + q19) / 2 : 0;
-    const hap = qMap.get(26) ?? 0;
-    if (dir > 0 && contrib > 0) {
-      engagementPoints.push({ direction: dir, contribution: contrib, happiness: hap });
-    }
+  for (const sMap of sessionAnswers.values()) {
+    const dir = Math.max(1, sMap.get(2) ?? 1);
+    const q13 = sMap.get(13) ?? 1;
+    const q19 = sMap.get(19) ?? 1;
+    const contrib = Math.max(1, (q13 + q19) / 2);
+    const hap = sMap.get(26) ?? 1;
+    engagementPoints.push({ direction: dir, contribution: contrib, happiness: hap });
   }
 
   return {

@@ -38,11 +38,27 @@ export default function MemberResultsPage() {
     ]);
 
     if (resultData) {
+      // Compute engagement average from other members (non-self points)
+      const points = resultData.engagementPoints || [];
+      const otherPoints = points.filter((p: { isSelf?: boolean }) => !p.isSelf);
+      let engagementAverage: { direction: number; contribution: number } | null = null;
+      if (otherPoints.length > 0) {
+        const avgDir = otherPoints.reduce((s: number, p: { direction: number }) => s + p.direction, 0) / otherPoints.length;
+        const avgCont = otherPoints.reduce((s: number, p: { contribution: number }) => s + p.contribution, 0) / otherPoints.length;
+        engagementAverage = {
+          direction: Math.round(avgDir * 100) / 100,
+          contribution: Math.round(avgCont * 100) / 100,
+        };
+      }
+
       setResults({
         teamAverage: Number(resultData.team_average) || 0,
         wagonSpeed: Number(resultData.wagon_speed) || 0,
         categoryScores: (resultData.category_scores as Record<string, { avg: number; level: string }>) || {},
         managementAverage: resultData.management_average ? Number(resultData.management_average) : null,
+        questionScores: resultData.questionScores,
+        engagementPoints: points,
+        engagementAverage,
       });
     }
 
