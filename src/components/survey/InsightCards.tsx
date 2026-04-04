@@ -140,12 +140,14 @@ export default function InsightCards({ scores, teamSDs, mode }: InsightCardsProp
       {strengths.length > 0 && (
         <div className="rounded-xl border-2 border-green-200 dark:border-green-800 bg-green-50 dark:bg-green-950 p-5">
           <h3 className="text-base font-bold text-green-800 dark:text-green-300 mb-1">
-            {isEn ? "Team Strengths" : "チームの確かな強み"}
+            {mode === "individual"
+              ? (isEn ? "Your Perceived Team Strengths" : "あなたが認識しているチームの強み")
+              : (isEn ? "Team Strengths" : "チームの確かな強み")}
           </h3>
           <p className="text-xs text-green-600 dark:text-green-400 mb-4">
-            {isEn
-              ? "Everyone rates these highly — your team's genuine strengths."
-              : "全員が高く評価している、チームの確かな強みです"}
+            {mode === "individual"
+              ? (isEn ? "These are the strengths you rated highly for your team." : "あなたが高く評価したチームの強みです")
+              : (isEn ? "Everyone rates these highly — your team's genuine strengths." : "全員が高く評価している、チームの確かな強みです")}
           </p>
           <div className="flex flex-col gap-3">
             {strengths.map((q) => (
@@ -159,12 +161,14 @@ export default function InsightCards({ scores, teamSDs, mode }: InsightCardsProp
       {challenges.length > 0 && (
         <div className="rounded-xl border-2 border-orange-200 dark:border-orange-800 bg-orange-50 dark:bg-orange-950 p-5">
           <h3 className="text-base font-bold text-orange-800 dark:text-orange-300 mb-1">
-            {isEn ? "Shared Challenges" : "全員が感じている課題"}
+            {mode === "individual"
+              ? (isEn ? "Challenges You Perceive" : "あなたが感じている課題")
+              : (isEn ? "Shared Challenges" : "全員が感じている課題")}
           </h3>
           <p className="text-xs text-orange-600 dark:text-orange-400 mb-4">
-            {isEn
-              ? "Everyone sees this as a challenge. Prioritize improvement here."
-              : "全員が課題と認識しています。優先的に改善しましょう"}
+            {mode === "individual"
+              ? (isEn ? "These are challenges you feel. Compare them with what your team recognizes." : "あなたが感じている課題です。チームが認識している課題と比べてみましょう")
+              : (isEn ? "Everyone sees this as a challenge. Prioritize improvement here." : "全員が課題と認識しています。優先的に改善しましょう")}
           </p>
           <div className="flex flex-col gap-3">
             {challenges.map((q) => (
@@ -174,8 +178,8 @@ export default function InsightCards({ scores, teamSDs, mode }: InsightCardsProp
         </div>
       )}
 
-      {/* ④ Impact */}
-      {impactItems.length > 0 && (
+      {/* ④ Impact - Team only */}
+      {mode === "team" && impactItems.length > 0 && (
         <div className="rounded-xl border-2 border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-950 p-5">
           <h3 className="text-base font-bold text-blue-800 dark:text-blue-300 mb-1">
             {isEn

@@ -86,4 +86,14 @@ body {
   .dark\\:text-white, .dark\\:text-gray-300, .dark\\:text-gray-400 {
     color: #171717 !important;
   }
+
+  /* Expand all detail comments for print */
+  [data-print-expand] {
+    display: block !important;
+  }
+
+  /* Hide expand/collapse toggle buttons */
+  [data-print-hide] {
+    display: none !important;
+  }
 }

@@ -266,16 +266,19 @@ function CategoryBreakdown({
                   <button
                     onClick={() => toggle(cat)}
                     className="mt-1 text-xs text-blue-600 dark:text-blue-400 hover:underline"
+                    data-print-hide=""
                   >
                     {isExpanded
                       ? (isEn ? "Hide details" : "詳細を閉じる")
                       : (isEn ? "Show details" : "詳細を見る")}
                   </button>
-                  {isExpanded && (
-                    <p className="mt-2 text-sm text-gray-500 dark:text-gray-400 leading-relaxed border-l-2 border-blue-300 pl-3">
-                      {detailComment}
-                    </p>
-                  )}
+                  {/* Screen: show only when expanded. Print: always show via data-print-expand */}
+                  <p
+                    className={`mt-2 text-sm text-gray-500 dark:text-gray-400 leading-relaxed border-l-2 border-blue-300 pl-3 ${isExpanded ? "" : "hidden"}`}
+                    data-print-expand=""
+                  >
+                    {detailComment}
+                  </p>
                 </>
               )}
             </div>
