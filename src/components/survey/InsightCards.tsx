@@ -115,28 +115,7 @@ export default function InsightCards({ scores, teamSDs, mode }: InsightCardsProp
 
   return (
     <div className="w-full flex flex-col gap-6">
-      {/* ① Perception Gaps - Team only */}
-      {mode === "team" && gaps.length > 0 && gaps[0].sd > 0 && (
-        <div className="rounded-xl border-2 border-purple-200 dark:border-purple-800 bg-purple-50 dark:bg-purple-950 p-5">
-          <h3 className="text-base font-bold text-purple-800 dark:text-purple-300 mb-1">
-            {isEn
-              ? "Questions with Perception Gaps Among Members"
-              : "メンバー間で認識にズレがある設問"}
-          </h3>
-          <p className="text-xs text-purple-600 dark:text-purple-400 mb-4">
-            {isEn
-              ? "Team members perceive these differently. Try discussing them together."
-              : "この設問についてメンバー間で感じ方が異なります。チームで対話してみましょう"}
-          </p>
-          <div className="flex flex-col gap-3">
-            {gaps.map((q) => (
-              <QuestionRow key={q.id} q={q} isEn={isEn} />
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* ② Strengths */}
+      {/* ① Strengths */}
       {strengths.length > 0 && (
         <div className="rounded-xl border-2 border-green-200 dark:border-green-800 bg-green-50 dark:bg-green-950 p-5">
           <h3 className="text-base font-bold text-green-800 dark:text-green-300 mb-1">
@@ -147,7 +126,7 @@ export default function InsightCards({ scores, teamSDs, mode }: InsightCardsProp
           <p className="text-xs text-green-600 dark:text-green-400 mb-4">
             {mode === "individual"
               ? (isEn ? "These are the strengths you rated highly for your team." : "あなたが高く評価したチームの強みです")
-              : (isEn ? "Everyone rates these highly — your team's genuine strengths." : "全員が高く評価している、チームの確かな強みです")}
+              : (isEn ? "Everyone rates these highly — your team's genuine strengths. Let's leverage them even more as a team." : "全員が高く評価している、チームの確かな強みです。チームでさらに活かしていきましょう")}
           </p>
           <div className="flex flex-col gap-3">
             {strengths.map((q) => (
@@ -157,7 +136,7 @@ export default function InsightCards({ scores, teamSDs, mode }: InsightCardsProp
         </div>
       )}
 
-      {/* ③ Challenges */}
+      {/* ② Challenges */}
       {challenges.length > 0 && (
         <div className="rounded-xl border-2 border-orange-200 dark:border-orange-800 bg-orange-50 dark:bg-orange-950 p-5">
           <h3 className="text-base font-bold text-orange-800 dark:text-orange-300 mb-1">
@@ -178,6 +157,27 @@ export default function InsightCards({ scores, teamSDs, mode }: InsightCardsProp
         </div>
       )}
 
+      {/* ③ Perception Gaps - Team only */}
+      {mode === "team" && gaps.length > 0 && gaps[0].sd > 0 && (
+        <div className="rounded-xl border-2 border-purple-200 dark:border-purple-800 bg-purple-50 dark:bg-purple-950 p-5">
+          <h3 className="text-base font-bold text-purple-800 dark:text-purple-300 mb-1">
+            {isEn
+              ? "Questions with Perception Gaps Among Members"
+              : "メンバー間で認識にズレがある設問"}
+          </h3>
+          <p className="text-xs text-purple-600 dark:text-purple-400 mb-4">
+            {isEn
+              ? "Team members perceive these differently. Try discussing them together."
+              : "この設問についてメンバー間で感じ方が異なります。チームで対話してみましょう"}
+          </p>
+          <div className="flex flex-col gap-3">
+            {gaps.map((q) => (
+              <QuestionRow key={q.id} q={q} isEn={isEn} />
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* ④ Impact - Team only */}
       {mode === "team" && impactItems.length > 0 && (
         <div className="rounded-xl border-2 border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-950 p-5">
@@ -188,8 +188,8 @@ export default function InsightCards({ scores, teamSDs, mode }: InsightCardsProp
           </h3>
           <p className="text-xs text-blue-600 dark:text-blue-400 mb-4">
             {isEn
-              ? "Improving these will have the greatest impact on your team's happiness."
-              : "この設問を改善すると、チームの幸福度への影響が最も大きくなります"}
+              ? "These questions have the greatest impact on your team's happiness. Discuss them alongside your challenges and perception gaps."
+              : "チームの幸福度への影響が最も大きい設問です。課題や認識のズレと共にチームで話し合ってみましょう"}
           </p>
           <div className="flex flex-col gap-3">
             {impactItems.map((q) => (

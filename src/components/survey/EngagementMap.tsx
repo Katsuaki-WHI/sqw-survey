@@ -24,9 +24,10 @@ const SIZE = 400;
 const PAD = 48;
 const INNER = SIZE - PAD * 2;
 
-/** Map score (1-5) to pixel position within the inner area */
+/** Map score (1-5) to pixel position within the inner area. Clamps to 1-5 range. */
 function toPixel(score: number): number {
-  return PAD + ((score - 1) / 4) * INNER;
+  const clamped = Math.max(1, Math.min(5, score));
+  return PAD + ((clamped - 1) / 4) * INNER;
 }
 
 /** Q26 happiness score to dot color */
@@ -180,9 +181,11 @@ export default function EngagementMap({
         ))}
 
         {mode === "team" ? (
-          <>
+          <g clipPath="url(#mapClip)">
             {/* Team mode: all members same size, anonymous, colored by happiness */}
-            {points.map((p, i) => (
+            {points
+              .filter((p) => p.direction > 0 && p.contribution > 0)
+              .map((p, i) => (
               <circle
                 key={`t${i}`}
                 cx={toPixel(p.contribution)}
@@ -194,12 +197,12 @@ export default function EngagementMap({
                 strokeWidth="1.5"
               />
             ))}
-          </>
+          </g>
         ) : (
-          <>
+          <g clipPath="url(#mapClip)">
             {/* Individual mode: other members small, self large with label */}
             {points
-              .filter((p) => !p.isSelf)
+              .filter((p) => !p.isSelf && p.direction > 0 && p.contribution > 0)
               .map((p, i) => (
                 <circle
                   key={`m${i}`}
@@ -213,7 +216,7 @@ export default function EngagementMap({
                 />
               ))}
             {points
-              .filter((p) => p.isSelf)
+              .filter((p) => p.isSelf && p.direction > 0 && p.contribution > 0)
               .map((p, i) => {
                 const color = happinessColor(p.happiness);
                 return (
@@ -239,7 +242,7 @@ export default function EngagementMap({
                   </g>
                 );
               })}
-          </>
+          </g>
         )}
 
         {/* Team average star */}
