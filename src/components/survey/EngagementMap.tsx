@@ -40,12 +40,13 @@ export default function EngagementMap({
 
   const midPx = toPixel(MID);
 
-  // Quadrant labels
+  // Quadrant labels — positions are in SVG coordinates (y=0 is top)
+  // Direction(Y axis) is inverted: high score = top of SVG
   const quadrants = [
-    { x: PAD + INNER * 0.75, y: PAD + INNER * 0.15, ja: "エンゲージ型", en: "Engaged", color: "#16a34a" },
-    { x: PAD + INNER * 0.25, y: PAD + INNER * 0.15, ja: "理念先行型", en: "Idealist", color: "#2563eb" },
-    { x: PAD + INNER * 0.75, y: PAD + INNER * 0.85, ja: "実行先行型", en: "Executor", color: "#ca8a04" },
-    { x: PAD + INNER * 0.25, y: PAD + INNER * 0.85, ja: "離脱リスク型", en: "At Risk", color: "#dc2626" },
+    { x: PAD + INNER * 0.75, svgY: PAD + INNER * 0.20, ja: "エンゲージ型", en: "Engaged", color: "#16a34a" },       // 右上
+    { x: PAD + INNER * 0.25, svgY: PAD + INNER * 0.20, ja: "理念先行型", en: "Idealist", color: "#2563eb" },        // 左上
+    { x: PAD + INNER * 0.75, svgY: PAD + INNER * 0.80, ja: "実行先行型", en: "Executor", color: "#ca8a04" },        // 右下
+    { x: PAD + INNER * 0.25, svgY: PAD + INNER * 0.80, ja: "離脱リスク型", en: "At Risk", color: "#dc2626" },       // 左下
   ];
 
   return (
@@ -113,7 +114,7 @@ export default function EngagementMap({
           <text
             key={q.en}
             x={q.x}
-            y={SIZE - q.y + PAD}
+            y={q.svgY}
             textAnchor="middle"
             fontSize="13"
             fontWeight="600"
