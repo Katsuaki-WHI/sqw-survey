@@ -95,8 +95,9 @@ export default function SurveyFlow({ onSubmit, completedExtra }: SurveyFlowProps
         const q13 = questionScores[13] ?? 0; // Q13: do what you do best
         const q19 = questionScores[19] ?? 0; // Q19: cooperate
         const contribution = q13 && q19 ? (q13 + q19) / 2 : 0;
+        const happiness = questionScores[26] ?? 0; // Q26: happiness
         const engagementPoints = direction > 0 && contribution > 0
-          ? [{ direction, contribution, isSelf: true }]
+          ? [{ direction, contribution, happiness, isSelf: true }]
           : [];
 
         results = { teamAverage, wagonSpeed, categoryScores, managementAverage, questionScores, engagementPoints };

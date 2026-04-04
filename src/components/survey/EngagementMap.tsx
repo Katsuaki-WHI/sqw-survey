@@ -7,6 +7,8 @@ export interface EngagementPoint {
   direction: number;
   /** X axis: (Q13 + Q19) / 2 (1-5) */
   contribution: number;
+  /** Q26 happiness score (1-5) for dot color */
+  happiness?: number;
   /** true = current user's own dot */
   isSelf?: boolean;
 }
@@ -27,6 +29,14 @@ function toPixel(score: number): number {
   return PAD + ((score - 1) / 4) * INNER;
 }
 
+/** Q26 happiness score to dot color */
+function happinessColor(score: number | undefined): string {
+  if (score == null) return "#9ca3af"; // grey fallback
+  if (score >= 4.0) return "#16A34A"; // green
+  if (score >= 3.0) return "#F59E0B"; // yellow
+  return "#DC2626"; // red
+}
+
 /** Midpoint score for axis divider */
 const MID = 3;
 
@@ -41,12 +51,11 @@ export default function EngagementMap({
   const midPx = toPixel(MID);
 
   // Quadrant labels — positions are in SVG coordinates (y=0 is top)
-  // Direction(Y axis) is inverted: high score = top of SVG
   const quadrants = [
-    { x: PAD + INNER * 0.75, svgY: PAD + INNER * 0.20, ja: "エンゲージ型", en: "Engaged", color: "#16a34a" },       // 右上
-    { x: PAD + INNER * 0.25, svgY: PAD + INNER * 0.20, ja: "理念先行型", en: "Idealist", color: "#2563eb" },        // 左上
-    { x: PAD + INNER * 0.75, svgY: PAD + INNER * 0.80, ja: "実行先行型", en: "Executor", color: "#ca8a04" },        // 右下
-    { x: PAD + INNER * 0.25, svgY: PAD + INNER * 0.80, ja: "離脱リスク型", en: "At Risk", color: "#dc2626" },       // 左下
+    { x: PAD + INNER * 0.75, svgY: PAD + INNER * 0.20, ja: "エンゲージ型", en: "Engaged", color: "#16a34a" },
+    { x: PAD + INNER * 0.25, svgY: PAD + INNER * 0.20, ja: "理念先行型", en: "Idealist", color: "#2563eb" },
+    { x: PAD + INNER * 0.75, svgY: PAD + INNER * 0.80, ja: "実行先行型", en: "Executor", color: "#ca8a04" },
+    { x: PAD + INNER * 0.25, svgY: PAD + INNER * 0.80, ja: "離脱リスク型", en: "At Risk", color: "#dc2626" },
   ];
 
   return (
@@ -126,7 +135,6 @@ export default function EngagementMap({
         ))}
 
         {/* Axis labels */}
-        {/* Y axis label (left) */}
         <text
           x={PAD - 6}
           y={SIZE / 2}
@@ -137,8 +145,6 @@ export default function EngagementMap({
         >
           {isEn ? "Direction (Purpose)" : "方向性（目的への共感）"}
         </text>
-
-        {/* X axis label (bottom) */}
         <text
           x={SIZE / 2}
           y={SIZE - PAD + 32}
@@ -173,7 +179,7 @@ export default function EngagementMap({
           </g>
         ))}
 
-        {/* Member dots (grey, behind self) */}
+        {/* Member dots (colored by happiness, behind self) */}
         {points
           .filter((p) => !p.isSelf)
           .map((p, i) => (
@@ -182,8 +188,8 @@ export default function EngagementMap({
               cx={toPixel(p.contribution)}
               cy={SIZE - toPixel(p.direction) + PAD}
               r={5}
-              fill="#9ca3af"
-              opacity="0.5"
+              fill={happinessColor(p.happiness)}
+              opacity="0.6"
               stroke="white"
               strokeWidth="1"
             />
@@ -216,32 +222,51 @@ export default function EngagementMap({
           </g>
         )}
 
-        {/* Self dot (large, orange, on top) */}
+        {/* Self dot (large, colored by happiness, on top) */}
         {points
           .filter((p) => p.isSelf)
-          .map((p, i) => (
-            <g key={`s${i}`}>
-              <circle
-                cx={toPixel(p.contribution)}
-                cy={SIZE - toPixel(p.direction) + PAD}
-                r={9}
-                fill="#f97316"
-                stroke="white"
-                strokeWidth="2"
-              />
-              <text
-                x={toPixel(p.contribution)}
-                y={SIZE - toPixel(p.direction) + PAD - 14}
-                textAnchor="middle"
-                fontSize="10"
-                fontWeight="bold"
-                fill="#ea580c"
-              >
-                {isEn ? "You" : "あなた"}
-              </text>
-            </g>
-          ))}
+          .map((p, i) => {
+            const color = happinessColor(p.happiness);
+            return (
+              <g key={`s${i}`}>
+                <circle
+                  cx={toPixel(p.contribution)}
+                  cy={SIZE - toPixel(p.direction) + PAD}
+                  r={9}
+                  fill={color}
+                  stroke="white"
+                  strokeWidth="2"
+                />
+                <text
+                  x={toPixel(p.contribution)}
+                  y={SIZE - toPixel(p.direction) + PAD - 14}
+                  textAnchor="middle"
+                  fontSize="10"
+                  fontWeight="bold"
+                  fill={color}
+                >
+                  {isEn ? "You" : "あなた"}
+                </text>
+              </g>
+            );
+          })}
       </svg>
+
+      {/* Legend */}
+      <div className="flex items-center gap-4 text-xs text-gray-600 dark:text-gray-400">
+        <span className="flex items-center gap-1">
+          <svg width="10" height="10"><circle cx="5" cy="5" r="4" fill="#16A34A" /></svg>
+          {isEn ? "High Happiness (4-5)" : "幸福度高（4〜5）"}
+        </span>
+        <span className="flex items-center gap-1">
+          <svg width="10" height="10"><circle cx="5" cy="5" r="4" fill="#F59E0B" /></svg>
+          {isEn ? "Moderate (3-4)" : "幸福度中（3〜4）"}
+        </span>
+        <span className="flex items-center gap-1">
+          <svg width="10" height="10"><circle cx="5" cy="5" r="4" fill="#DC2626" /></svg>
+          {isEn ? "Low Happiness (1-3)" : "幸福度低（1〜3）"}
+        </span>
+      </div>
     </div>
   );
 }
