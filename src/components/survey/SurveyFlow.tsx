@@ -18,14 +18,21 @@ const SCALE_QUESTIONS = QUESTIONS.filter((q) => q.type === "scale");
 const FREETEXT_QUESTIONS = QUESTIONS.filter((q) => q.type === "freetext");
 const TOTAL_STEPS = SCALE_QUESTIONS.length + 1;
 
+interface TeamContext {
+  leaderName: string | null;
+  notes: string | null;
+}
+
 interface SurveyFlowProps {
   /** Called with answers when survey is submitted. Can return ResultsData to display, or void for local calculation. */
   onSubmit?: (answers: Answers) => Promise<ResultsData | void>;
   /** Extra content to show below results (e.g., link to team results) */
   completedExtra?: React.ReactNode;
+  /** Team context info to display during survey */
+  teamContext?: TeamContext;
 }
 
-export default function SurveyFlow({ onSubmit, completedExtra }: SurveyFlowProps) {
+export default function SurveyFlow({ onSubmit, completedExtra, teamContext }: SurveyFlowProps) {
   const { locale, dict } = useLocale();
   const t = dict.survey;
   const isEn = locale === "en";
@@ -159,6 +166,22 @@ export default function SurveyFlow({ onSubmit, completedExtra }: SurveyFlowProps
           style={{ width: `${progress}%` }}
         />
       </div>
+
+      {/* Team context banner */}
+      {teamContext && step === 0 && (
+        <div className="w-full max-w-2xl mx-auto px-6 pt-4">
+          {teamContext.leaderName && (
+            <p className="text-sm text-blue-600 dark:text-blue-400 text-center mb-1">
+              {dict.team.invitedBy.replace("{leaderName}", teamContext.leaderName)}
+            </p>
+          )}
+          {teamContext.notes && (
+            <div className="rounded-lg bg-yellow-50 dark:bg-yellow-950 border border-yellow-200 dark:border-yellow-800 px-4 py-2 text-sm text-yellow-800 dark:text-yellow-300 text-center">
+              <span className="font-medium">{dict.team.surveyNotes}:</span> {teamContext.notes}
+            </div>
+          )}
+        </div>
+      )}
 
       <div className="flex flex-1 flex-col items-center justify-center px-6 py-12 max-w-2xl mx-auto w-full">
         {/* Scale questions */}

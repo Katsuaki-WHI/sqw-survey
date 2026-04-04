@@ -92,7 +92,20 @@
     "releaseModeUpdated": "Release mode updated",
     "feedbackControl": "Feedback Settings",
     "currentReleaseMode": "Current Release Mode",
-    "updating": "Updating..."
+    "updating": "Updating...",
+    "descriptionLabel": "Team Description (optional)",
+    "descriptionPlaceholder": "e.g., Sales Division Team A (April 2026~)",
+    "leaderNameLabel": "Team Leader / Manager (optional)",
+    "leaderNamePlaceholder": "e.g., John Smith",
+    "notesLabel": "Notes for Respondents (optional)",
+    "notesPlaceholder": "e.g., Please answer with your direct manager in mind",
+    "inviteMessageLabel": "Invitation Message (optional)",
+    "inviteMessagePlaceholder": "e.g., Please help us improve our team!",
+    "responseProgress": "{responseCount} / {memberCount} responded",
+    "invitedBy": "This survey is an invitation from {leaderName}",
+    "teamDescription": "About the Team",
+    "leaderInfo": "Leader / Manager",
+    "surveyNotes": "Notes for Respondents"
   },
   "metadata": {
     "title": "SQW Survey | Square Wheel Survey",

@@ -92,7 +92,20 @@
     "releaseModeUpdated": "公開設定を更新しました",
     "feedbackControl": "フィードバック設定",
     "currentReleaseMode": "現在の公開モード",
-    "updating": "更新中..."
+    "updating": "更新中...",
+    "descriptionLabel": "チームの説明（任意）",
+    "descriptionPlaceholder": "例：営業部Aチーム（2026年4月〜）",
+    "leaderNameLabel": "上司・リーダー名（任意）",
+    "leaderNamePlaceholder": "例：田中太郎",
+    "notesLabel": "回答時の注意事項（任意）",
+    "notesPlaceholder": "例：「上司・リーダー」は課長の○○さんを想定して回答してください",
+    "inviteMessageLabel": "招待メッセージ（任意）",
+    "inviteMessagePlaceholder": "例：チームの改善のために、ぜひご協力ください！",
+    "responseProgress": "{responseCount}人 / {memberCount}人 回答済み",
+    "invitedBy": "このサーベイは{leaderName}さんからの招待です",
+    "teamDescription": "チームについて",
+    "leaderInfo": "上司・リーダー",
+    "surveyNotes": "回答時の注意事項"
   },
   "metadata": {
     "title": "SQWサーベイ | スクエアホイールサーベイ",

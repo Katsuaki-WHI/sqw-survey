@@ -59,6 +59,54 @@ export default function TeamCreatePage() {
 
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              {t.descriptionLabel}
+            </label>
+            <input
+              name="description"
+              type="text"
+              placeholder={t.descriptionPlaceholder}
+              className="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-3 text-gray-900 dark:text-white bg-white dark:bg-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              {t.leaderNameLabel}
+            </label>
+            <input
+              name="leader_name"
+              type="text"
+              placeholder={t.leaderNamePlaceholder}
+              className="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-3 text-gray-900 dark:text-white bg-white dark:bg-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              {t.notesLabel}
+            </label>
+            <textarea
+              name="notes"
+              rows={2}
+              placeholder={t.notesPlaceholder}
+              className="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-3 text-gray-900 dark:text-white bg-white dark:bg-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              {t.inviteMessageLabel}
+            </label>
+            <textarea
+              name="invite_message"
+              rows={2}
+              placeholder={t.inviteMessagePlaceholder}
+              className="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-3 text-gray-900 dark:text-white bg-white dark:bg-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               {t.deadlineLabel}
             </label>
             <input

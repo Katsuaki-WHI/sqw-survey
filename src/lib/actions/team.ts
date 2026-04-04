@@ -10,6 +10,10 @@ export async function createTeam(formData: FormData) {
   const name = formData.get("name") as string;
   const deadlineStr = formData.get("deadline") as string;
   const releaseMode = (formData.get("release_mode") as ReleaseMode) || "manual";
+  const description = (formData.get("description") as string) || null;
+  const leaderName = (formData.get("leader_name") as string) || null;
+  const notes = (formData.get("notes") as string) || null;
+  const inviteMessage = (formData.get("invite_message") as string) || null;
 
   if (!name || name.trim().length === 0) {
     return { error: "Team name is required" };
@@ -27,6 +31,10 @@ export async function createTeam(formData: FormData) {
     admin_token: adminToken,
     deadline,
     release_mode: releaseMode,
+    description: description?.trim() || null,
+    leader_name: leaderName?.trim() || null,
+    notes: notes?.trim() || null,
+    invite_message: inviteMessage?.trim() || null,
   });
 
   if (error) {
@@ -42,7 +50,7 @@ export async function getTeamByInviteCode(inviteCode: string) {
 
   const { data, error } = await supabase
     .from("teams")
-    .select("id, name, deadline, results_visible, release_mode")
+    .select("id, name, deadline, results_visible, release_mode, description, leader_name, notes, invite_message")
     .eq("invite_code", inviteCode)
     .single();
 
@@ -72,7 +80,7 @@ export async function getTeamByAdminToken(adminToken: string) {
 
   const { data, error } = await supabase
     .from("teams")
-    .select("id, name, invite_code, deadline, results_visible, release_mode, created_at")
+    .select("id, name, invite_code, deadline, results_visible, release_mode, created_at, description, leader_name, notes, invite_message")
     .eq("admin_token", adminToken)
     .single();
 

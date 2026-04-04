@@ -238,13 +238,13 @@ export default function AdminDashboardPage() {
                   : t.noDeadline}
               </p>
             </div>
-            <div>
-              <p className="text-sm text-gray-500">{t.memberCount}</p>
-              <p className="font-semibold text-gray-900 dark:text-white">{stats?.memberCount ?? 0}</p>
-            </div>
-            <div>
+            <div className="col-span-2">
               <p className="text-sm text-gray-500">{t.responseCount}</p>
-              <p className="font-semibold text-gray-900 dark:text-white">{stats?.responseCount ?? 0}</p>
+              <p className="text-2xl font-bold text-blue-600">
+                {t.responseProgress
+                  .replace("{responseCount}", String(stats?.responseCount ?? 0))
+                  .replace("{memberCount}", String(stats?.memberCount ?? 0))}
+              </p>
             </div>
           </div>
         </div>

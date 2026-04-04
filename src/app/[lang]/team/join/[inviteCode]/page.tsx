@@ -16,6 +16,10 @@ interface TeamInfo {
   deadline: string | null;
   results_visible: boolean;
   release_mode: string;
+  description: string | null;
+  leader_name: string | null;
+  notes: string | null;
+  invite_message: string | null;
 }
 
 export default function TeamJoinPage() {
@@ -128,6 +132,11 @@ export default function TeamJoinPage() {
     return (
       <SurveyFlow
         onSubmit={handleSurveySubmit}
+        teamContext={
+          (team.leader_name || team.notes)
+            ? { leaderName: team.leader_name, notes: team.notes }
+            : undefined
+        }
         completedExtra={
           memberToken ? (
             <Link
@@ -162,6 +171,35 @@ export default function TeamJoinPage() {
         <p className="text-lg text-gray-600 dark:text-gray-400 mb-2">
           {t.joinDescription.replace("{teamName}", team.name)}
         </p>
+
+        {/* Team details card */}
+        {(team.description || team.leader_name || team.invite_message || team.notes) && (
+          <div className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-4 mb-4 text-left text-sm space-y-3">
+            {team.leader_name && (
+              <p className="text-blue-700 dark:text-blue-400 font-medium text-center">
+                {t.invitedBy.replace("{leaderName}", team.leader_name)}
+              </p>
+            )}
+            {team.invite_message && (
+              <p className="text-gray-700 dark:text-gray-300 bg-blue-50 dark:bg-blue-950 rounded-lg p-3 italic text-center">
+                &ldquo;{team.invite_message}&rdquo;
+              </p>
+            )}
+            {team.description && (
+              <div>
+                <p className="text-xs text-gray-500 mb-1">{t.teamDescription}</p>
+                <p className="text-gray-800 dark:text-gray-200">{team.description}</p>
+              </div>
+            )}
+            {team.notes && (
+              <div className="rounded-lg bg-yellow-50 dark:bg-yellow-950 border border-yellow-200 dark:border-yellow-800 p-3">
+                <p className="text-xs text-yellow-700 dark:text-yellow-400 font-medium mb-1">{t.surveyNotes}</p>
+                <p className="text-yellow-800 dark:text-yellow-300">{team.notes}</p>
+              </div>
+            )}
+          </div>
+        )}
+
         <p className="text-sm text-gray-500 mb-8">
           {deadlineStr
             ? t.joinDeadline.replace("{deadline}", deadlineStr)
