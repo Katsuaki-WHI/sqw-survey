@@ -71,6 +71,39 @@ export default function SurveyFlow({ onSubmit, completedExtra, teamContext }: Su
         }
       }
 
+      // Build scale answers for local enrichment
+      if (results && !results.questionScores) {
+        const scaleAnswers: Record<number, number> = {};
+        for (const [key, val] of Object.entries(answers)) {
+          if (typeof val === "number") {
+            scaleAnswers[Number(key)] = val;
+          }
+        }
+        results.questionScores = scaleAnswers;
+
+        // Management average
+        if (results.managementAverage == null) {
+          const mgmtIds = [27, 28, 29, 30, 31];
+          const mgmtScores = mgmtIds.map((id) => scaleAnswers[id]).filter((v) => v != null);
+          results.managementAverage =
+            mgmtScores.length > 0
+              ? Math.round((mgmtScores.reduce((a, b) => a + b, 0) / mgmtScores.length) * 100) / 100
+              : null;
+        }
+
+        // Engagement map
+        if (!results.engagementPoints || results.engagementPoints.length === 0) {
+          const direction = scaleAnswers[2] ?? 0;
+          const q13 = scaleAnswers[13] ?? 0;
+          const q19 = scaleAnswers[19] ?? 0;
+          const contribution = q13 && q19 ? (q13 + q19) / 2 : 0;
+          const happiness = scaleAnswers[26] ?? 0;
+          if (direction > 0 && contribution > 0) {
+            results.engagementPoints = [{ direction, contribution, happiness, isSelf: true }];
+          }
+        }
+      }
+
       // If onSubmit didn't return results, calculate locally
       if (!results) {
         const scaleAnswers: Record<number, number> = {};
