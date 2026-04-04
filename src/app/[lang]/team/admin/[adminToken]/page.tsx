@@ -45,10 +45,13 @@ interface TeamResultsRaw {
   response_count: number;
   member_count: number;
   question_averages: QuestionAvg[] | null;
+  question_sds?: Record<number, number>;
+  engagement_points?: { direction: number; contribution: number; happiness: number }[];
   results_visible: boolean;
 }
 
-function computeResultsData(questionAverages: QuestionAvg[]): ResultsData {
+function computeResultsData(raw: TeamResultsRaw): ResultsData {
+  const questionAverages = raw.question_averages || [];
   const qMap = new Map<number, number>();
   for (const qa of questionAverages) {
     qMap.set(qa.question_id, qa.avg_score);
@@ -80,7 +83,34 @@ function computeResultsData(questionAverages: QuestionAvg[]): ResultsData {
   const wagonSpeed = calcWagonSpeed(teamAverage);
   const managementAverage = categoryScores.management?.avg ?? null;
 
-  return { teamAverage, wagonSpeed, categoryScores, managementAverage };
+  // questionScores for InsightCards
+  const questionScores: Record<number, number> = {};
+  for (const qa of questionAverages) {
+    questionScores[qa.question_id] = qa.avg_score;
+  }
+
+  // Engagement
+  const points = raw.engagement_points || [];
+  let engagementAverage: { direction: number; contribution: number } | null = null;
+  if (points.length > 0) {
+    const avgDir = points.reduce((s, p) => s + p.direction, 0) / points.length;
+    const avgCont = points.reduce((s, p) => s + p.contribution, 0) / points.length;
+    engagementAverage = {
+      direction: Math.round(avgDir * 100) / 100,
+      contribution: Math.round(avgCont * 100) / 100,
+    };
+  }
+
+  return {
+    teamAverage,
+    wagonSpeed,
+    categoryScores,
+    managementAverage,
+    questionScores,
+    questionSDs: raw.question_sds,
+    engagementPoints: points,
+    engagementAverage,
+  };
 }
 
 export default function AdminDashboardPage() {
@@ -196,7 +226,7 @@ export default function AdminDashboardPage() {
 
   const hasResponses = stats && stats.responseCount > 0;
   const resultsData = hasResponses && rawResults?.question_averages
-    ? computeResultsData(rawResults.question_averages)
+    ? computeResultsData(rawResults)
     : null;
 
   const releaseModes: { value: ReleaseMode; label: string; desc: string }[] = [

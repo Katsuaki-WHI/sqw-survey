@@ -247,6 +247,34 @@ export async function getTeamResults(adminToken: string) {
     avg_score: Math.round((scores.reduce((a, b) => a + b, 0) / scores.length) * 100) / 100,
   }));
 
+  // Calculate per-question SD
+  const questionSDs: Record<number, number> = {};
+  for (const [qId, scores] of qMap.entries()) {
+    if (scores.length < 2) { questionSDs[qId] = 0; continue; }
+    const mean = scores.reduce((a, b) => a + b, 0) / scores.length;
+    const variance = scores.reduce((sum, s) => sum + (s - mean) ** 2, 0) / scores.length;
+    questionSDs[qId] = Math.round(Math.sqrt(variance) * 100) / 100;
+  }
+
+  // Build per-session engagement data
+  const sessionAnswers = new Map<string, Map<number, number>>();
+  for (const a of answers || []) {
+    if (!sessionAnswers.has(a.session_id)) sessionAnswers.set(a.session_id, new Map());
+    sessionAnswers.get(a.session_id)!.set(a.question_id, a.score);
+  }
+
+  const engagementPoints: { direction: number; contribution: number; happiness: number }[] = [];
+  for (const sa of sessionAnswers.values()) {
+    const dir = sa.get(2) ?? 0;
+    const q13 = sa.get(13) ?? 0;
+    const q19 = sa.get(19) ?? 0;
+    const contrib = q13 && q19 ? (q13 + q19) / 2 : 0;
+    const hap = sa.get(26) ?? 0;
+    if (dir > 0 && contrib > 0) {
+      engagementPoints.push({ direction: dir, contribution: contrib, happiness: hap });
+    }
+  }
+
   // Get member count
   const { count: memberCount } = await supabase
     .from("team_members")
@@ -258,6 +286,8 @@ export async function getTeamResults(adminToken: string) {
     response_count: responseCount ?? 0,
     member_count: memberCount ?? 0,
     question_averages: questionAverages,
+    question_sds: questionSDs,
+    engagement_points: engagementPoints,
     results_visible: team.results_visible,
   };
 }
@@ -352,10 +382,41 @@ export async function getTeamResultsByInviteCode(inviteCode: string) {
     avg_score: Math.round((scores.reduce((a, b) => a + b, 0) / scores.length) * 100) / 100,
   }));
 
+  // Calculate per-question SD
+  const questionSDs: Record<number, number> = {};
+  for (const [qId, scores] of qMap.entries()) {
+    if (scores.length < 2) { questionSDs[qId] = 0; continue; }
+    const mean = scores.reduce((a, b) => a + b, 0) / scores.length;
+    const variance = scores.reduce((sum, s) => sum + (s - mean) ** 2, 0) / scores.length;
+    questionSDs[qId] = Math.round(Math.sqrt(variance) * 100) / 100;
+  }
+
+  // Build per-session engagement data (Q2=direction, Q13+Q19/2=contribution, Q26=happiness)
+  const sessionAnswers = new Map<string, Map<number, number>>();
+  for (const a of answers || []) {
+    if (!sessionIds.has(a.session_id) || a.score == null) continue;
+    if (!sessionAnswers.has(a.session_id)) sessionAnswers.set(a.session_id, new Map());
+    sessionAnswers.get(a.session_id)!.set(a.question_id, a.score);
+  }
+
+  const engagementPoints: { direction: number; contribution: number; happiness: number }[] = [];
+  for (const qMap of sessionAnswers.values()) {
+    const dir = qMap.get(2) ?? 0;
+    const q13 = qMap.get(13) ?? 0;
+    const q19 = qMap.get(19) ?? 0;
+    const contrib = q13 && q19 ? (q13 + q19) / 2 : 0;
+    const hap = qMap.get(26) ?? 0;
+    if (dir > 0 && contrib > 0) {
+      engagementPoints.push({ direction: dir, contribution: contrib, happiness: hap });
+    }
+  }
+
   return {
     team,
     visible: true,
     questionAverages,
+    questionSDs,
+    engagementPoints,
     responseCount: responseCount ?? 0,
   };
 }

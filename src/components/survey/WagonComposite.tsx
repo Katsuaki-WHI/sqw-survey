@@ -213,19 +213,6 @@ export default function WagonComposite({
 
   return (
     <div className="w-full flex flex-col items-center gap-6">
-      {/* Wagon Speed */}
-      <div className="text-center">
-        <p className="text-sm text-gray-500 mb-1">
-          {isEn ? "Wagon Push Force" : "ワゴン推進力"}
-        </p>
-        <p className="text-5xl font-bold text-blue-600">
-          {wagonSpeed} <span className="text-2xl">km</span>
-        </p>
-        <p className="text-sm text-gray-400 mt-1">
-          {isEn ? "Team Average" : "平均スコア"}: {teamAverage.toFixed(2)} / 5.00
-        </p>
-      </div>
-
       {/* Composite wagon illustration - matches reference site exactly */}
       <div
         className="relative w-full overflow-hidden rounded-xl border border-gray-200 dark:border-gray-700 bg-white"

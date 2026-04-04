@@ -81,7 +81,34 @@ export default function TeamResultsPage() {
     const wagonSpeed = calcWagonSpeed(teamAverage);
     const managementAverage = categoryScores.management?.avg ?? null;
 
-    setResults({ teamAverage, wagonSpeed, categoryScores, managementAverage });
+    // Build questionScores for InsightCards
+    const questionScores: Record<number, number> = {};
+    for (const qa of data.questionAverages || []) {
+      questionScores[qa.question_id] = qa.avg_score;
+    }
+
+    // Engagement average
+    const points = data.engagementPoints || [];
+    let engagementAverage: { direction: number; contribution: number } | null = null;
+    if (points.length > 0) {
+      const avgDir = points.reduce((s, p) => s + p.direction, 0) / points.length;
+      const avgCont = points.reduce((s, p) => s + p.contribution, 0) / points.length;
+      engagementAverage = {
+        direction: Math.round(avgDir * 100) / 100,
+        contribution: Math.round(avgCont * 100) / 100,
+      };
+    }
+
+    setResults({
+      teamAverage,
+      wagonSpeed,
+      categoryScores,
+      managementAverage,
+      questionScores,
+      questionSDs: data.questionSDs ?? undefined,
+      engagementPoints: points,
+      engagementAverage,
+    });
     setLoading(false);
   }, [inviteCode]);
 
