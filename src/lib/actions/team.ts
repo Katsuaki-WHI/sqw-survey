@@ -265,14 +265,12 @@ export async function getTeamResults(adminToken: string) {
 
   const engagementPoints: { direction: number; contribution: number; happiness: number }[] = [];
   for (const sa of sessionAnswers.values()) {
-    const dir = sa.get(2) ?? 0;
-    const q13 = sa.get(13) ?? 0;
-    const q19 = sa.get(19) ?? 0;
-    const contrib = q13 && q19 ? (q13 + q19) / 2 : 0;
-    const hap = sa.get(26) ?? 0;
-    if (dir > 0 && contrib > 0) {
-      engagementPoints.push({ direction: dir, contribution: contrib, happiness: hap });
-    }
+    const dir = Math.max(1, sa.get(2) ?? 1);
+    const q13 = sa.get(13) ?? 1;
+    const q19 = sa.get(19) ?? 1;
+    const contrib = (q13 + q19) / 2;
+    const hap = sa.get(26) ?? 1;
+    engagementPoints.push({ direction: dir, contribution: Math.max(1, contrib), happiness: hap });
   }
 
   // Get member count
