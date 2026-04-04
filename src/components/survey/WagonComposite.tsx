@@ -182,11 +182,12 @@ function buildLayers(scores: Partial<Record<QuestionCategory, CategoryScore>>): 
   }
 
   // 10. Happiness (幸福度)
-  //    CSS: bottom: 355px; left: 16px; width: 102px
+  //    CSS: bottom: 310px; left: 16px; width: 102px
+  //    (原本は355pxだが、355+画像高さ>420pxではみ出すため310pxに調整)
   layers.push({
     key: "happiness",
     src: `${IMG_BASE}/result_happiness${happiness}.png`,
-    bottom: 355, left: 16, width: 102,
+    bottom: 310, left: 16, width: 102,
   });
 
   // 11. Copyright
