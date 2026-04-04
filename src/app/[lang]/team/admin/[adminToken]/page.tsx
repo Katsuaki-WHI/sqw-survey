@@ -276,6 +276,28 @@ export default function AdminDashboardPage() {
           </div>
         </div>
 
+        {/* Team Results Link (when visible) */}
+        {(team.results_visible || team.release_mode === "immediate") && hasResponses && (
+          <div className="rounded-lg border-2 border-green-200 dark:border-green-800 bg-green-50 dark:bg-green-950 p-4 mb-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-green-800 dark:text-green-300">
+                  {t.teamResultsAvailable}
+                </p>
+                <p className="text-xs text-green-600 dark:text-green-400 mt-1 break-all">
+                  {`${origin}/${locale}/team/join/${team.invite_code}/results`}
+                </p>
+              </div>
+              <Link
+                href={`/${locale}/team/join/${team.invite_code}/results`}
+                className="shrink-0 rounded-lg bg-green-600 px-4 py-2 text-sm font-medium text-white hover:bg-green-500 transition-colors"
+              >
+                {t.viewTeamResultsButton}
+              </Link>
+            </div>
+          </div>
+        )}
+
         {/* ===================== */}
         {/* Feedback Control Panel */}
         {/* ===================== */}

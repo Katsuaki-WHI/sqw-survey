@@ -193,16 +193,73 @@ export async function updateReleaseMode(adminToken: string, releaseMode: Release
 export async function getTeamResults(adminToken: string) {
   const supabase = await createSupabaseServer();
 
-  const { data, error } = await supabase.rpc("get_team_results", {
-    p_admin_token: adminToken,
-  });
+  const { data: team } = await supabase
+    .from("teams")
+    .select("id, name, results_visible")
+    .eq("admin_token", adminToken)
+    .single();
 
-  if (error) {
-    console.error("Failed to get team results:", error);
-    return null;
+  if (!team) return null;
+
+  // Get response count
+  const { count: responseCount } = await supabase
+    .from("survey_sessions")
+    .select("*", { count: "exact", head: true })
+    .eq("team_id", team.id)
+    .not("completed_at", "is", null);
+
+  // Get completed session IDs for this team
+  const { data: sessions } = await supabase
+    .from("survey_sessions")
+    .select("id")
+    .eq("team_id", team.id)
+    .not("completed_at", "is", null);
+
+  const sessionIds = (sessions || []).map((s) => s.id);
+
+  if (sessionIds.length === 0) {
+    return {
+      team_name: team.name,
+      response_count: 0,
+      member_count: 0,
+      question_averages: null,
+      results_visible: team.results_visible,
+    };
   }
 
-  return data;
+  // Get all answers for these sessions
+  const { data: answers } = await supabase
+    .from("survey_answers")
+    .select("question_id, score, session_id")
+    .in("session_id", sessionIds)
+    .not("score", "is", null);
+
+  // Aggregate by question
+  const qMap = new Map<number, number[]>();
+  for (const a of answers || []) {
+    const scores = qMap.get(a.question_id) || [];
+    scores.push(a.score);
+    qMap.set(a.question_id, scores);
+  }
+
+  const questionAverages = Array.from(qMap.entries()).map(([qId, scores]) => ({
+    question_id: qId,
+    avg_score: Math.round((scores.reduce((a, b) => a + b, 0) / scores.length) * 100) / 100,
+  }));
+
+  // Get member count
+  const { count: memberCount } = await supabase
+    .from("team_members")
+    .select("*", { count: "exact", head: true })
+    .eq("team_id", team.id);
+
+  return {
+    team_name: team.name,
+    response_count: responseCount ?? 0,
+    member_count: memberCount ?? 0,
+    question_averages: questionAverages,
+    results_visible: team.results_visible,
+  };
 }
 
 export async function getTeamByMemberToken(memberToken: string) {
