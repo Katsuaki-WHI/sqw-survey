@@ -16,10 +16,15 @@ create table if not exists teams (
   -- immediate: 個人回答完了後すぐにチーム結果も公開
   -- on_deadline: 回答期限到来時に自動公開
   -- manual: 管理者が手動で公開（デフォルト）
-  description text,                          -- チームの説明（任意）
-  leader_name text,                          -- 上司・リーダー名（任意）
+  description text,                          -- チームの説明
+  leader_name text,                          -- 上司・リーダー名
   notes text,                                -- 回答時の注意事項（任意）
   invite_message text,                       -- 招待メッセージ（任意）
+  company_name text,                         -- 会社名（任意）
+  industry text,                             -- 業種
+  company_size text,                         -- 企業規模
+  expected_members integer,                  -- 回答予定人数
+  survey_purpose text,                       -- サーベイの目的（任意）
   created_at timestamptz default now() not null
 );
 

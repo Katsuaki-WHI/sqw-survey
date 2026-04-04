@@ -27,6 +27,7 @@ interface TeamData {
   results_visible: boolean;
   release_mode: string;
   created_at: string;
+  expected_members: number | null;
 }
 
 interface TeamStats {
@@ -241,10 +242,23 @@ export default function AdminDashboardPage() {
             <div className="col-span-2">
               <p className="text-sm text-gray-500">{t.responseCount}</p>
               <p className="text-2xl font-bold text-blue-600">
-                {t.responseProgress
-                  .replace("{responseCount}", String(stats?.responseCount ?? 0))
-                  .replace("{memberCount}", String(stats?.memberCount ?? 0))}
+                {team.expected_members
+                  ? t.responseProgressWithExpected
+                      .replace("{responseCount}", String(stats?.responseCount ?? 0))
+                      .replace("{expectedMembers}", String(team.expected_members))
+                      .replace("{memberCount}", String(stats?.memberCount ?? 0))
+                  : t.responseProgress
+                      .replace("{responseCount}", String(stats?.responseCount ?? 0))
+                      .replace("{memberCount}", String(stats?.memberCount ?? 0))}
               </p>
+              {team.expected_members && stats && (
+                <div className="mt-2 w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5">
+                  <div
+                    className="bg-blue-600 h-2.5 rounded-full transition-all duration-300"
+                    style={{ width: `${Math.min(100, (stats.responseCount / team.expected_members) * 100)}%` }}
+                  />
+                </div>
+              )}
             </div>
           </div>
         </div>

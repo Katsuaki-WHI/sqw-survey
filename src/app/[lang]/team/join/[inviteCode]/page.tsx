@@ -173,7 +173,7 @@ export default function TeamJoinPage() {
         </p>
 
         {/* Team details card */}
-        {(team.description || team.leader_name || team.invite_message || team.notes) && (
+        {(team.description || team.leader_name || team.invite_message) && (
           <div className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-4 mb-4 text-left text-sm space-y-3">
             {team.leader_name && (
               <p className="text-blue-700 dark:text-blue-400 font-medium text-center">
@@ -189,12 +189,6 @@ export default function TeamJoinPage() {
               <div>
                 <p className="text-xs text-gray-500 mb-1">{t.teamDescription}</p>
                 <p className="text-gray-800 dark:text-gray-200">{team.description}</p>
-              </div>
-            )}
-            {team.notes && (
-              <div className="rounded-lg bg-yellow-50 dark:bg-yellow-950 border border-yellow-200 dark:border-yellow-800 p-3">
-                <p className="text-xs text-yellow-700 dark:text-yellow-400 font-medium mb-1">{t.surveyNotes}</p>
-                <p className="text-yellow-800 dark:text-yellow-300">{team.notes}</p>
               </div>
             )}
           </div>
