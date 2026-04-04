@@ -179,21 +179,68 @@ export default function EngagementMap({
           </g>
         ))}
 
-        {/* Member dots (colored by happiness, behind self) */}
-        {points
-          .filter((p) => !p.isSelf)
-          .map((p, i) => (
-            <circle
-              key={`m${i}`}
-              cx={toPixel(p.contribution)}
-              cy={SIZE - toPixel(p.direction) + PAD}
-              r={5}
-              fill={happinessColor(p.happiness)}
-              opacity="0.6"
-              stroke="white"
-              strokeWidth="1"
-            />
-          ))}
+        {mode === "team" ? (
+          <>
+            {/* Team mode: all members same size, anonymous, colored by happiness */}
+            {points.map((p, i) => (
+              <circle
+                key={`t${i}`}
+                cx={toPixel(p.contribution)}
+                cy={SIZE - toPixel(p.direction) + PAD}
+                r={8}
+                fill={happinessColor(p.happiness)}
+                opacity="0.7"
+                stroke="white"
+                strokeWidth="1.5"
+              />
+            ))}
+          </>
+        ) : (
+          <>
+            {/* Individual mode: other members small, self large with label */}
+            {points
+              .filter((p) => !p.isSelf)
+              .map((p, i) => (
+                <circle
+                  key={`m${i}`}
+                  cx={toPixel(p.contribution)}
+                  cy={SIZE - toPixel(p.direction) + PAD}
+                  r={5}
+                  fill={happinessColor(p.happiness)}
+                  opacity="0.6"
+                  stroke="white"
+                  strokeWidth="1"
+                />
+              ))}
+            {points
+              .filter((p) => p.isSelf)
+              .map((p, i) => {
+                const color = happinessColor(p.happiness);
+                return (
+                  <g key={`s${i}`}>
+                    <circle
+                      cx={toPixel(p.contribution)}
+                      cy={SIZE - toPixel(p.direction) + PAD}
+                      r={9}
+                      fill={color}
+                      stroke="white"
+                      strokeWidth="2"
+                    />
+                    <text
+                      x={toPixel(p.contribution)}
+                      y={SIZE - toPixel(p.direction) + PAD - 14}
+                      textAnchor="middle"
+                      fontSize="10"
+                      fontWeight="bold"
+                      fill={color}
+                    >
+                      {isEn ? "You" : "あなた"}
+                    </text>
+                  </g>
+                );
+              })}
+          </>
+        )}
 
         {/* Team average star */}
         {teamAverage && (
@@ -221,35 +268,6 @@ export default function EngagementMap({
             </text>
           </g>
         )}
-
-        {/* Self dot (large, colored by happiness, on top) */}
-        {points
-          .filter((p) => p.isSelf)
-          .map((p, i) => {
-            const color = happinessColor(p.happiness);
-            return (
-              <g key={`s${i}`}>
-                <circle
-                  cx={toPixel(p.contribution)}
-                  cy={SIZE - toPixel(p.direction) + PAD}
-                  r={9}
-                  fill={color}
-                  stroke="white"
-                  strokeWidth="2"
-                />
-                <text
-                  x={toPixel(p.contribution)}
-                  y={SIZE - toPixel(p.direction) + PAD - 14}
-                  textAnchor="middle"
-                  fontSize="10"
-                  fontWeight="bold"
-                  fill={color}
-                >
-                  {isEn ? "You" : "あなた"}
-                </text>
-              </g>
-            );
-          })}
       </svg>
 
       {/* Legend */}
