@@ -285,12 +285,17 @@ export default function TeamCreatePage() {
                 {t.releaseModeLabel} <span className="text-red-500">*</span>
               </label>
               <div className="flex flex-col gap-2">
-                {(["manual", "on_deadline", "immediate"] as const).map((mode) => (
-                  <label key={mode} className="flex items-center gap-3 rounded-lg border border-gray-200 dark:border-gray-700 px-4 py-3 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
-                    <input type="radio" checked={releaseMode === mode} onChange={() => setReleaseMode(mode)} className="text-blue-600" />
-                    <span className="text-sm text-gray-900 dark:text-white">
-                      {mode === "immediate" ? t.releaseModeImmediate : mode === "on_deadline" ? t.releaseModeOnDeadline : t.releaseModeManual}
-                    </span>
+                {(["manual", "all_completed", "on_deadline"] as const).map((mode) => (
+                  <label key={mode} className="flex items-start gap-3 rounded-lg border border-gray-200 dark:border-gray-700 px-4 py-3 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+                    <input type="radio" checked={releaseMode === mode} onChange={() => setReleaseMode(mode)} className="text-blue-600 mt-0.5" />
+                    <div>
+                      <span className="text-sm text-gray-900 dark:text-white font-medium">
+                        {mode === "all_completed" ? t.releaseModeAllCompleted : mode === "on_deadline" ? t.releaseModeOnDeadline : t.releaseModeManual}
+                      </span>
+                      <p className="text-xs text-gray-500 mt-0.5">
+                        {mode === "all_completed" ? t.releaseModeAllCompletedDesc : mode === "on_deadline" ? t.releaseModeOnDeadlineDesc : t.releaseModeManualDesc}
+                      </p>
+                    </div>
                   </label>
                 ))}
               </div>

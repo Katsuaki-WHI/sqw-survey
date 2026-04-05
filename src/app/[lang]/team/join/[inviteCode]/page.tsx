@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useLocale } from "@/lib/i18n/context";
-import { getTeamByInviteCode, joinTeam } from "@/lib/actions/team";
+import { getTeamByInviteCode, joinTeam, checkMemberHasResponse } from "@/lib/actions/team";
 import { submitSurvey } from "@/lib/actions/survey";
 import SurveyFlow, { type Answers } from "@/components/survey/SurveyFlow";
 import type { ResultsData } from "@/components/survey/ResultsView";
@@ -58,9 +58,14 @@ export default function TeamJoinPage() {
       setExistingMemberToken(existing);
       const existingSession = getCookie(`sqw_completed_${data.id}`);
       if (existingSession) {
-        // Redirect to personal results page
-        router.replace(`/${locale}/team/results/${existing}`);
-        return;
+        // Cookie says completed — verify with DB
+        const hasResponse = await checkMemberHasResponse(existing);
+        if (hasResponse) {
+          router.replace(`/${locale}/team/results/${existing}`);
+          return;
+        }
+        // DB says no response — clear stale cookie, allow re-answer
+        document.cookie = `sqw_completed_${data.id}=; path=/; max-age=0`;
       }
     }
 
@@ -223,7 +228,6 @@ export default function TeamJoinPage() {
               </Link>
             )}
             {(team.results_visible ||
-              team.release_mode === "immediate" ||
               (team.release_mode === "on_deadline" && team.deadline && new Date(team.deadline) < new Date())
             ) && (
               <Link

@@ -270,7 +270,6 @@ export default function AdminDashboardPage() {
       setTeam({
         ...team,
         release_mode: result.release_mode,
-        results_visible: result.results_visible ?? team.results_visible,
       });
       showToast(t.releaseModeUpdated);
     }
@@ -305,8 +304,8 @@ export default function AdminDashboardPage() {
 
   const releaseModes: { value: ReleaseMode; label: string; desc: string }[] = [
     { value: "manual", label: t.releaseModeManual, desc: t.releaseModeManualDesc },
+    { value: "all_completed", label: t.releaseModeAllCompleted, desc: t.releaseModeAllCompletedDesc },
     { value: "on_deadline", label: t.releaseModeOnDeadline, desc: t.releaseModeOnDeadlineDesc },
-    { value: "immediate", label: t.releaseModeImmediate, desc: t.releaseModeImmediateDesc },
   ];
 
   return (
@@ -422,7 +421,7 @@ export default function AdminDashboardPage() {
         </div>
 
         {/* Team Results Link (when visible) */}
-        {(team.results_visible || team.release_mode === "immediate") && hasResponses && (
+        {(team.results_visible || team.release_mode === "immediate" || team.release_mode === "all_completed") && hasResponses && (
           <div className="rounded-lg border-2 border-green-200 dark:border-green-800 bg-green-50 dark:bg-green-950 p-4 mb-6">
             <div className="flex items-center justify-between">
               <div>
@@ -588,12 +587,12 @@ export default function AdminDashboardPage() {
             <div className="border-t border-blue-200 dark:border-blue-800 pt-4">
               <div className="flex items-center gap-2">
                 <div className={`w-3 h-3 rounded-full ${
-                  team.results_visible || team.release_mode === "immediate"
+                  team.results_visible || team.release_mode === "immediate" || team.release_mode === "all_completed"
                     ? "bg-green-500"
                     : "bg-yellow-500"
                 }`} />
                 <p className="text-sm text-gray-700 dark:text-gray-300">
-                  {team.results_visible || team.release_mode === "immediate"
+                  {team.results_visible || team.release_mode === "immediate" || team.release_mode === "all_completed"
                     ? t.resultsVisible
                     : team.release_mode === "on_deadline"
                     ? (team.deadline

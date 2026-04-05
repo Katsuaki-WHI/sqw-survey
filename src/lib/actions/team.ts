@@ -4,7 +4,7 @@ import { createSupabaseServer } from "@/lib/supabase/server";
 import { generateInviteCode, generateAdminToken, generateMemberToken } from "@/lib/utils/tokens";
 import { isResultsEffectivelyVisible } from "@/lib/utils/visibility";
 
-export type ReleaseMode = "immediate" | "on_deadline" | "manual";
+export type ReleaseMode = "manual" | "all_completed" | "on_deadline";
 
 export async function createTeam(formData: FormData) {
   const name = formData.get("name") as string;
@@ -239,11 +239,7 @@ export async function updateReleaseMode(adminToken: string, releaseMode: Release
 
   if (!team) return { error: "Team not found" };
 
-  // If switching to immediate, also set results_visible = true
   const updates: Record<string, unknown> = { release_mode: releaseMode };
-  if (releaseMode === "immediate") {
-    updates.results_visible = true;
-  }
 
   const { error } = await supabase
     .from("teams")
@@ -252,7 +248,7 @@ export async function updateReleaseMode(adminToken: string, releaseMode: Release
 
   if (error) return { error: "Failed to update release mode" };
 
-  return { release_mode: releaseMode, results_visible: releaseMode === "immediate" ? true : undefined };
+  return { release_mode: releaseMode };
 }
 
 export async function getTeamResults(adminToken: string) {
@@ -390,6 +386,7 @@ export async function getTeamByMemberToken(memberToken: string) {
   );
 
   return {
+    teamId: member.team_id as string,
     inviteCode: team.invite_code as string,
     resultsVisible: isVisible,
   };
@@ -575,6 +572,39 @@ export async function resetMemberResponse(adminToken: string, memberId: string) 
 
   await supabase.from("team_members").update({ session_id: null }).eq("id", member.id);
 
+  // If release_mode is all_completed, unpublish results since we now have an incomplete member
+  const { data: teamData } = await supabase
+    .from("teams")
+    .select("release_mode, results_visible")
+    .eq("id", team.id)
+    .single();
+
+  if (teamData?.release_mode === "all_completed" && teamData.results_visible) {
+    await supabase.from("teams").update({ results_visible: false }).eq("id", team.id);
+  }
+
   return { success: true };
+}
+
+/** Check if a member has a completed response in the DB */
+export async function checkMemberHasResponse(memberToken: string) {
+  const supabase = await createSupabaseServer();
+
+  const { data: member } = await supabase
+    .from("team_members")
+    .select("session_id")
+    .eq("member_token", memberToken)
+    .single();
+
+  if (!member?.session_id) return false;
+
+  const { data: session } = await supabase
+    .from("survey_sessions")
+    .select("id")
+    .eq("id", member.session_id)
+    .not("completed_at", "is", null)
+    .single();
+
+  return !!session;
 }
 

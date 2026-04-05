@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useLocale } from "@/lib/i18n/context";
 import { getMemberResults } from "@/lib/actions/survey";
 import { getTeamByMemberToken } from "@/lib/actions/team";
@@ -12,11 +12,13 @@ import Link from "next/link";
 export default function MemberResultsPage() {
   const { locale, dict } = useLocale();
   const t = dict.survey;
+  const tt = dict.team;
   const params = useParams();
+  const router = useRouter();
   const memberToken = params.memberToken as string;
 
   const [results, setResults] = useState<ResultsData | null>(null);
-  const [teamInfo, setTeamInfo] = useState<{ inviteCode: string; resultsVisible: boolean } | null>(null);
+  const [teamInfo, setTeamInfo] = useState<{ teamId: string; inviteCode: string; resultsVisible: boolean } | null>(null);
   const [loading, setLoading] = useState(true);
   const [unauthorized, setUnauthorized] = useState(false);
 
@@ -128,6 +130,24 @@ export default function MemberResultsPage() {
           >
             {t.backToTop}
           </Link>
+        )}
+
+        {/* Retake button */}
+        {teamInfo?.inviteCode && teamInfo.teamId && (
+          <div className="flex flex-col items-center gap-2 mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+            <button
+              onClick={() => {
+                // Clear survey cookies for this team
+                document.cookie = `sqw_member_${teamInfo.teamId}=; path=/; max-age=0`;
+                document.cookie = `sqw_completed_${teamInfo.teamId}=; path=/; max-age=0`;
+                router.replace(`/${locale}/team/join/${teamInfo.inviteCode}`);
+              }}
+              className="text-sm text-red-500 hover:text-red-400 underline"
+            >
+              {tt.retakeButton}
+            </button>
+            <p className="text-xs text-gray-400 text-center max-w-sm">{tt.retakeNote}</p>
+          </div>
         )}
       </div>
     </div>

@@ -79,6 +79,26 @@ export async function submitSurvey({ answers, teamId, memberToken, memberEmail }
       .update({ session_id: session.id })
       .eq("member_token", memberToken)
       .eq("team_id", teamId);
+
+    // Check if all_completed auto-publish should trigger
+    const { data: teamRow } = await supabase
+      .from("teams")
+      .select("release_mode, results_visible, expected_members")
+      .eq("id", teamId)
+      .single();
+
+    if (teamRow?.release_mode === "all_completed" && !teamRow.results_visible) {
+      const { count: responseCount } = await supabase
+        .from("survey_sessions")
+        .select("*", { count: "exact", head: true })
+        .eq("team_id", teamId)
+        .not("completed_at", "is", null);
+
+      const target = teamRow.expected_members ?? 0;
+      if (target > 0 && (responseCount ?? 0) >= target) {
+        await supabase.from("teams").update({ results_visible: true }).eq("id", teamId);
+      }
+    }
   }
 
   return {
