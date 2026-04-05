@@ -150,7 +150,22 @@
     "resetConfirm": "Reset this response? This action cannot be undone.",
     "resetNote": "After reset, ask the member to reopen the invite URL in a new browser or incognito window.",
     "resetSuccess": "Response has been reset",
-    "resetting": "Resetting..."
+    "resetting": "Resetting...",
+    "projectNameLabel": "Project name (optional)",
+    "projectNamePlaceholder": "e.g., Acme Corp April 2026 Survey",
+    "step1Title": "STEP 1: Project Settings",
+    "step2Title": "STEP 2: Add Teams",
+    "step3Title": "STEP 3: Confirm & Create",
+    "addTeam": "+ Add a team",
+    "removeTeam": "Remove",
+    "nextStep": "Next",
+    "prevStep": "Back",
+    "confirmCreate": "Create",
+    "projectSummary": "Project Settings",
+    "teamsSummary": "Teams",
+    "projectCreatedTitle": "Project Created!",
+    "projectCreatedDesc": "Share the invite links with your team members. You can manage results from the admin dashboard.",
+    "deadlineRequired": "Please set a response deadline"
   },
   "metadata": {
     "title": "SQW Survey | Square Wheel Survey",

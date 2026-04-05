@@ -14,6 +14,7 @@ import {
   resetMemberResponse,
   type ReleaseMode,
 } from "@/lib/actions/team";
+import { getProjectByAdminToken } from "@/lib/actions/project";
 import { CATEGORY_CONFIG, type QuestionCategory } from "@/lib/survey/questions";
 import { calcWagonSpeed, calcWagonSpeedFromEngagement } from "@/lib/survey/scoring";
 import LanguageToggle from "@/components/LanguageToggle";
@@ -135,6 +136,8 @@ export default function AdminDashboardPage() {
   const [toast, setToast] = useState("");
   const [members, setMembers] = useState<{ id: string; label: string; completed: boolean; joinedAt: string }[]>([]);
   const [resettingId, setResettingId] = useState<string | null>(null);
+  const [projectTeams, setProjectTeams] = useState<{ id: string; name: string; invite_code: string; admin_token: string; expected_members: number | null }[] | null>(null);
+  const [projectName, setProjectName] = useState<string | null>(null);
 
   const showToast = (msg: string) => {
     setToast(msg);
@@ -142,6 +145,32 @@ export default function AdminDashboardPage() {
   };
 
   const loadData = useCallback(async () => {
+    // Try project admin token first
+    const projectData = await getProjectByAdminToken(adminToken);
+    if (projectData) {
+      setProjectName(projectData.project.name);
+      setProjectTeams(projectData.teams as typeof projectTeams);
+      // Load first team as default view
+      if (projectData.teams.length > 0) {
+        const firstTeam = await getTeamByAdminToken(projectData.teams[0].admin_token);
+        if (firstTeam) {
+          setTeam(firstTeam);
+          if (firstTeam.deadline) setDeadlineInput(new Date(firstTeam.deadline).toISOString().slice(0, 16));
+          const [statsData, resultsData, membersData] = await Promise.all([
+            getTeamStats(firstTeam.id),
+            getTeamResults(projectData.teams[0].admin_token),
+            getTeamMembers(projectData.teams[0].admin_token),
+          ]);
+          setStats(statsData);
+          if (resultsData) setRawResults(resultsData as TeamResultsRaw);
+          if (membersData) setMembers(membersData);
+        }
+      }
+      setLoading(false);
+      return;
+    }
+
+    // Fallback: single team admin token
     const teamData = await getTeamByAdminToken(adminToken);
     if (!teamData) {
       setLoading(false);
@@ -268,8 +297,31 @@ export default function AdminDashboardPage() {
 
       <div className="max-w-3xl mx-auto w-full px-6 py-12">
         <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-8">
-          {t.adminTitle}
+          {projectName || t.adminTitle}
         </h1>
+
+        {/* Project teams overview */}
+        {projectTeams && projectTeams.length > 1 && (
+          <div className="rounded-lg border border-gray-200 dark:border-gray-700 p-6 mb-6">
+            <h2 className="text-sm font-bold text-gray-600 dark:text-gray-400 mb-3">
+              {t.teamsSummary}
+            </h2>
+            <div className="flex flex-col gap-2">
+              {projectTeams.map((pt) => {
+                const ptInvite = `${origin}/${locale}/team/join/${pt.invite_code}`;
+                return (
+                  <div key={pt.id} className="flex items-center justify-between rounded-lg border border-gray-100 dark:border-gray-800 px-4 py-3">
+                    <div>
+                      <p className="text-sm font-medium text-gray-900 dark:text-white">{pt.name}</p>
+                      <p className="text-xs text-gray-500">{pt.expected_members}{isEn ? " members" : "名"}</p>
+                    </div>
+                    <CopyLinkButton text={ptInvite} />
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
 
         {/* Team Info */}
         <div className="rounded-lg border border-gray-200 dark:border-gray-700 p-6 mb-6">

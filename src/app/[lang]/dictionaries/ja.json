@@ -150,7 +150,22 @@
     "resetConfirm": "この回答をリセットしますか？この操作は取り消せません。",
     "resetNote": "リセット後はメンバーに招待URLを再送して、新しいブラウザまたはシークレットウィンドウで回答するよう伝えてください。",
     "resetSuccess": "回答をリセットしました",
-    "resetting": "リセット中..."
+    "resetting": "リセット中...",
+    "projectNameLabel": "プロジェクト名（任意）",
+    "projectNamePlaceholder": "例：〇〇社 2026年4月サーベイ",
+    "step1Title": "STEP 1：プロジェクト共通設定",
+    "step2Title": "STEP 2：チーム追加",
+    "step3Title": "STEP 3：確認・作成",
+    "addTeam": "＋ チームを追加する",
+    "removeTeam": "削除",
+    "nextStep": "次へ",
+    "prevStep": "戻る",
+    "confirmCreate": "作成する",
+    "projectSummary": "プロジェクト設定",
+    "teamsSummary": "チーム一覧",
+    "projectCreatedTitle": "プロジェクトが作成されました！",
+    "projectCreatedDesc": "各チームの招待リンクをメンバーに共有してください。管理画面から結果を確認できます。",
+    "deadlineRequired": "回答期限を入力してください"
   },
   "metadata": {
     "title": "SQWサーベイ | スクエアホイールサーベイ",
