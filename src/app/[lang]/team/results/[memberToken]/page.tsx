@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import { useLocale } from "@/lib/i18n/context";
 import { getMemberResults } from "@/lib/actions/survey";
 import { getTeamByMemberToken } from "@/lib/actions/team";
@@ -15,7 +15,6 @@ export default function MemberResultsPage() {
   const t = dict.survey;
   const tt = dict.team;
   const params = useParams();
-  const router = useRouter();
   const memberToken = params.memberToken as string;
 
   const [results, setResults] = useState<ResultsData | null>(null);
@@ -138,22 +137,6 @@ export default function MemberResultsPage() {
           {tt.bookmarkNotice}
         </p>
 
-        {/* Retake button — hidden when team results are published */}
-        {teamInfo?.inviteCode && teamInfo.teamId && !teamInfo.resultsVisible && (
-          <div className="flex flex-col items-center gap-2 mt-2 pt-4 border-t border-gray-200 dark:border-gray-700 w-full">
-            <button
-              onClick={() => {
-                document.cookie = `sqw_member_${teamInfo.teamId}=; path=/; max-age=0`;
-                document.cookie = `sqw_completed_${teamInfo.teamId}=; path=/; max-age=0`;
-                router.replace(`/${locale}/team/join/${teamInfo.inviteCode}`);
-              }}
-              className="text-sm text-red-500 hover:text-red-400 underline"
-            >
-              {tt.retakeButton}
-            </button>
-            <p className="text-xs text-gray-400 text-center max-w-sm">{tt.retakeNote}</p>
-          </div>
-        )}
       </div>
     </div>
   );

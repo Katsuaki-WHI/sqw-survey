@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useLocale } from "@/lib/i18n/context";
-import { getTeamByInviteCode, joinTeam, checkMemberHasResponse } from "@/lib/actions/team";
+import { getTeamByInviteCode, joinTeam, checkMemberStatus } from "@/lib/actions/team";
 import { submitSurvey } from "@/lib/actions/survey";
 import SurveyFlow, { type Answers } from "@/components/survey/SurveyFlow";
 import type { ResultsData } from "@/components/survey/ResultsView";
@@ -59,14 +59,17 @@ export default function TeamJoinPage() {
       setExistingMemberToken(existing);
       const existingSession = getCookie(`sqw_completed_${data.id}`);
       if (existingSession) {
-        // Cookie says completed — verify with DB
-        const hasResponse = await checkMemberHasResponse(existing);
-        if (hasResponse) {
+        // Cookie says completed — verify with DB and check reset_flag
+        const status = await checkMemberStatus(existing);
+        if (status.hasResponse && !status.resetFlag) {
           router.replace(`/${locale}/team/results/${existing}`);
           return;
         }
-        // DB says no response — clear stale cookie, allow re-answer
+        // Reset or no response — clear cookies, allow re-answer
         document.cookie = `sqw_completed_${data.id}=; path=/; max-age=0`;
+        document.cookie = `sqw_member_${data.id}=; path=/; max-age=0`;
+        setMemberToken(null);
+        setExistingMemberToken(null);
       }
     }
 

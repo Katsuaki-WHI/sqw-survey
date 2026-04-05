@@ -76,7 +76,7 @@ export async function submitSurvey({ answers, teamId, memberToken, memberEmail }
   if (teamId && memberToken) {
     await supabase
       .from("team_members")
-      .update({ session_id: session.id })
+      .update({ session_id: session.id, reset_flag: false })
       .eq("member_token", memberToken)
       .eq("team_id", teamId);
 

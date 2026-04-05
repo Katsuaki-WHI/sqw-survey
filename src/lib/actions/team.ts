@@ -575,7 +575,7 @@ export async function resetMemberResponse(adminToken: string, memberId: string) 
     await supabase.from("survey_sessions").delete().eq("id", member.session_id);
   }
 
-  await supabase.from("team_members").update({ session_id: null }).eq("id", member.id);
+  await supabase.from("team_members").update({ session_id: null, reset_flag: true }).eq("id", member.id);
 
   // If release_mode is all_completed, unpublish results since we now have an incomplete member
   const { data: teamData } = await supabase
@@ -591,17 +591,23 @@ export async function resetMemberResponse(adminToken: string, memberId: string) 
   return { success: true };
 }
 
-/** Check if a member has a completed response in the DB */
-export async function checkMemberHasResponse(memberToken: string) {
+/** Check member status: has response, was reset, team_id */
+export async function checkMemberStatus(memberToken: string) {
   const supabase = await createSupabaseServer();
 
   const { data: member } = await supabase
     .from("team_members")
-    .select("session_id")
+    .select("session_id, team_id, reset_flag")
     .eq("member_token", memberToken)
     .single();
 
-  if (!member?.session_id) return false;
+  if (!member) return { hasResponse: false, resetFlag: false, teamId: null };
+
+  const resetFlag = member.reset_flag === true;
+
+  if (!member.session_id) {
+    return { hasResponse: false, resetFlag, teamId: member.team_id };
+  }
 
   const { data: session } = await supabase
     .from("survey_sessions")
@@ -610,6 +616,12 @@ export async function checkMemberHasResponse(memberToken: string) {
     .not("completed_at", "is", null)
     .single();
 
-  return !!session;
+  return { hasResponse: !!session, resetFlag, teamId: member.team_id };
+}
+
+/** @deprecated Use checkMemberStatus instead */
+export async function checkMemberHasResponse(memberToken: string) {
+  const status = await checkMemberStatus(memberToken);
+  return status.hasResponse;
 }
 
