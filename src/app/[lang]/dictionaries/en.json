@@ -7,8 +7,8 @@
     "title": "SQW Survey",
     "description": "Visualize your team's health with the Square Wheel Survey. It takes about 5 minutes.",
     "startButton": "Start Survey",
-    "createTeamButton": "Create a Team (For Facilitators)",
-    "respondentNotice": "If you are a respondent, please access the survey via the invitation URL shared by your facilitator.",
+    "createTeamButton": "Set Up a Survey",
+    "respondentNotice": "If you are a respondent, please access the survey via the invitation URL shared by the survey organizer.",
     "footer": "Work Happiness"
   },
   "survey": {

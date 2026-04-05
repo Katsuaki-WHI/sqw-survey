@@ -7,8 +7,8 @@
     "title": "SQWサーベイ",
     "description": "スクエアホイールサーベイで、あなたのチームの状態を可視化しましょう。約5分で完了します。",
     "startButton": "サーベイを始める",
-    "createTeamButton": "チームを作成する（ファシリテーター向け）",
-    "respondentNotice": "回答者の方は、ファシリテーターから共有された招待URLからアクセスしてください。",
+    "createTeamButton": "サーベイを設定する",
+    "respondentNotice": "回答される方は、設定者から共有された招待URLからアクセスしてください。",
     "footer": "Work Happiness"
   },
   "survey": {
