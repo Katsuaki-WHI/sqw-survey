@@ -157,9 +157,18 @@ export async function getTeamStats(teamId: string) {
     .eq("team_id", teamId)
     .not("completed_at", "is", null);
 
+  // Count completed sessions without email
+  const { count: noEmailCount } = await supabase
+    .from("survey_sessions")
+    .select("*", { count: "exact", head: true })
+    .eq("team_id", teamId)
+    .not("completed_at", "is", null)
+    .is("member_email", null);
+
   return {
     memberCount: memberCount ?? 0,
     responseCount: responseCount ?? 0,
+    noEmailCount: noEmailCount ?? 0,
   };
 }
 
@@ -367,7 +376,7 @@ export async function getTeamByMemberToken(memberToken: string) {
 
   const { data: member } = await supabase
     .from("team_members")
-    .select("team_id")
+    .select("team_id, session_id")
     .eq("member_token", memberToken)
     .single();
 
@@ -381,7 +390,17 @@ export async function getTeamByMemberToken(memberToken: string) {
 
   if (!team) return null;
 
-  // Determine effective visibility
+  // Check if member has email registered
+  let hasEmail = false;
+  if (member.session_id) {
+    const { data: session } = await supabase
+      .from("survey_sessions")
+      .select("member_email")
+      .eq("id", member.session_id)
+      .single();
+    hasEmail = !!session?.member_email;
+  }
+
   const isVisible = isResultsEffectivelyVisible(
     team.results_visible,
     team.release_mode,
@@ -392,6 +411,7 @@ export async function getTeamByMemberToken(memberToken: string) {
     teamId: member.team_id as string,
     inviteCode: team.invite_code as string,
     resultsVisible: isVisible,
+    hasEmail,
   };
 }
 

@@ -180,7 +180,12 @@
     "backToMyResults": "Back to My Results",
     "bookmarkNotice": "You can revisit your results anytime via the invitation URL. We recommend bookmarking it.",
     "personalUrlTitle": "Your personal results URL (recommended to bookmark)",
-    "personalUrlDesc": "Save this URL to access your results from any browser or device, even if you used private browsing mode."
+    "personalUrlDesc": "Save this URL to access your results from any browser or device, even if you used private browsing mode.",
+    "notifyEmailLabel": "Get notified when team results are published (optional)",
+    "notifyEmailRegister": "Register",
+    "notifyEmailRegistered": "Notification email registered",
+    "notifyEmailSuccess": "Registered. You'll be notified when results are published.",
+    "emailUnregisteredWarning": "{count} member(s) have not registered their email address. They will not be notified when results are published."
   },
   "metadata": {
     "title": "SQW Survey | Square Wheel Survey",

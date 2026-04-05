@@ -36,6 +36,7 @@ interface TeamData {
 interface TeamStats {
   memberCount: number;
   responseCount: number;
+  noEmailCount: number;
 }
 
 interface QuestionAvg {
@@ -561,6 +562,13 @@ export default function AdminDashboardPage() {
               ))}
             </div>
           </div>
+
+          {/* Email unregistered warning */}
+          {stats && stats.noEmailCount > 0 && !team.results_visible && (
+            <div className="mb-4 rounded-lg bg-yellow-50 dark:bg-yellow-950 border border-yellow-200 dark:border-yellow-800 px-4 py-3 text-sm text-yellow-800 dark:text-yellow-300">
+              {t.emailUnregisteredWarning.replace("{count}", String(stats.noEmailCount))}
+            </div>
+          )}
 
           {/* Manual Visibility Toggle (only when manual mode) */}
           {team.release_mode === "manual" && (

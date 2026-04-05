@@ -180,7 +180,12 @@
     "backToMyResults": "自分の結果に戻る",
     "bookmarkNotice": "この結果は招待URLからいつでも確認できます。URLをブックマークしておくことをおすすめします。",
     "personalUrlTitle": "あなたの個人結果URL（ブックマーク推奨）",
-    "personalUrlDesc": "このURLを保存しておくと、どのブラウザからでも結果を確認できます。プライベートモードで回答した場合も、このURLから結果に戻れます。"
+    "personalUrlDesc": "このURLを保存しておくと、どのブラウザからでも結果を確認できます。プライベートモードで回答した場合も、このURLから結果に戻れます。",
+    "notifyEmailLabel": "チーム結果が公開されたら通知を受け取る（任意）",
+    "notifyEmailRegister": "登録する",
+    "notifyEmailRegistered": "通知メールを登録済みです",
+    "notifyEmailSuccess": "登録しました。結果公開時にメールでお知らせします。",
+    "emailUnregisteredWarning": "{count}名のメンバーがメールアドレスを未登録です。結果公開時に通知が届きません。"
   },
   "metadata": {
     "title": "SQWサーベイ | スクエアホイールサーベイ",

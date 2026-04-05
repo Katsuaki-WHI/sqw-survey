@@ -18,9 +18,12 @@ export default function MemberResultsPage() {
   const memberToken = params.memberToken as string;
 
   const [results, setResults] = useState<ResultsData | null>(null);
-  const [teamInfo, setTeamInfo] = useState<{ teamId: string; inviteCode: string; resultsVisible: boolean } | null>(null);
+  const [teamInfo, setTeamInfo] = useState<{ teamId: string; inviteCode: string; resultsVisible: boolean; hasEmail: boolean } | null>(null);
   const [loading, setLoading] = useState(true);
   const [unauthorized, setUnauthorized] = useState(false);
+  const [notifyEmail, setNotifyEmail] = useState("");
+  const [emailRegistered, setEmailRegistered] = useState(false);
+  const [emailSubmitting, setEmailSubmitting] = useState(false);
 
   const load = useCallback(async () => {
     const cookieMatch = document.cookie
@@ -132,7 +135,50 @@ export default function MemberResultsPage() {
           </Link>
         )}
 
-        {/* Bookmark notice (②) */}
+        {/* Email notification registration — only when results not yet published */}
+        {teamInfo && !teamInfo.resultsVisible && (
+          <div className="w-full rounded-lg border border-gray-200 dark:border-gray-700 p-4">
+            {teamInfo.hasEmail || emailRegistered ? (
+              <p className="text-sm text-green-600 dark:text-green-400 text-center">
+                {emailRegistered ? `✓ ${tt.notifyEmailSuccess}` : `✓ ${tt.notifyEmailRegistered}`}
+              </p>
+            ) : (
+              <>
+                <label className="block text-sm text-gray-600 dark:text-gray-400 mb-2">
+                  {tt.notifyEmailLabel}
+                </label>
+                <div className="flex gap-2">
+                  <input
+                    type="email"
+                    placeholder="your@email.com"
+                    value={notifyEmail}
+                    onChange={(e) => setNotifyEmail(e.target.value)}
+                    className="flex-1 rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm text-gray-900 dark:text-white bg-white dark:bg-gray-900"
+                  />
+                  <button
+                    onClick={async () => {
+                      if (!notifyEmail.trim()) return;
+                      setEmailSubmitting(true);
+                      const res = await fetch("/api/team/update-email", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ memberToken, email: notifyEmail.trim() }),
+                      });
+                      if (res.ok) setEmailRegistered(true);
+                      setEmailSubmitting(false);
+                    }}
+                    disabled={emailSubmitting || !notifyEmail.trim()}
+                    className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-500 disabled:opacity-50 transition-colors"
+                  >
+                    {tt.notifyEmailRegister}
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
+        )}
+
+        {/* Bookmark notice */}
         <p className="text-sm text-gray-500 dark:text-gray-400 text-center">
           {tt.bookmarkNotice}
         </p>
