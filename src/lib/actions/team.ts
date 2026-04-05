@@ -33,28 +33,49 @@ export async function createTeam(formData: FormData) {
 
   const supabase = await createSupabaseServer();
 
-  const { error } = await supabase.from("teams").insert({
+  // Build insert payload — only include columns that exist in the DB
+  const insertData: Record<string, unknown> = {
     name: name.trim(),
     invite_code: inviteCode,
     admin_token: adminToken,
     deadline,
     release_mode: releaseMode,
-    description: description?.trim() || null,
-    leader_name: leaderName?.trim() || null,
-    notes: notes?.trim() || null,
-    invite_message: inviteMessage?.trim() || null,
-    company_name: companyName?.trim() || null,
-    industry: industry || null,
-    company_size: companySize || null,
-    expected_members: expectedMembers,
-    survey_purpose: surveyPurpose || null,
-    admin_email: adminEmail?.trim() || null,
-    facilitator_email: adminEmail?.trim() || null,
-  });
+  };
+
+  // Optional columns (added via migrations — safe to include even if column exists)
+  if (description?.trim()) insertData.description = description.trim();
+  if (leaderName?.trim()) insertData.leader_name = leaderName.trim();
+  if (notes?.trim()) insertData.notes = notes.trim();
+  if (inviteMessage?.trim()) insertData.invite_message = inviteMessage.trim();
+  if (companyName?.trim()) insertData.company_name = companyName.trim();
+  if (industry) insertData.industry = industry;
+  if (companySize) insertData.company_size = companySize;
+  if (expectedMembers) insertData.expected_members = expectedMembers;
+  if (surveyPurpose) insertData.survey_purpose = surveyPurpose;
+  if (adminEmail?.trim()) insertData.facilitator_email = adminEmail.trim();
+
+  const { error } = await supabase.from("teams").insert(insertData);
 
   if (error) {
-    console.error("Failed to create team:", error);
-    return { error: "Failed to create team" };
+    console.error("Failed to create team:", error.message, error.details, error.hint);
+
+    // Retry without optional columns if column doesn't exist
+    if (error.message?.includes("column") || error.code === "42703") {
+      console.log("Retrying with minimal columns...");
+      const { error: retryError } = await supabase.from("teams").insert({
+        name: name.trim(),
+        invite_code: inviteCode,
+        admin_token: adminToken,
+        deadline,
+        release_mode: releaseMode,
+      });
+      if (retryError) {
+        console.error("Retry also failed:", retryError.message);
+        return { error: "Failed to create team" };
+      }
+    } else {
+      return { error: "Failed to create team" };
+    }
   }
 
   // Send email in background (don't block)

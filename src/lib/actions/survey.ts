@@ -34,17 +34,19 @@ export async function submitSurvey({ answers, teamId, memberToken, memberEmail }
       : null;
 
   // Create session
+  const sessionInsert: Record<string, unknown> = {
+    team_id: teamId || null,
+    completed_at: new Date().toISOString(),
+    team_average: teamAverage,
+    wagon_speed: wagonSpeed,
+    category_scores: categoryScores,
+    management_average: managementAverage,
+  };
+  if (memberEmail?.trim()) sessionInsert.member_email = memberEmail.trim();
+
   const { data: session, error: sessionError } = await supabase
     .from("survey_sessions")
-    .insert({
-      team_id: teamId || null,
-      completed_at: new Date().toISOString(),
-      team_average: teamAverage,
-      wagon_speed: wagonSpeed,
-      category_scores: categoryScores,
-      management_average: managementAverage,
-      member_email: memberEmail?.trim() || null,
-    })
+    .insert(sessionInsert)
     .select("id")
     .single();
 
