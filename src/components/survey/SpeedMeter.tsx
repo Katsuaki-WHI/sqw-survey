@@ -9,11 +9,11 @@ interface SpeedMeterProps {
 
 const SIZE = 300;
 const CX = SIZE / 2;
-const CY = SIZE / 2 + 10;
-const RADIUS = 100;
+// Gauge center pushed down to make room for title above
+const CY = 185;
+const RADIUS = 95;
 const STROKE = 16;
 
-/** Speed (0-200) to angle in radians. 0km = -180°(left), 200km = 0°(right) */
 function speedToAngle(speed: number): number {
   const clamped = Math.max(0, Math.min(200, speed));
   return Math.PI - (clamped / 200) * Math.PI;
@@ -23,7 +23,6 @@ function polarToXY(angle: number, r: number): { x: number; y: number } {
   return { x: CX + r * Math.cos(angle), y: CY - r * Math.sin(angle) };
 }
 
-/** Speed to color */
 function speedColor(speed: number): string {
   if (speed >= 150) return "#16a34a";
   if (speed >= 100) return "#ca8a04";
@@ -38,7 +37,7 @@ function arcPath(startAngle: number, endAngle: number, r: number): string {
   return `M ${start.x} ${start.y} A ${r} ${r} 0 ${largeArc} 0 ${end.x} ${end.y}`;
 }
 
-export default function SpeedMeter({ speed, teamAverage }: SpeedMeterProps) {
+export default function SpeedMeter({ speed }: SpeedMeterProps) {
   const { locale } = useLocale();
   const isEn = locale === "en";
 
@@ -57,17 +56,19 @@ export default function SpeedMeter({ speed, teamAverage }: SpeedMeterProps) {
   const ticks = [0, 50, 100, 150, 200];
   const minorTicks = [25, 75, 125, 175];
 
-  // Layout: title at y=18, gauge center at CY=160, speed text at CY+28, avg at CY+46
-  const SVG_H = CY + 56;
+  // Title y=20, gauge top edge = CY - RADIUS - STROKE/2 = 185-95-8 = 82
+  // Gap between title bottom (~33) and gauge top (82) = 49px — plenty of room
+  // Speed text y = CY+26 = 211, SVG_H = 225
+  const SVG_H = 225;
 
   return (
     <div className="flex flex-col items-center">
       {/* To swap gauge background: place image at public/images/speedometer-bg.png */}
       <svg viewBox={`0 0 ${SIZE} ${SVG_H}`} width={SIZE} className="max-w-full h-auto">
-        {/* Title label at top */}
+        {/* Title label — well above the gauge arc */}
         <text
-          x={CX} y={18}
-          textAnchor="middle" fontSize="13" fontWeight="bold"
+          x={CX} y={20}
+          textAnchor="middle" fontSize="14" fontWeight="bold"
           fill="#374151"
         >
           {isEn ? "Wagon Speed" : "ワゴン推進力"}
@@ -91,7 +92,7 @@ export default function SpeedMeter({ speed, teamAverage }: SpeedMeterProps) {
           );
         })}
 
-        {/* Active arc up to current speed */}
+        {/* Active arc */}
         {speed > 0 && (
           <path
             d={arcPath(speedToAngle(0), speedToAngle(Math.min(speed, 200)), RADIUS)}
@@ -103,7 +104,7 @@ export default function SpeedMeter({ speed, teamAverage }: SpeedMeterProps) {
           />
         )}
 
-        {/* Major tick marks and labels */}
+        {/* Major ticks + labels */}
         {ticks.map((v) => {
           const angle = speedToAngle(v);
           const outer = polarToXY(angle, RADIUS + STROKE / 2 + 2);
@@ -119,7 +120,7 @@ export default function SpeedMeter({ speed, teamAverage }: SpeedMeterProps) {
           );
         })}
 
-        {/* Minor tick marks */}
+        {/* Minor ticks */}
         {minorTicks.map((v) => {
           const angle = speedToAngle(v);
           const outer = polarToXY(angle, RADIUS + STROKE / 2 + 1);
@@ -141,23 +142,14 @@ export default function SpeedMeter({ speed, teamAverage }: SpeedMeterProps) {
         {/* Center cap */}
         <circle cx={CX} cy={CY} r={7} fill="#374151" stroke="white" strokeWidth="2" />
 
-        {/* Speed value */}
+        {/* Speed value — below the needle pivot, inside the flat bottom of the half-circle */}
         <text
-          x={CX} y={CY + 28}
-          textAnchor="middle" fontSize="28" fontWeight="bold"
+          x={CX} y={CY + 26}
+          textAnchor="middle" fontSize="26" fontWeight="bold"
           fill={speedColor(speed)}
         >
           {speed}
           <tspan fontSize="13" fill="#6b7280"> km/h</tspan>
-        </text>
-
-        {/* Team average */}
-        <text
-          x={CX} y={CY + 46}
-          textAnchor="middle" fontSize="11"
-          fill="#9ca3af"
-        >
-          {isEn ? "Avg" : "平均"}: {teamAverage.toFixed(2)} / 5.00
         </text>
       </svg>
     </div>
