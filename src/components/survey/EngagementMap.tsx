@@ -24,10 +24,15 @@ const SIZE = 400;
 const PAD = 48;
 const INNER = SIZE - PAD * 2;
 
-/** Map score (1-5) to pixel position within the inner area. Clamps to 1-5 range. */
+/** Map score (1-5) to pixel position within the inner area. Clamps with margin so dots at edges stay visible. */
 function toPixel(score: number): number {
-  const clamped = Math.max(1, Math.min(5, score));
+  const clamped = Math.max(1.1, Math.min(4.9, score));
   return PAD + ((clamped - 1) / 4) * INNER;
+}
+
+/** Convert a Y-axis score to SVG Y coordinate (inverted: high score = top) */
+function toY(score: number): number {
+  return SIZE - toPixel(score);
 }
 
 /** Q26 happiness score to dot color */
@@ -135,7 +140,7 @@ function DotWithOverlap({
   if (p.overlapCount > 1 && p.overlapIndex > 0) return null;
 
   const cx = toPixel(p.plotX);
-  const cy = SIZE - toPixel(p.plotY) + PAD;
+  const cy = toY(p.plotY);
   const color = happinessColor(p.happiness);
 
   return (
@@ -258,7 +263,7 @@ export default function EngagementMap({
               stroke="#f3f4f6" strokeWidth="0.5"
             />
             <line
-              x1={PAD} y1={SIZE - toPixel(v) + PAD} x2={SIZE - PAD} y2={SIZE - toPixel(v) + PAD}
+              x1={PAD} y1={toY(v)} x2={SIZE - PAD} y2={toY(v)}
               stroke="#f3f4f6" strokeWidth="0.5"
             />
           </g>
@@ -270,7 +275,7 @@ export default function EngagementMap({
           stroke="#9ca3af" strokeWidth="1" strokeDasharray="4 4"
         />
         <line
-          x1={PAD} y1={SIZE - midPx + PAD} x2={SIZE - PAD} y2={SIZE - midPx + PAD}
+          x1={PAD} y1={toY(MID)} x2={SIZE - PAD} y2={toY(MID)}
           stroke="#9ca3af" strokeWidth="1" strokeDasharray="4 4"
         />
 
@@ -325,7 +330,7 @@ export default function EngagementMap({
             </text>
             <text
               x={PAD - 10}
-              y={SIZE - toPixel(v) + PAD + 3}
+              y={toY(v) + 3}
               textAnchor="middle"
               fontSize="9"
               fill="#9ca3af"
@@ -364,7 +369,7 @@ export default function EngagementMap({
           <g clipPath="url(#mapClip)">
             <text
               x={toPixel(teamAverage.contribution)}
-              y={SIZE - toPixel(teamAverage.direction) + PAD + 5}
+              y={toY(teamAverage.direction) + 5}
               textAnchor="middle"
               fontSize="20"
               fill="#eab308"
@@ -375,7 +380,7 @@ export default function EngagementMap({
             </text>
             <text
               x={toPixel(teamAverage.contribution)}
-              y={SIZE - toPixel(teamAverage.direction) + PAD + 18}
+              y={toY(teamAverage.direction) + 18}
               textAnchor="middle"
               fontSize="8"
               fill="#854d0e"
