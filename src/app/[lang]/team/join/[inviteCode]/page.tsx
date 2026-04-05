@@ -36,6 +36,7 @@ export default function TeamJoinPage() {
   const [expired, setExpired] = useState(false);
   const [alreadyDone, setAlreadyDone] = useState(false);
   const [existingMemberToken, setExistingMemberToken] = useState<string | null>(null);
+  const [joinEmail, setJoinEmail] = useState("");
 
   const loadTeam = useCallback(async () => {
     const data = await getTeamByInviteCode(inviteCode);
@@ -84,14 +85,14 @@ export default function TeamJoinPage() {
     setStarted(true);
   }
 
-  async function handleSurveySubmit(answers: Answers, email?: string): Promise<ResultsData | void> {
+  async function handleSurveySubmit(answers: Answers): Promise<ResultsData | void> {
     if (!team || !memberToken) return;
 
     const result = await submitSurvey({
       answers,
       teamId: team.id,
       memberToken,
-      memberEmail: email,
+      memberEmail: joinEmail || undefined,
     });
 
     if ("error" in result) {
@@ -136,7 +137,6 @@ export default function TeamJoinPage() {
     return (
       <SurveyFlow
         onSubmit={handleSurveySubmit}
-        showEmailField
         teamContext={
           (team.leader_name || team.notes)
             ? { leaderName: team.leader_name, notes: team.notes }
@@ -248,12 +248,28 @@ export default function TeamJoinPage() {
         )}
 
         {!expired && !alreadyDone && (
-          <button
-            onClick={handleStart}
-            className="rounded-full bg-blue-600 px-8 py-3 text-lg font-semibold text-white shadow-sm hover:bg-blue-500 transition-colors"
-          >
-            {t.joinButton}
-          </button>
+          <div className="flex flex-col items-center gap-4 w-full">
+            {/* Email input */}
+            <div className="w-full max-w-sm text-left">
+              <label className="block text-sm text-gray-600 dark:text-gray-400 mb-1">
+                {t.memberEmailLabel}
+              </label>
+              <input
+                type="email"
+                placeholder={t.memberEmailPlaceholder}
+                value={joinEmail}
+                onChange={(e) => setJoinEmail(e.target.value)}
+                className="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-3 text-gray-900 dark:text-white bg-white dark:bg-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+              />
+            </div>
+
+            <button
+              onClick={handleStart}
+              className="rounded-full bg-blue-600 px-8 py-3 text-lg font-semibold text-white shadow-sm hover:bg-blue-500 transition-colors"
+            >
+              {t.joinButton}
+            </button>
+          </div>
         )}
       </div>
     </div>
