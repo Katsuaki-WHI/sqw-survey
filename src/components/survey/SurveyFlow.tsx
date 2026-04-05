@@ -62,24 +62,21 @@ export default function SurveyFlow({ onSubmit, completedExtra, teamContext, surv
     const isLastScale = step === SCALE_QUESTIONS.length - 1;
 
     if (isLastScale && !hasQualitative) {
-      // Last scale question + no qualitative → auto-submit
-      setStep(step + 1); // move to submit step
-    } else if (step < TOTAL_STEPS - 1) {
+      // Last scale question + no qualitative → auto-submit with newAnswers
+      doSubmit(newAnswers);
+    } else {
       setStep(step + 1);
     }
   }
 
-  function handleFreetextChange(questionId: number, value: string) {
-    setAnswers((prev) => ({ ...prev, [questionId]: value }));
-  }
-
-  async function handleSubmit() {
+  async function doSubmit(overrideAnswers?: Answers) {
     setSubmitting(true);
+    const submitAnswers = overrideAnswers || answers;
     try {
       let results: ResultsData | null = null;
 
       if (onSubmit) {
-        const submitted = await onSubmit(answers, hasQualitative ? qualitativeAnswers : undefined);
+        const submitted = await onSubmit(submitAnswers, hasQualitative ? qualitativeAnswers : undefined);
         if (submitted) {
           results = submitted;
         }
@@ -88,14 +85,13 @@ export default function SurveyFlow({ onSubmit, completedExtra, teamContext, surv
       // Build scale answers for local enrichment
       if (results && !results.questionScores) {
         const scaleAnswers: Record<number, number> = {};
-        for (const [key, val] of Object.entries(answers)) {
+        for (const [key, val] of Object.entries(submitAnswers)) {
           if (typeof val === "number") {
             scaleAnswers[Number(key)] = val;
           }
         }
         results.questionScores = scaleAnswers;
 
-        // Management average
         if (results.managementAverage == null) {
           const mgmtIds = [27, 28, 29, 30, 31];
           const mgmtScores = mgmtIds.map((id) => scaleAnswers[id]).filter((v) => v != null);
@@ -105,7 +101,6 @@ export default function SurveyFlow({ onSubmit, completedExtra, teamContext, surv
               : null;
         }
 
-        // Engagement map
         if (!results.engagementPoints || results.engagementPoints.length === 0) {
           const direction = Math.max(1, scaleAnswers[2] ?? 1);
           const q13 = scaleAnswers[13] ?? 1;
@@ -116,10 +111,9 @@ export default function SurveyFlow({ onSubmit, completedExtra, teamContext, surv
         }
       }
 
-      // If onSubmit didn't return results, calculate locally
       if (!results) {
         const scaleAnswers: Record<number, number> = {};
-        for (const [key, val] of Object.entries(answers)) {
+        for (const [key, val] of Object.entries(submitAnswers)) {
           if (typeof val === "number") {
             scaleAnswers[Number(key)] = val;
           }
@@ -128,7 +122,6 @@ export default function SurveyFlow({ onSubmit, completedExtra, teamContext, surv
         const wagonSpeed = calcWagonSpeed(teamAverage);
         const categoryScores = calcCategoryScores(scaleAnswers);
 
-        // Management average
         const mgmtIds = [27, 28, 29, 30, 31];
         const mgmtScores = mgmtIds.map((id) => scaleAnswers[id]).filter((v) => v != null);
         const managementAverage =
@@ -136,13 +129,11 @@ export default function SurveyFlow({ onSubmit, completedExtra, teamContext, surv
             ? Math.round((mgmtScores.reduce((a, b) => a + b, 0) / mgmtScores.length) * 100) / 100
             : null;
 
-        // Build per-question scores for insight cards
         const questionScores: Record<number, number> = {};
         for (const [key, val] of Object.entries(scaleAnswers)) {
           questionScores[Number(key)] = val;
         }
 
-        // Build engagement map data (individual dot)
         const direction = Math.max(1, questionScores[2] ?? 1);
         const q13 = questionScores[13] ?? 1;
         const q19 = questionScores[19] ?? 1;
@@ -159,6 +150,9 @@ export default function SurveyFlow({ onSubmit, completedExtra, teamContext, surv
       setSubmitting(false);
     }
   }
+
+  // handleSubmit is an alias for doSubmit (for button onClick)
+  const handleSubmit = () => doSubmit();
 
   function handleBack() {
     if (step > 0) setStep(step - 1);
@@ -301,16 +295,10 @@ export default function SurveyFlow({ onSubmit, completedExtra, teamContext, surv
           </>
         )}
 
-        {/* Auto-submit when no qualitative step and scale questions are done */}
-        {!hasQualitative && step === SCALE_QUESTIONS.length && !completed && !submitting && (
+        {/* Loading state during auto-submit (no qualitative, last scale answered) */}
+        {!hasQualitative && step >= SCALE_QUESTIONS.length && !completed && submitting && (
           <div className="flex flex-col items-center">
-            <button
-              onClick={handleSubmit}
-              disabled={submitting}
-              className="rounded-full bg-blue-600 px-8 py-3 text-lg font-semibold text-white shadow-sm hover:bg-blue-500 transition-colors disabled:opacity-50"
-            >
-              {submitting ? "..." : t.submitButton}
-            </button>
+            <div className="text-gray-400">...</div>
           </div>
         )}
 
