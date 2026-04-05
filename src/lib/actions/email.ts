@@ -37,7 +37,7 @@ export async function sendTeamCreatedEmail({
 <h2>Team "${teamName}" has been created</h2>
 <p>Your team survey is ready. Share the invite link with your team members.</p>
 
-<h3>Admin URL (keep this safe!)</h3>
+<h3>Organizer URL (keep this safe!)</h3>
 <p><a href="${adminUrl}">${adminUrl}</a></p>
 <p style="color:#dc2626;font-size:13px;">* This link cannot be displayed again. Make sure to save it.</p>
 
@@ -53,7 +53,7 @@ export async function sendTeamCreatedEmail({
 <h2>チーム「${teamName}」を作成しました</h2>
 <p>チームサーベイの準備ができました。招待リンクをメンバーに共有してください。</p>
 
-<h3>管理者URL（大切に保管してください）</h3>
+<h3>設定者URL（大切に保管してください）</h3>
 <p><a href="${adminUrl}">${adminUrl}</a></p>
 <p style="color:#dc2626;font-size:13px;">※このリンクは再表示できません。必ず保管してください。</p>
 
