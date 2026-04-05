@@ -134,7 +134,7 @@ export default function AdminDashboardPage() {
   const [updatingDeadline, setUpdatingDeadline] = useState(false);
   const [updatingMode, setUpdatingMode] = useState(false);
   const [toast, setToast] = useState("");
-  const [members, setMembers] = useState<{ id: string; label: string; completed: boolean; joinedAt: string }[]>([]);
+  const [members, setMembers] = useState<{ id: string; label: string; completed: boolean; completedAt: string | null; respondentName: string | null; joinedAt: string }[]>([]);
   const [resettingId, setResettingId] = useState<string | null>(null);
   const [projectTeams, setProjectTeams] = useState<{ id: string; name: string; invite_code: string; admin_token: string; expected_members: number | null }[] | null>(null);
   const [projectName, setProjectName] = useState<string | null>(null);
@@ -455,14 +455,19 @@ export default function AdminDashboardPage() {
                   className="flex items-center justify-between rounded-lg border border-gray-100 dark:border-gray-800 px-4 py-3"
                 >
                   <div className="flex items-center gap-3">
-                    <span className="text-sm font-mono text-gray-500">{m.label}</span>
-                    <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${
-                      m.completed
-                        ? "bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300"
-                        : "bg-yellow-100 dark:bg-yellow-900 text-yellow-700 dark:text-yellow-300"
-                    }`}>
-                      {m.completed ? t.memberCompleted : t.memberPending}
+                    <span className="text-sm text-gray-900 dark:text-white">
+                      {m.respondentName || t.anonymous}
                     </span>
+                    {m.completed && m.completedAt && (
+                      <span className="text-xs text-gray-400">
+                        ({new Date(m.completedAt).toLocaleDateString(isEn ? "en-US" : "ja-JP", { month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit" })} {t.memberCompleted})
+                      </span>
+                    )}
+                    {!m.completed && (
+                      <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-yellow-100 dark:bg-yellow-900 text-yellow-700 dark:text-yellow-300">
+                        {t.memberPending}
+                      </span>
+                    )}
                   </div>
                   {m.completed && (
                     <button

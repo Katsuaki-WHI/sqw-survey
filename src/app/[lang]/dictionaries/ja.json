@@ -170,7 +170,12 @@
     "retakeButton": "回答をやり直す",
     "retakeNote": "※このサーベイの回答履歴のみ削除されます。他のWebサイトの情報には影響しません。",
     "deleteResponseButton": "回答を削除",
-    "deleteResponseConfirm": "この回答を削除しますか？削除すると再回答が必要になります"
+    "deleteResponseConfirm": "この回答を削除しますか？削除すると再回答が必要になります",
+    "respondentNameLabel": "お名前（任意）",
+    "respondentNamePlaceholder": "ニックネームでもOKです",
+    "respondentNameHint": "ニックネームや苗字など、何でも構いません。万が一回答内容をリセットする必要が生じた際に、管理者が削除する回答を特定するためだけに使用します。回答内容と紐付けて他の人に開示されることはありません。",
+    "anonymous": "匿名",
+    "backToHome": "ホームに戻る"
   },
   "metadata": {
     "title": "SQWサーベイ | スクエアホイールサーベイ",

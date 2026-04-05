@@ -110,14 +110,17 @@ export async function getTeamByInviteCode(inviteCode: string) {
   return data;
 }
 
-export async function joinTeam(teamId: string) {
+export async function joinTeam(teamId: string, respondentName?: string) {
   const memberToken = generateMemberToken();
   const supabase = await createSupabaseServer();
 
-  const { error } = await supabase.from("team_members").insert({
+  const insertData: Record<string, unknown> = {
     team_id: teamId,
     member_token: memberToken,
-  });
+  };
+  if (respondentName?.trim()) insertData.respondent_name = respondentName.trim();
+
+  const { error } = await supabase.from("team_members").insert(insertData);
 
   if (error) {
     console.error("Failed to join team:", error);
@@ -520,28 +523,30 @@ export async function getTeamMembers(adminToken: string) {
 
   const { data: members } = await supabase
     .from("team_members")
-    .select("id, member_token, session_id, created_at")
+    .select("id, member_token, session_id, created_at, respondent_name")
     .eq("team_id", team.id)
     .order("created_at", { ascending: true });
 
   if (!members) return [];
 
   const sessionIds = members.map((m) => m.session_id).filter(Boolean) as string[];
-  const completedSet = new Set<string>();
+  const completedMap = new Map<string, string>(); // session_id -> completed_at
   if (sessionIds.length > 0) {
     const { data: sessions } = await supabase
       .from("survey_sessions")
-      .select("id")
+      .select("id, completed_at")
       .in("id", sessionIds)
       .not("completed_at", "is", null);
-    for (const s of sessions || []) completedSet.add(s.id);
+    for (const s of sessions || []) completedMap.set(s.id, s.completed_at);
   }
 
   return members.map((m, i) => ({
     id: m.id,
     memberToken: m.member_token,
     sessionId: m.session_id,
-    completed: m.session_id ? completedSet.has(m.session_id) : false,
+    completed: m.session_id ? completedMap.has(m.session_id) : false,
+    completedAt: m.session_id ? completedMap.get(m.session_id) ?? null : null,
+    respondentName: m.respondent_name ?? null,
     label: `#${i + 1}`,
     joinedAt: m.created_at,
   }));

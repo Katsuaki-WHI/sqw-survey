@@ -37,6 +37,7 @@ export default function TeamJoinPage() {
   const [alreadyDone, setAlreadyDone] = useState(false);
   const [existingMemberToken, setExistingMemberToken] = useState<string | null>(null);
   const [joinEmail, setJoinEmail] = useState("");
+  const [joinName, setJoinName] = useState("");
 
   const loadTeam = useCallback(async () => {
     const data = await getTeamByInviteCode(inviteCode);
@@ -81,7 +82,7 @@ export default function TeamJoinPage() {
 
     let token = memberToken;
     if (!token) {
-      token = await joinTeam(team.id);
+      token = await joinTeam(team.id, joinName || undefined);
       if (!token) return;
       setMemberToken(token);
       document.cookie = `sqw_member_${team.id}=${token}; path=/; max-age=${60 * 60 * 24 * 30}; SameSite=Lax`;
@@ -242,6 +243,21 @@ export default function TeamJoinPage() {
 
         {!expired && !alreadyDone && (
           <div className="flex flex-col items-center gap-4 w-full">
+            {/* Name input */}
+            <div className="w-full max-w-sm text-left">
+              <label className="block text-sm text-gray-600 dark:text-gray-400 mb-1">
+                {t.respondentNameLabel}
+              </label>
+              <input
+                type="text"
+                placeholder={t.respondentNamePlaceholder}
+                value={joinName}
+                onChange={(e) => setJoinName(e.target.value)}
+                className="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-3 text-gray-900 dark:text-white bg-white dark:bg-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+              />
+              <p className="text-xs text-gray-400 mt-1 leading-relaxed">{t.respondentNameHint}</p>
+            </div>
+
             {/* Email input */}
             <div className="w-full max-w-sm text-left">
               <label className="block text-sm text-gray-600 dark:text-gray-400 mb-1">

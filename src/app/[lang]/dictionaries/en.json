@@ -170,7 +170,12 @@
     "retakeButton": "Retake the survey",
     "retakeNote": "* Only your response data for this survey will be cleared. Other website data is not affected.",
     "deleteResponseButton": "Delete response",
-    "deleteResponseConfirm": "Delete this response? The member will need to retake the survey."
+    "deleteResponseConfirm": "Delete this response? The member will need to retake the survey.",
+    "respondentNameLabel": "Your name (optional)",
+    "respondentNamePlaceholder": "Nickname is fine",
+    "respondentNameHint": "Any name or nickname is fine. This is used only to help the facilitator identify which response to delete if needed. It will never be shared with others or linked to your answers.",
+    "anonymous": "Anonymous",
+    "backToHome": "Back to Home"
   },
   "metadata": {
     "title": "SQW Survey | Square Wheel Survey",
