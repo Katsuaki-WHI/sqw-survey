@@ -39,8 +39,8 @@ export default function SurveyFlow({ onSubmit, completedExtra, teamContext, surv
   const configQuestions = getQuestionsForConfig(config);
   const SCALE_QUESTIONS = configQuestions.filter((q) => q.type === "scale");
   const hasQualitative = (qualitativeQuestions && qualitativeQuestions.length > 0);
-  // Steps: scale questions + (qualitative step if any) + 1 (freetext/submit step is removed — qualitative replaces it)
-  const TOTAL_STEPS = SCALE_QUESTIONS.length + (hasQualitative ? 1 : 0);
+  // Steps: scale questions + 1 (qualitative step or submit step)
+  const TOTAL_STEPS = SCALE_QUESTIONS.length + 1;
 
   const [step, setStep] = useState(0);
   const [answers, setAnswers] = useState<Answers>({});
@@ -56,8 +56,15 @@ export default function SurveyFlow({ onSubmit, completedExtra, teamContext, surv
 
   function handleScaleAnswer(value: number) {
     if (!currentQuestion) return;
-    setAnswers((prev) => ({ ...prev, [currentQuestion.id]: value }));
-    if (step < TOTAL_STEPS - 1) {
+    const newAnswers = { ...answers, [currentQuestion.id]: value };
+    setAnswers(newAnswers);
+
+    const isLastScale = step === SCALE_QUESTIONS.length - 1;
+
+    if (isLastScale && !hasQualitative) {
+      // Last scale question + no qualitative → auto-submit
+      setStep(step + 1); // move to submit step
+    } else if (step < TOTAL_STEPS - 1) {
       setStep(step + 1);
     }
   }
