@@ -175,9 +175,9 @@ export default function TeamResultsPage() {
       <div className="flex flex-col items-center gap-4 mt-8">
         <Link
           href={`/${locale}/team/join/${inviteCode}`}
-          className="rounded-full bg-gray-800 px-6 py-3 text-white hover:bg-gray-700 transition-colors"
+          className="rounded-full bg-blue-600 px-6 py-3 text-white hover:bg-blue-500 transition-colors"
         >
-          {t.backToTop}
+          {locale === "en" ? "Back to My Results" : "自分の結果に戻る"}
         </Link>
       </div>
     </div>

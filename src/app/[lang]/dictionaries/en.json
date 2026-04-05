@@ -7,7 +7,8 @@
     "title": "SQW Survey",
     "description": "Visualize your team's health with the Square Wheel Survey. It takes about 5 minutes.",
     "startButton": "Start Survey",
-    "createTeamButton": "Create Team Survey",
+    "createTeamButton": "Create a Team (For Facilitators)",
+    "respondentNotice": "If you are a respondent, please access the survey via the invitation URL shared by your facilitator.",
     "footer": "Work Happiness"
   },
   "survey": {
@@ -175,7 +176,11 @@
     "respondentNamePlaceholder": "Nickname is fine",
     "respondentNameHint": "Any name or nickname is fine. This is used only to help the facilitator identify which response to delete if needed. It will never be shared with others or linked to your answers.",
     "anonymous": "Anonymous",
-    "backToHome": "Back to Home"
+    "backToHome": "Back to Home",
+    "backToMyResults": "Back to My Results",
+    "bookmarkNotice": "You can revisit your results anytime via the invitation URL. We recommend bookmarking it.",
+    "personalUrlTitle": "Your personal results URL (recommended to bookmark)",
+    "personalUrlDesc": "Save this URL to access your results from any browser or device, even if you used private browsing mode."
   },
   "metadata": {
     "title": "SQW Survey | Square Wheel Survey",

@@ -7,6 +7,7 @@ import { getMemberResults } from "@/lib/actions/survey";
 import { getTeamByMemberToken } from "@/lib/actions/team";
 import ResultsView, { type ResultsData } from "@/components/survey/ResultsView";
 import LanguageToggle from "@/components/LanguageToggle";
+import CopyLinkButton from "@/components/ui/CopyLinkButton";
 import Link from "next/link";
 
 export default function MemberResultsPage() {
@@ -23,7 +24,6 @@ export default function MemberResultsPage() {
   const [unauthorized, setUnauthorized] = useState(false);
 
   const load = useCallback(async () => {
-    // Verify ownership: the member_token cookie must match the URL token
     const cookieMatch = document.cookie
       .split("; ")
       .some((c) => c.includes(`=${memberToken}`));
@@ -40,7 +40,6 @@ export default function MemberResultsPage() {
     ]);
 
     if (resultData) {
-      console.log(`[MemberResultsPage] engagementPoints:`, JSON.stringify(resultData.engagementPoints));
       setResults({
         teamAverage: Number(resultData.team_average) || 0,
         wagonSpeed: Number(resultData.wagon_speed) || 0,
@@ -91,6 +90,9 @@ export default function MemberResultsPage() {
     );
   }
 
+  const origin = typeof window !== "undefined" ? window.location.origin : "";
+  const personalUrl = `${origin}/${locale}/team/results/${memberToken}`;
+
   return (
     <div className="flex flex-1 flex-col items-center px-6 py-12 bg-gradient-to-b from-green-50 to-white dark:from-gray-900 dark:to-black">
       <LanguageToggle />
@@ -106,8 +108,22 @@ export default function MemberResultsPage() {
         mode="individual"
       />
 
-      <div className="flex flex-col items-center gap-4 mt-8">
-        {/* Link to team results if available */}
+      <div className="flex flex-col items-center gap-4 mt-8 w-full max-w-lg">
+        {/* Personal results URL (⑤) */}
+        <div className="w-full rounded-lg border border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-950 p-4">
+          <p className="text-sm font-medium text-blue-800 dark:text-blue-300 mb-1">{tt.personalUrlTitle}</p>
+          <p className="text-xs text-blue-600 dark:text-blue-400 mb-3">{tt.personalUrlDesc}</p>
+          <div className="flex gap-2 items-center">
+            <input
+              readOnly
+              value={personalUrl}
+              className="flex-1 rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-xs text-gray-900 dark:text-white bg-white dark:bg-gray-800"
+            />
+            <CopyLinkButton text={personalUrl} />
+          </div>
+        </div>
+
+        {/* Link to team results (①) */}
         {teamInfo?.resultsVisible && teamInfo.inviteCode && (
           <Link
             href={`/${locale}/team/join/${teamInfo.inviteCode}/results`}
@@ -116,19 +132,17 @@ export default function MemberResultsPage() {
             {t.viewTeamResults}
           </Link>
         )}
-        <Link
-          href={`/${locale}`}
-          className="rounded-full bg-gray-800 px-6 py-3 text-white hover:bg-gray-700 transition-colors"
-        >
-          {dict.team.backToHome}
-        </Link>
+
+        {/* Bookmark notice (②) */}
+        <p className="text-sm text-gray-500 dark:text-gray-400 text-center">
+          {tt.bookmarkNotice}
+        </p>
 
         {/* Retake button */}
         {teamInfo?.inviteCode && teamInfo.teamId && (
-          <div className="flex flex-col items-center gap-2 mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+          <div className="flex flex-col items-center gap-2 mt-2 pt-4 border-t border-gray-200 dark:border-gray-700 w-full">
             <button
               onClick={() => {
-                // Clear survey cookies for this team
                 document.cookie = `sqw_member_${teamInfo.teamId}=; path=/; max-age=0`;
                 document.cookie = `sqw_completed_${teamInfo.teamId}=; path=/; max-age=0`;
                 router.replace(`/${locale}/team/join/${teamInfo.inviteCode}`);

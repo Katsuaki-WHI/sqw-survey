@@ -7,7 +7,8 @@
     "title": "SQWサーベイ",
     "description": "スクエアホイールサーベイで、あなたのチームの状態を可視化しましょう。約5分で完了します。",
     "startButton": "サーベイを始める",
-    "createTeamButton": "チームサーベイを作成",
+    "createTeamButton": "チームを作成する（ファシリテーター向け）",
+    "respondentNotice": "回答者の方は、ファシリテーターから共有された招待URLからアクセスしてください。",
     "footer": "Work Happiness"
   },
   "survey": {
@@ -175,7 +176,11 @@
     "respondentNamePlaceholder": "ニックネームでもOKです",
     "respondentNameHint": "ニックネームや苗字など、何でも構いません。万が一回答内容をリセットする必要が生じた際に、管理者が削除する回答を特定するためだけに使用します。回答内容と紐付けて他の人に開示されることはありません。",
     "anonymous": "匿名",
-    "backToHome": "ホームに戻る"
+    "backToHome": "ホームに戻る",
+    "backToMyResults": "自分の結果に戻る",
+    "bookmarkNotice": "この結果は招待URLからいつでも確認できます。URLをブックマークしておくことをおすすめします。",
+    "personalUrlTitle": "あなたの個人結果URL（ブックマーク推奨）",
+    "personalUrlDesc": "このURLを保存しておくと、どのブラウザからでも結果を確認できます。プライベートモードで回答した場合も、このURLから結果に戻れます。"
   },
   "metadata": {
     "title": "SQWサーベイ | スクエアホイールサーベイ",
