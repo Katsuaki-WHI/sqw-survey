@@ -25,7 +25,8 @@ create table if not exists teams (
   company_size text,                         -- 企業規模
   expected_members integer,                  -- 回答予定人数
   survey_purpose text,                       -- サーベイの目的（任意）
-  admin_email text,                          -- 管理者メールアドレス
+  admin_email text,                          -- 管理者（ファシリテーター）メールアドレス
+  facilitator_email text,                    -- ファシリテーターメールアドレス（新）
   created_at timestamptz default now() not null
 );
 
@@ -50,7 +51,8 @@ create table if not exists survey_sessions (
   team_average numeric(4,2),
   wagon_speed numeric(5,1),
   category_scores jsonb,
-  management_average numeric(4,2)
+  management_average numeric(4,2),
+  member_email text                    -- メンバーのメールアドレス（結果通知用、任意）
 );
 
 -- 個別回答

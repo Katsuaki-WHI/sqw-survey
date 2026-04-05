@@ -137,10 +137,10 @@
     "teamDescription": "チームについて",
     "leaderInfo": "上司・リーダー",
     "surveyNotes": "回答時の注意事項",
-    "adminEmailLabel": "管理者メールアドレス",
+    "adminEmailLabel": "あなたのメールアドレス（管理者URLを送信します）",
     "adminEmailPlaceholder": "例：admin@example.com",
-    "adminEmailHint": "管理者URLをこのメールアドレスに送信します",
-    "memberEmailLabel": "チーム結果が公開されたら通知を受け取る（任意）",
+    "adminEmailHint": "",
+    "memberEmailLabel": "メールアドレス（任意）チーム結果公開時に通知します",
     "memberEmailPlaceholder": "例：your@email.com"
   },
   "metadata": {

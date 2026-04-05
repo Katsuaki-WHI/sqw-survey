@@ -49,6 +49,7 @@ export async function createTeam(formData: FormData) {
     expected_members: expectedMembers,
     survey_purpose: surveyPurpose || null,
     admin_email: adminEmail?.trim() || null,
+    facilitator_email: adminEmail?.trim() || null,
   });
 
   if (error) {
@@ -160,13 +161,14 @@ export async function toggleResultsVisibility(adminToken: string, locale = "ja")
 
   // Send notification emails when results are being published
   if (newVisible) {
-    const { data: members } = await supabase
-      .from("team_members")
-      .select("email")
+    const { data: sessions } = await supabase
+      .from("survey_sessions")
+      .select("member_email")
       .eq("team_id", team.id)
-      .not("email", "is", null);
+      .not("completed_at", "is", null)
+      .not("member_email", "is", null);
 
-    const emails = (members || []).map((m) => m.email).filter(Boolean) as string[];
+    const emails = (sessions || []).map((s) => s.member_email).filter(Boolean) as string[];
     if (emails.length > 0) {
       const { sendResultsPublishedEmail } = await import("./email");
       const origin = process.env.NEXT_PUBLIC_SITE_URL || "https://survey.workhappiness.co.jp";

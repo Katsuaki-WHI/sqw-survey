@@ -90,7 +90,6 @@ export default function TeamCreatePage() {
                 {t.adminEmailLabel} <span className="text-red-500">*</span>
               </label>
               <input name="admin_email" type="email" required placeholder={t.adminEmailPlaceholder} className={INPUT_CLASS} />
-              <p className="text-xs text-gray-500 mt-1">{t.adminEmailHint}</p>
             </div>
 
             {/* Team Name */}

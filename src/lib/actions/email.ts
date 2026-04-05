@@ -3,7 +3,7 @@
 import { Resend } from "resend";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
-const FROM = "SQW Survey <noreply@survey.workhappiness.co.jp>";
+const FROM = "SQW Survey <onboarding@resend.dev>";
 
 interface TeamCreatedEmailParams {
   to: string;

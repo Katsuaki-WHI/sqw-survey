@@ -137,10 +137,10 @@
     "teamDescription": "About the Team",
     "leaderInfo": "Leader / Manager",
     "surveyNotes": "Notes for Respondents",
-    "adminEmailLabel": "Admin Email Address",
+    "adminEmailLabel": "Your email address (admin URL will be sent here)",
     "adminEmailPlaceholder": "e.g., admin@example.com",
-    "adminEmailHint": "Admin URL will be sent to this email address",
-    "memberEmailLabel": "Get notified when team results are available (optional)",
+    "adminEmailHint": "",
+    "memberEmailLabel": "Email (optional) - Get notified when team results are available",
     "memberEmailPlaceholder": "e.g., your@email.com"
   },
   "metadata": {

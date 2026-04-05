@@ -43,6 +43,7 @@ export async function submitSurvey({ answers, teamId, memberToken, memberEmail }
       wagon_speed: wagonSpeed,
       category_scores: categoryScores,
       management_average: managementAverage,
+      member_email: memberEmail?.trim() || null,
     })
     .select("id")
     .single();
@@ -71,13 +72,9 @@ export async function submitSurvey({ answers, teamId, memberToken, memberEmail }
 
   // Link session to team member if applicable
   if (teamId && memberToken) {
-    const updates: Record<string, unknown> = { session_id: session.id };
-    if (memberEmail?.trim()) {
-      updates.email = memberEmail.trim();
-    }
     await supabase
       .from("team_members")
-      .update(updates)
+      .update({ session_id: session.id })
       .eq("member_token", memberToken)
       .eq("team_id", teamId);
   }
