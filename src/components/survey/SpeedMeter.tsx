@@ -39,16 +39,14 @@ function arcPath(startAngle: number, endAngle: number, r: number): string {
   return `M ${start.x} ${start.y} A ${r} ${r} 0 ${largeArc} 0 ${end.x} ${end.y}`;
 }
 
-/** SVG fallback gauge (arcs + ticks) — shown when background image is not available */
-function SvgGauge({ speed }: { speed: number }) {
+/** SVG fallback gauge arcs — shown when background image is not available */
+function SvgGaugeArcs({ speed }: { speed: number }) {
   const segments = [
     { from: 0, to: 50, color: "#fecaca", active: "#dc2626" },
     { from: 50, to: 100, color: "#fed7aa", active: "#ea580c" },
     { from: 100, to: 150, color: "#fef08a", active: "#ca8a04" },
     { from: 150, to: 200, color: "#bbf7d0", active: "#16a34a" },
   ];
-  const ticks = [0, 50, 100, 150, 200];
-  const minorTicks = [25, 75, 125, 175];
 
   return (
     <>
@@ -79,28 +77,48 @@ function SvgGauge({ speed }: { speed: number }) {
           opacity="0.8"
         />
       )}
+    </>
+  );
+}
 
-      {ticks.map((v) => {
+/** Tick marks and number labels — always rendered (on top of image or SVG arcs) */
+function GaugeTicks() {
+  // Major ticks every 20km with labels at 0,50,100,150,200
+  const majorTicks = Array.from({ length: 11 }, (_, i) => i * 20); // 0,20,40,...,200
+  const labelTicks = [0, 50, 100, 150, 200];
+  // Minor ticks every 10km (excluding major tick positions)
+  const minorTicks = Array.from({ length: 21 }, (_, i) => i * 10).filter((v) => v % 20 !== 0); // 10,30,50(skip),...
+
+  return (
+    <>
+      {/* Major ticks (20km intervals) */}
+      {majorTicks.map((v) => {
         const angle = speedToAngle(v);
-        const outer = polarToXY(angle, RADIUS + STROKE / 2 + 2);
-        const inner = polarToXY(angle, RADIUS + STROKE / 2 - 5);
-        const label = polarToXY(angle, RADIUS + STROKE / 2 + 15);
+        const outer = polarToXY(angle, RADIUS + STROKE / 2 + 3);
+        const inner = polarToXY(angle, RADIUS + STROKE / 2 - 6);
         return (
-          <g key={v}>
-            <line x1={inner.x} y1={inner.y} x2={outer.x} y2={outer.y} stroke="#9ca3af" strokeWidth="1.5" />
-            <text x={label.x} y={label.y} textAnchor="middle" dominantBaseline="middle" fontSize="9" fill="#9ca3af">
-              {v}
-            </text>
-          </g>
+          <line key={`M${v}`} x1={inner.x} y1={inner.y} x2={outer.x} y2={outer.y} stroke="#6b7280" strokeWidth="1.5" />
         );
       })}
 
+      {/* Minor ticks (10km intervals) */}
       {minorTicks.map((v) => {
         const angle = speedToAngle(v);
         const outer = polarToXY(angle, RADIUS + STROKE / 2 + 1);
         const inner = polarToXY(angle, RADIUS + STROKE / 2 - 3);
         return (
-          <line key={v} x1={inner.x} y1={inner.y} x2={outer.x} y2={outer.y} stroke="#d1d5db" strokeWidth="1" />
+          <line key={`m${v}`} x1={inner.x} y1={inner.y} x2={outer.x} y2={outer.y} stroke="#9ca3af" strokeWidth="1" />
+        );
+      })}
+
+      {/* Number labels */}
+      {labelTicks.map((v) => {
+        const angle = speedToAngle(v);
+        const pos = polarToXY(angle, RADIUS + STROKE / 2 + 16);
+        return (
+          <text key={`L${v}`} x={pos.x} y={pos.y} textAnchor="middle" dominantBaseline="middle" fontSize="10" fill="#6b7280">
+            {v}
+          </text>
         );
       })}
     </>
@@ -148,8 +166,11 @@ export default function SpeedMeter({ speed }: SpeedMeterProps) {
           />
         )}
 
-        {/* SVG gauge fallback — shown when image is not loaded */}
-        {!bgLoaded && <SvgGauge speed={speed} />}
+        {/* SVG gauge arcs fallback — shown when image is not loaded */}
+        {!bgLoaded && <SvgGaugeArcs speed={speed} />}
+
+        {/* Tick marks and number labels — always visible */}
+        <GaugeTicks />
 
         {/* Needle (always rendered on top) */}
         <polygon
