@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useLocale } from "@/lib/i18n/context";
 import { createProject } from "@/lib/actions/project";
 import LanguageToggle from "@/components/LanguageToggle";
@@ -9,6 +9,10 @@ import Link from "next/link";
 
 const INPUT_CLASS =
   "w-full rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-3 text-gray-900 dark:text-white bg-white dark:bg-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-transparent";
+const INPUT_ERROR_CLASS =
+  "w-full rounded-lg border-2 border-red-500 px-4 py-3 text-gray-900 dark:text-white bg-white dark:bg-gray-900 focus:ring-2 focus:ring-red-500 focus:border-transparent";
+
+type FieldErrors = Record<string, string>;
 
 interface TeamRow {
   name: string;
@@ -28,7 +32,9 @@ export default function TeamCreatePage() {
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
   const [created, setCreated] = useState<CreatedResult | null>(null);
+  const formRef = useRef<HTMLDivElement>(null);
 
   // STEP 1 state
   const [projectName, setProjectName] = useState("");
@@ -72,8 +78,19 @@ export default function TeamCreatePage() {
   ];
 
   function handleNext1() {
-    if (!email || !industry || !companySize || !deadline) {
-      setError(t.deadlineRequired);
+    const errs: FieldErrors = {};
+    if (!email) errs.email = t.errorEmail;
+    if (!industry) errs.industry = t.errorIndustry;
+    if (!companySize) errs.companySize = t.errorCompanySize;
+    if (!deadline) errs.deadline = t.errorDeadline;
+    if (!releaseMode) errs.releaseMode = t.errorReleaseMode;
+
+    setFieldErrors(errs);
+    if (Object.keys(errs).length > 0) {
+      // Scroll to first error
+      const firstKey = Object.keys(errs)[0];
+      const el = formRef.current?.querySelector(`[data-field="${firstKey}"]`);
+      el?.scrollIntoView({ behavior: "smooth", block: "center" });
       return;
     }
     setError("");
@@ -226,18 +243,19 @@ export default function TeamCreatePage() {
         {/* STEP 1            */}
         {/* ================ */}
         {step === 1 && (
-          <div className="flex flex-col gap-5">
+          <div ref={formRef} className="flex flex-col gap-5">
             <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-200">{t.step1Title}</h2>
 
             {/* Email */}
-            <div>
+            <div data-field="email">
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 {t.adminEmailLabel} <span className="text-red-500">*</span>
               </label>
-              <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder={t.adminEmailPlaceholder} className={INPUT_CLASS} />
+              <input type="email" value={email} onChange={(e) => { setEmail(e.target.value); setFieldErrors((p) => ({ ...p, email: "" })); }} placeholder={t.adminEmailPlaceholder} className={fieldErrors.email ? INPUT_ERROR_CLASS : INPUT_CLASS} />
+              {fieldErrors.email && <p className="text-xs text-red-500 mt-1">{fieldErrors.email}</p>}
             </div>
 
-            {/* Project Name */}
+            {/* Survey Name */}
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{t.projectNameLabel}</label>
               <input type="text" value={projectName} onChange={(e) => setProjectName(e.target.value)} placeholder={t.projectNamePlaceholder} className={INPUT_CLASS} />
@@ -250,44 +268,47 @@ export default function TeamCreatePage() {
             </div>
 
             {/* Industry */}
-            <div>
+            <div data-field="industry">
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 {t.industryLabel} <span className="text-red-500">*</span>
               </label>
-              <select value={industry} onChange={(e) => setIndustry(e.target.value)} className={INPUT_CLASS}>
+              <select value={industry} onChange={(e) => { setIndustry(e.target.value); setFieldErrors((p) => ({ ...p, industry: "" })); }} className={fieldErrors.industry ? INPUT_ERROR_CLASS : INPUT_CLASS}>
                 <option value="">{t.industryPlaceholder}</option>
                 {industries.map((i) => <option key={i.value} value={i.value}>{i.label}</option>)}
               </select>
+              {fieldErrors.industry && <p className="text-xs text-red-500 mt-1">{fieldErrors.industry}</p>}
             </div>
 
             {/* Company Size */}
-            <div>
+            <div data-field="companySize">
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 {t.companySizeLabel} <span className="text-red-500">*</span>
               </label>
-              <select value={companySize} onChange={(e) => setCompanySize(e.target.value)} className={INPUT_CLASS}>
+              <select value={companySize} onChange={(e) => { setCompanySize(e.target.value); setFieldErrors((p) => ({ ...p, companySize: "" })); }} className={fieldErrors.companySize ? INPUT_ERROR_CLASS : INPUT_CLASS}>
                 <option value="">{t.companySizePlaceholder}</option>
                 {companySizes.map((s) => <option key={s.value} value={s.value}>{s.label}</option>)}
               </select>
+              {fieldErrors.companySize && <p className="text-xs text-red-500 mt-1">{fieldErrors.companySize}</p>}
             </div>
 
             {/* Deadline */}
-            <div>
+            <div data-field="deadline">
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 {t.deadlineLabel.replace("（任意）", "").replace("(optional)", "")} <span className="text-red-500">*</span>
               </label>
-              <input type="datetime-local" value={deadline} onChange={(e) => setDeadline(e.target.value)} className={INPUT_CLASS} />
+              <input type="datetime-local" value={deadline} onChange={(e) => { setDeadline(e.target.value); setFieldErrors((p) => ({ ...p, deadline: "" })); }} className={fieldErrors.deadline ? INPUT_ERROR_CLASS : INPUT_CLASS} />
+              {fieldErrors.deadline && <p className="text-xs text-red-500 mt-1">{fieldErrors.deadline}</p>}
             </div>
 
             {/* Release Mode */}
-            <div>
+            <div data-field="releaseMode">
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 {t.releaseModeLabel} <span className="text-red-500">*</span>
               </label>
               <div className="flex flex-col gap-2">
                 {(["manual", "all_completed", "on_deadline"] as const).map((mode) => (
-                  <label key={mode} className="flex items-start gap-3 rounded-lg border border-gray-200 dark:border-gray-700 px-4 py-3 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
-                    <input type="radio" checked={releaseMode === mode} onChange={() => setReleaseMode(mode)} className="text-blue-600 mt-0.5" />
+                  <label key={mode} className={`flex items-start gap-3 rounded-lg border px-4 py-3 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors ${fieldErrors.releaseMode ? "border-red-500" : "border-gray-200 dark:border-gray-700"}`}>
+                    <input type="radio" checked={releaseMode === mode} onChange={() => { setReleaseMode(mode); setFieldErrors((p) => ({ ...p, releaseMode: "" })); }} className="text-blue-600 mt-0.5" />
                     <div>
                       <span className="text-sm text-gray-900 dark:text-white font-medium">
                         {mode === "all_completed" ? t.releaseModeAllCompleted : mode === "on_deadline" ? t.releaseModeOnDeadline : t.releaseModeManual}
@@ -299,6 +320,7 @@ export default function TeamCreatePage() {
                   </label>
                 ))}
               </div>
+              {fieldErrors.releaseMode && <p className="text-xs text-red-500 mt-1">{fieldErrors.releaseMode}</p>}
             </div>
 
             {/* Invite Message */}
@@ -315,8 +337,6 @@ export default function TeamCreatePage() {
                 {surveyPurposes.map((p) => <option key={p.value} value={p.value}>{p.label}</option>)}
               </select>
             </div>
-
-            {error && <p className="text-sm text-red-600">{error}</p>}
 
             <button onClick={handleNext1} className="rounded-full bg-blue-600 px-8 py-3 text-lg font-semibold text-white shadow-sm hover:bg-blue-500 transition-colors">
               {t.nextStep}
