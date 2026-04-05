@@ -41,6 +41,8 @@ export default function TeamJoinPage() {
   const [existingMemberToken, setExistingMemberToken] = useState<string | null>(null);
   const [joinEmail, setJoinEmail] = useState("");
   const [joinName, setJoinName] = useState("");
+  const [emailError, setEmailError] = useState(false);
+  const [emailBlurred, setEmailBlurred] = useState(false);
 
   const loadTeam = useCallback(async () => {
     const data = await getTeamByInviteCode(inviteCode);
@@ -272,23 +274,45 @@ export default function TeamJoinPage() {
               <p className="text-xs text-gray-400 mt-1 leading-relaxed">{t.respondentNameHint}</p>
             </div>
 
-            {/* Email input */}
+            {/* Email input with validation */}
             <div className="w-full max-w-sm text-left">
               <label className="block text-sm text-gray-600 dark:text-gray-400 mb-1">
                 {t.memberEmailLabel}
               </label>
-              <input
-                type="email"
-                placeholder={t.memberEmailPlaceholder}
-                value={joinEmail}
-                onChange={(e) => setJoinEmail(e.target.value)}
-                className="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-3 text-gray-900 dark:text-white bg-white dark:bg-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-              />
+              <div className="relative">
+                <input
+                  type="email"
+                  placeholder={t.memberEmailPlaceholder}
+                  value={joinEmail}
+                  onChange={(e) => {
+                    setJoinEmail(e.target.value);
+                    if (emailBlurred) setEmailError(e.target.value.trim() !== "" && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e.target.value.trim()));
+                  }}
+                  onBlur={() => {
+                    setEmailBlurred(true);
+                    setEmailError(joinEmail.trim() !== "" && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(joinEmail.trim()));
+                  }}
+                  className={`w-full rounded-lg px-4 py-3 pr-10 text-sm text-gray-900 dark:text-white bg-white dark:bg-gray-900 focus:ring-2 focus:border-transparent ${
+                    emailError
+                      ? "border-2 border-red-500 focus:ring-red-500"
+                      : joinEmail.trim() && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(joinEmail.trim())
+                        ? "border border-green-500 focus:ring-green-500"
+                        : "border border-gray-300 dark:border-gray-600 focus:ring-blue-500"
+                  }`}
+                />
+                {joinEmail.trim() && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(joinEmail.trim()) && (
+                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-green-500 text-lg">✓</span>
+                )}
+              </div>
+              {emailError && (
+                <p className="text-xs text-red-500 mt-1">{t.emailFormatError}</p>
+              )}
             </div>
 
             <button
               onClick={handleStart}
-              className="rounded-full bg-blue-600 px-8 py-3 text-lg font-semibold text-white shadow-sm hover:bg-blue-500 transition-colors"
+              disabled={joinEmail.trim() !== "" && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(joinEmail.trim())}
+              className="rounded-full bg-blue-600 px-8 py-3 text-lg font-semibold text-white shadow-sm hover:bg-blue-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {t.joinButton}
             </button>
