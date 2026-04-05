@@ -141,7 +141,16 @@
     "adminEmailPlaceholder": "例：admin@example.com",
     "adminEmailHint": "",
     "memberEmailLabel": "メールアドレス（任意）チーム結果公開時に通知します",
-    "memberEmailPlaceholder": "例：your@email.com"
+    "memberEmailPlaceholder": "例：your@email.com",
+    "memberList": "回答者一覧",
+    "memberJoined": "参加済み",
+    "memberCompleted": "回答済み",
+    "memberPending": "未回答",
+    "resetButton": "リセット",
+    "resetConfirm": "この回答をリセットしますか？この操作は取り消せません。",
+    "resetNote": "リセット後はメンバーに招待URLを再送して、新しいブラウザまたはシークレットウィンドウで回答するよう伝えてください。",
+    "resetSuccess": "回答をリセットしました",
+    "resetting": "リセット中..."
   },
   "metadata": {
     "title": "SQWサーベイ | スクエアホイールサーベイ",

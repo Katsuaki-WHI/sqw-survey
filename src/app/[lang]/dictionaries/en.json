@@ -141,7 +141,16 @@
     "adminEmailPlaceholder": "e.g., admin@example.com",
     "adminEmailHint": "",
     "memberEmailLabel": "Email (optional) - Get notified when team results are available",
-    "memberEmailPlaceholder": "e.g., your@email.com"
+    "memberEmailPlaceholder": "e.g., your@email.com",
+    "memberList": "Respondents",
+    "memberJoined": "Joined",
+    "memberCompleted": "Completed",
+    "memberPending": "Pending",
+    "resetButton": "Reset",
+    "resetConfirm": "Reset this response? This action cannot be undone.",
+    "resetNote": "After reset, ask the member to reopen the invite URL in a new browser or incognito window.",
+    "resetSuccess": "Response has been reset",
+    "resetting": "Resetting..."
   },
   "metadata": {
     "title": "SQW Survey | Square Wheel Survey",

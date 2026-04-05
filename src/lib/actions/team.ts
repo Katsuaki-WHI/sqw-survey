@@ -509,3 +509,72 @@ export async function getTeamResultsByInviteCode(inviteCode: string) {
     responseCount: responseCount ?? 0,
   };
 }
+
+export async function getTeamMembers(adminToken: string) {
+  const supabase = await createSupabaseServer();
+
+  const { data: team } = await supabase
+    .from("teams")
+    .select("id")
+    .eq("admin_token", adminToken)
+    .single();
+
+  if (!team) return null;
+
+  const { data: members } = await supabase
+    .from("team_members")
+    .select("id, member_token, session_id, created_at")
+    .eq("team_id", team.id)
+    .order("created_at", { ascending: true });
+
+  if (!members) return [];
+
+  const sessionIds = members.map((m) => m.session_id).filter(Boolean) as string[];
+  const completedSet = new Set<string>();
+  if (sessionIds.length > 0) {
+    const { data: sessions } = await supabase
+      .from("survey_sessions")
+      .select("id")
+      .in("id", sessionIds)
+      .not("completed_at", "is", null);
+    for (const s of sessions || []) completedSet.add(s.id);
+  }
+
+  return members.map((m, i) => ({
+    id: m.id,
+    memberToken: m.member_token,
+    sessionId: m.session_id,
+    completed: m.session_id ? completedSet.has(m.session_id) : false,
+    label: `#${i + 1}`,
+    joinedAt: m.created_at,
+  }));
+}
+
+export async function resetMemberResponse(adminToken: string, memberId: string) {
+  const supabase = await createSupabaseServer();
+
+  const { data: team } = await supabase
+    .from("teams")
+    .select("id")
+    .eq("admin_token", adminToken)
+    .single();
+
+  if (!team) return { error: "Team not found" };
+
+  const { data: member } = await supabase
+    .from("team_members")
+    .select("id, session_id, team_id")
+    .eq("id", memberId)
+    .single();
+
+  if (!member || member.team_id !== team.id) return { error: "Member not found" };
+
+  if (member.session_id) {
+    await supabase.from("survey_sessions").delete().eq("id", member.session_id);
+  }
+
+  await supabase.from("team_members").update({ session_id: null }).eq("id", member.id);
+
+  return { success: true };
+}
+

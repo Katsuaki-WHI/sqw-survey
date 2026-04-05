@@ -10,6 +10,8 @@ import {
   getTeamResults,
   updateDeadline,
   updateReleaseMode,
+  getTeamMembers,
+  resetMemberResponse,
   type ReleaseMode,
 } from "@/lib/actions/team";
 import { CATEGORY_CONFIG, type QuestionCategory } from "@/lib/survey/questions";
@@ -131,6 +133,8 @@ export default function AdminDashboardPage() {
   const [updatingDeadline, setUpdatingDeadline] = useState(false);
   const [updatingMode, setUpdatingMode] = useState(false);
   const [toast, setToast] = useState("");
+  const [members, setMembers] = useState<{ id: string; label: string; completed: boolean; joinedAt: string }[]>([]);
+  const [resettingId, setResettingId] = useState<string | null>(null);
 
   const showToast = (msg: string) => {
     setToast(msg);
@@ -148,12 +152,14 @@ export default function AdminDashboardPage() {
       setDeadlineInput(new Date(teamData.deadline).toISOString().slice(0, 16));
     }
 
-    const [statsData, resultsData] = await Promise.all([
+    const [statsData, resultsData, membersData] = await Promise.all([
       getTeamStats(teamData.id),
       getTeamResults(adminToken),
+      getTeamMembers(adminToken),
     ]);
     setStats(statsData);
     if (resultsData) setRawResults(resultsData as TeamResultsRaw);
+    if (membersData) setMembers(membersData);
     setLoading(false);
   }, [adminToken]);
 
@@ -168,6 +174,18 @@ export default function AdminDashboardPage() {
       setTeam({ ...team, results_visible: result.results_visible });
     }
     setToggling(false);
+  }
+
+  async function handleResetMember(memberId: string) {
+    const msg = `${t.resetConfirm}\n\n${t.resetNote}`;
+    if (!window.confirm(msg)) return;
+    setResettingId(memberId);
+    const result = await resetMemberResponse(adminToken, memberId);
+    if (!("error" in result)) {
+      showToast(t.resetSuccess);
+      loadData(); // Reload all data
+    }
+    setResettingId(null);
   }
 
   async function handleUpdateDeadline() {
@@ -326,6 +344,43 @@ export default function AdminDashboardPage() {
               >
                 {t.viewTeamResultsButton}
               </Link>
+            </div>
+          </div>
+        )}
+
+        {/* Member List with Reset */}
+        {members.length > 0 && (
+          <div className="rounded-lg border border-gray-200 dark:border-gray-700 p-6 mb-6">
+            <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-4">
+              {t.memberList}
+            </h2>
+            <div className="flex flex-col gap-2">
+              {members.map((m) => (
+                <div
+                  key={m.id}
+                  className="flex items-center justify-between rounded-lg border border-gray-100 dark:border-gray-800 px-4 py-3"
+                >
+                  <div className="flex items-center gap-3">
+                    <span className="text-sm font-mono text-gray-500">{m.label}</span>
+                    <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${
+                      m.completed
+                        ? "bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300"
+                        : "bg-yellow-100 dark:bg-yellow-900 text-yellow-700 dark:text-yellow-300"
+                    }`}>
+                      {m.completed ? t.memberCompleted : t.memberPending}
+                    </span>
+                  </div>
+                  {m.completed && (
+                    <button
+                      onClick={() => handleResetMember(m.id)}
+                      disabled={resettingId === m.id}
+                      className="text-xs text-red-600 hover:text-red-500 border border-red-200 dark:border-red-800 rounded px-3 py-1 hover:bg-red-50 dark:hover:bg-red-950 transition-colors disabled:opacity-50"
+                    >
+                      {resettingId === m.id ? t.resetting : t.resetButton}
+                    </button>
+                  )}
+                </div>
+              ))}
             </div>
           </div>
         )}
