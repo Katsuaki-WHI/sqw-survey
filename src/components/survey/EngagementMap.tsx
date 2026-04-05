@@ -214,10 +214,10 @@ export default function EngagementMap({
   });
 
   const quadrants = [
-    { x: PAD + INNER * 0.75, svgY: PAD + INNER * 0.20, ja: "エンゲージ型", en: "Engaged", color: "#16a34a" },
-    { x: PAD + INNER * 0.25, svgY: PAD + INNER * 0.20, ja: "理念先行型", en: "Idealist", color: "#2563eb" },
-    { x: PAD + INNER * 0.75, svgY: PAD + INNER * 0.80, ja: "実行先行型", en: "Executor", color: "#ca8a04" },
-    { x: PAD + INNER * 0.25, svgY: PAD + INNER * 0.80, ja: "離脱リスク型", en: "At Risk", color: "#dc2626" },
+    { x: PAD + INNER * 0.75, svgY: PAD + INNER * 0.20, ja: "エンゲージ型", en: "Engaged", color: "#16A34A" },
+    { x: PAD + INNER * 0.25, svgY: PAD + INNER * 0.20, ja: "理念先行型", en: "Idealist", color: "#2563EB" },
+    { x: PAD + INNER * 0.75, svgY: PAD + INNER * 0.80, ja: "実行先行型", en: "Executor", color: "#D97706" },
+    { x: PAD + INNER * 0.25, svgY: PAD + INNER * 0.80, ja: "離脱リスク型", en: "At Risk", color: "#DC2626" },
   ];
 
   return (
@@ -252,7 +252,7 @@ export default function EngagementMap({
           x={PAD} y={PAD} width={INNER} height={INNER}
           preserveAspectRatio="xMidYMid slice"
           clipPath="url(#mapClip)"
-          opacity="0.3"
+          opacity="0.15"
         />
 
         {/* Grid lines (light) */}
@@ -286,10 +286,12 @@ export default function EngagementMap({
             x={q.x}
             y={q.svgY}
             textAnchor="middle"
-            fontSize="13"
-            fontWeight="600"
+            fontSize="16"
+            fontWeight="bold"
             fill={q.color}
-            opacity="0.35"
+            stroke="white"
+            strokeWidth="3"
+            paintOrder="stroke"
           >
             {isEn ? q.en : q.ja}
           </text>
