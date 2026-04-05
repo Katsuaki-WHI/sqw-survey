@@ -5,7 +5,7 @@ import { useParams } from "next/navigation";
 import { useLocale } from "@/lib/i18n/context";
 import { getTeamResultsByInviteCode } from "@/lib/actions/team";
 import { CATEGORY_CONFIG, type QuestionCategory } from "@/lib/survey/questions";
-import { calcWagonSpeed } from "@/lib/survey/scoring";
+import { calcWagonSpeed, calcWagonSpeedFromEngagement } from "@/lib/survey/scoring";
 import ResultsView, { type ResultsData } from "@/components/survey/ResultsView";
 import LanguageToggle from "@/components/LanguageToggle";
 import Link from "next/link";
@@ -78,14 +78,16 @@ export default function TeamResultsPage() {
     }
 
     const teamAverage = totalCount > 0 ? Math.round((totalSum / totalCount) * 100) / 100 : 0;
-    const wagonSpeed = calcWagonSpeed(teamAverage);
     const managementAverage = categoryScores.management?.avg ?? null;
 
-    // Build questionScores for InsightCards
+    // Build questionScores for InsightCards and wagon speed
     const questionScores: Record<number, number> = {};
     for (const qa of data.questionAverages || []) {
       questionScores[qa.question_id] = qa.avg_score;
     }
+
+    // Wagon speed from engagement (new formula: engagement² × 8)
+    const wagonSpeed = calcWagonSpeedFromEngagement(questionScores);
 
     // Engagement average
     const points = data.engagementPoints || [];

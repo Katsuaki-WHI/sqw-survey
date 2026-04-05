@@ -150,7 +150,7 @@ export default function SpeedMeter({ speed }: SpeedMeterProps) {
           textAnchor="middle" fontSize="14" fontWeight="bold"
           fill="#374151"
         >
-          {isEn ? "Wagon Speed" : "ワゴン推進力"}
+          {isEn ? "Wagon Speed" : "ワゴンスピード"}
         </text>
 
         {/* Background image (hidden until loaded, replaces SVG arcs) */}

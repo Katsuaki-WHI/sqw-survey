@@ -25,9 +25,29 @@ export function getScaleLevel(avg: number): ScaleLevel {
   return "critical";
 }
 
-/** ワゴン推進力（km）を計算: 1.6 × 平均³ */
+/** ワゴンスピード（旧計算式）: 1.6 × 平均³ — 個人結果用 */
 export function calcWagonSpeed(teamAverage: number): number {
   return Math.round(1.6 * Math.pow(teamAverage, 3) * 10) / 10;
+}
+
+/**
+ * ワゴンスピード（新計算式）: エンゲージメント² × 8
+ *   方向性 = Q02のチーム平均
+ *   貢献意欲 = (Q13 + Q19) / 2 のチーム平均
+ *   エンゲージメント = (方向性 + 貢献意欲) / 2
+ *   ワゴンスピード = エンゲージメント² × 8
+ *
+ * @param questionAverages - questionId -> チーム平均スコア のマップ
+ */
+export function calcWagonSpeedFromEngagement(
+  questionAverages: Record<number, number>
+): number {
+  const direction = questionAverages[2] ?? 1;
+  const q13 = questionAverages[13] ?? 1;
+  const q19 = questionAverages[19] ?? 1;
+  const contribution = (q13 + q19) / 2;
+  const engagement = (direction + contribution) / 2;
+  return Math.round(engagement * engagement * 8 * 10) / 10;
 }
 
 /** 回答データからカテゴリ別スコアを算出 */

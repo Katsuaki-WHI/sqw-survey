@@ -104,8 +104,10 @@ export default function ResultsView({ data, title, mode }: ResultsViewProps) {
         />
       )}
 
-      {/* Speed meter (below engagement map) */}
-      <SpeedMeter speed={data.wagonSpeed} teamAverage={data.teamAverage} />
+      {/* Speed meter — team results only */}
+      {mode === "team" && (
+        <SpeedMeter speed={data.wagonSpeed} teamAverage={data.teamAverage} />
+      )}
 
       {/* Category illustrations grid */}
       <WagonIllustration
