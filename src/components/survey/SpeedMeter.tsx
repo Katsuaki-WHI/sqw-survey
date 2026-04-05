@@ -59,7 +59,7 @@ export default function SpeedMeter({ speed, teamAverage }: SpeedMeterProps) {
   // Scale tick marks
   const ticks = [0, 25, 50, 75, 100, 125, 150, 175, 200];
 
-  const svgH = SIZE / 2 + 60;
+  const svgH = SIZE / 2 + 50;
 
   return (
     <div className="flex flex-col items-center">
@@ -131,33 +131,23 @@ export default function SpeedMeter({ speed, teamAverage }: SpeedMeterProps) {
         {/* Center cap */}
         <circle cx={CX} cy={CY} r={8} fill="#374151" stroke="white" strokeWidth="2" />
 
-        {/* Speed value */}
+        {/* Speed value + unit */}
         <text
-          x={CX} y={CY + 35}
-          textAnchor="middle" fontSize="32" fontWeight="bold"
+          x={CX} y={CY + 32}
+          textAnchor="middle" fontSize="30" fontWeight="bold"
           fill={speedColor(speed)}
         >
           {speed}
-        </text>
-        <text
-          x={CX} y={CY + 50}
-          textAnchor="middle" fontSize="12"
-          fill="#6b7280"
-        >
-          km
-        </text>
-
-        {/* Label */}
-        <text
-          x={CX} y={CY + 68}
-          textAnchor="middle" fontSize="11"
-          fill="#9ca3af"
-        >
-          {isEn ? "Team Average" : "平均スコア"}: {teamAverage.toFixed(2)} / 5.00
+          <tspan fontSize="14" fill="#6b7280"> km/h</tspan>
         </text>
       </svg>
-      <p className="text-sm font-medium text-gray-600 dark:text-gray-400 -mt-2">
+
+      {/* Labels below SVG */}
+      <p className="text-base font-bold text-gray-700 dark:text-gray-300 mt-1">
         {isEn ? "Wagon Speed" : "ワゴン推進力"}
+      </p>
+      <p className="text-sm text-gray-400 mt-1">
+        {isEn ? "Team Average" : "平均スコア"}: {teamAverage.toFixed(2)} / 5.00
       </p>
     </div>
   );
