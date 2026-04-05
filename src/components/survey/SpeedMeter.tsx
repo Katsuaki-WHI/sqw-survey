@@ -59,9 +59,13 @@ export default function SpeedMeter({ speed, teamAverage }: SpeedMeterProps) {
   // Scale tick marks
   const ticks = [0, 25, 50, 75, 100, 125, 150, 175, 200];
 
+  const svgH = SIZE / 2 + 60;
+
   return (
     <div className="flex flex-col items-center">
-      <svg viewBox={`0 0 ${SIZE} ${SIZE / 2 + 60}`} width={SIZE} className="max-w-full h-auto">
+      {/* To swap gauge background: place image at public/images/speedometer-bg.png
+          and set SPEEDOMETER_USE_IMAGE=true in SpeedMeter.tsx */}
+      <svg viewBox={`0 0 ${SIZE} ${svgH}`} width={SIZE} className="max-w-full h-auto">
         {/* Background arc segments */}
         {segments.map((seg) => {
           const a1 = speedToAngle(seg.from);

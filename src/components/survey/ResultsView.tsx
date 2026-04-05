@@ -88,9 +88,6 @@ export default function ResultsView({ data, title, mode }: ResultsViewProps) {
         {title}
       </h1>
 
-      {/* Speed meter */}
-      <SpeedMeter speed={data.wagonSpeed} teamAverage={data.teamAverage} />
-
       {/* Composite wagon illustration (1 layered picture) */}
       <WagonComposite
         categoryScores={data.categoryScores as Partial<Record<QuestionCategory, CategoryScore>>}
@@ -106,6 +103,9 @@ export default function ResultsView({ data, title, mode }: ResultsViewProps) {
           mode={mode}
         />
       )}
+
+      {/* Speed meter (below engagement map) */}
+      <SpeedMeter speed={data.wagonSpeed} teamAverage={data.teamAverage} />
 
       {/* Category illustrations grid */}
       <WagonIllustration
