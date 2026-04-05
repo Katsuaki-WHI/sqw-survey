@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { QUESTIONS, SCALE_LABELS } from "@/lib/survey/questions";
+import { QUESTIONS, SCALE_LABELS, getQuestionsForConfig, type SurveyConfig } from "@/lib/survey/questions";
 import {
   calcTeamAverage,
   calcWagonSpeed,
@@ -14,37 +14,44 @@ import ResultsView, { type ResultsData } from "./ResultsView";
 
 export type Answers = Record<number, number | string>;
 
-const SCALE_QUESTIONS = QUESTIONS.filter((q) => q.type === "scale");
-const FREETEXT_QUESTIONS = QUESTIONS.filter((q) => q.type === "freetext");
-const TOTAL_STEPS = SCALE_QUESTIONS.length + 1;
-
 interface TeamContext {
   leaderName: string | null;
   notes: string | null;
 }
 
 interface SurveyFlowProps {
-  /** Called with answers when survey is submitted. Can return ResultsData to display, or void for local calculation. */
-  onSubmit?: (answers: Answers) => Promise<ResultsData | void>;
-  /** Extra content to show below results (e.g., link to team results) */
+  onSubmit?: (answers: Answers, qualitativeData?: Record<number, string>) => Promise<ResultsData | void>;
   completedExtra?: React.ReactNode;
-  /** Team context info to display during survey */
   teamContext?: TeamContext;
+  /** Survey configuration — controls which questions are shown */
+  surveyConfig?: SurveyConfig;
+  /** Custom qualitative questions from team settings */
+  qualitativeQuestions?: string[];
 }
 
-export default function SurveyFlow({ onSubmit, completedExtra, teamContext }: SurveyFlowProps) {
+export default function SurveyFlow({ onSubmit, completedExtra, teamContext, surveyConfig, qualitativeQuestions }: SurveyFlowProps) {
   const { locale, dict } = useLocale();
   const t = dict.survey;
   const isEn = locale === "en";
 
+  // Build question lists based on config
+  const config = surveyConfig || { version: "26" as const, includeManagementTrust: false, qualitativeQuestions: [] };
+  const configQuestions = getQuestionsForConfig(config);
+  const SCALE_QUESTIONS = configQuestions.filter((q) => q.type === "scale");
+  const hasQualitative = (qualitativeQuestions && qualitativeQuestions.length > 0);
+  // Steps: scale questions + (qualitative step if any) + 1 (freetext/submit step is removed — qualitative replaces it)
+  const TOTAL_STEPS = SCALE_QUESTIONS.length + (hasQualitative ? 1 : 0);
+
   const [step, setStep] = useState(0);
   const [answers, setAnswers] = useState<Answers>({});
+  const [qualitativeAnswers, setQualitativeAnswers] = useState<Record<number, string>>({});
   const [completed, setCompleted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [resultsData, setResultsData] = useState<ResultsData | null>(null);
 
-  const isFreetextStep = step === SCALE_QUESTIONS.length;
-  const currentQuestion = !isFreetextStep ? SCALE_QUESTIONS[step] : null;
+  const isQualitativeStep = hasQualitative && step === SCALE_QUESTIONS.length;
+  const isScaleStep = step < SCALE_QUESTIONS.length;
+  const currentQuestion = isScaleStep ? SCALE_QUESTIONS[step] : null;
   const progress = ((step + 1) / TOTAL_STEPS) * 100;
 
   function handleScaleAnswer(value: number) {
@@ -65,7 +72,7 @@ export default function SurveyFlow({ onSubmit, completedExtra, teamContext }: Su
       let results: ResultsData | null = null;
 
       if (onSubmit) {
-        const submitted = await onSubmit(answers);
+        const submitted = await onSubmit(answers, hasQualitative ? qualitativeAnswers : undefined);
         if (submitted) {
           results = submitted;
         }
@@ -214,7 +221,7 @@ export default function SurveyFlow({ onSubmit, completedExtra, teamContext }: Su
 
       <div className="flex flex-1 flex-col items-center justify-center px-6 py-12 max-w-2xl mx-auto w-full">
         {/* Scale questions */}
-        {!isFreetextStep && currentQuestion && (
+        {isScaleStep && currentQuestion && (
           <>
             <p className="text-sm font-medium text-blue-600 mb-2">
               {isEn ? currentQuestion.wagonPartEn : currentQuestion.wagonPart} -{" "}
@@ -251,30 +258,27 @@ export default function SurveyFlow({ onSubmit, completedExtra, teamContext }: Su
           </>
         )}
 
-        {/* Free text */}
-        {isFreetextStep && (
+        {/* Qualitative questions step */}
+        {isQualitativeStep && qualitativeQuestions && (
           <>
             <p className="text-sm text-gray-400 mb-4">
               {questionLabel(TOTAL_STEPS, TOTAL_STEPS)}
-              {t.freetextLabel}
             </p>
             <h2 className="text-xl font-semibold text-gray-900 dark:text-white text-center mb-8">
-              {t.freetextTitle}
+              {dict.team.qualitativeTitle}
             </h2>
             <div className="flex flex-col gap-6 w-full max-w-lg">
-              {FREETEXT_QUESTIONS.map((q) => (
-                <div key={q.id}>
+              {qualitativeQuestions.map((qText, i) => (
+                <div key={i}>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    {isEn ? q.textEn : q.text}
+                    {qText}
                   </label>
                   <textarea
                     rows={3}
                     className="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-3 text-gray-900 dark:text-white bg-white dark:bg-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     placeholder={t.freetextPlaceholder}
-                    value={(answers[q.id] as string) || ""}
-                    onChange={(e) =>
-                      handleFreetextChange(q.id, e.target.value)
-                    }
+                    value={qualitativeAnswers[i] || ""}
+                    onChange={(e) => setQualitativeAnswers((prev) => ({ ...prev, [i]: e.target.value }))}
                   />
                 </div>
               ))}
@@ -288,6 +292,19 @@ export default function SurveyFlow({ onSubmit, completedExtra, teamContext }: Su
               {submitting ? "..." : t.submitButton}
             </button>
           </>
+        )}
+
+        {/* Auto-submit when no qualitative step and scale questions are done */}
+        {!hasQualitative && step === SCALE_QUESTIONS.length && !completed && !submitting && (
+          <div className="flex flex-col items-center">
+            <button
+              onClick={handleSubmit}
+              disabled={submitting}
+              className="rounded-full bg-blue-600 px-8 py-3 text-lg font-semibold text-white shadow-sm hover:bg-blue-500 transition-colors disabled:opacity-50"
+            >
+              {submitting ? "..." : t.submitButton}
+            </button>
+          </div>
         )}
 
         {/* Back button */}

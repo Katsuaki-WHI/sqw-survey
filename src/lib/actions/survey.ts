@@ -8,9 +8,11 @@ interface SubmitSurveyParams {
   teamId?: string;
   memberToken?: string;
   memberEmail?: string;
+  qualitativeData?: Record<number, string>;
+  qualitativeQuestions?: string[];
 }
 
-export async function submitSurvey({ answers, teamId, memberToken, memberEmail }: SubmitSurveyParams) {
+export async function submitSurvey({ answers, teamId, memberToken, memberEmail, qualitativeData, qualitativeQuestions }: SubmitSurveyParams) {
   const supabase = await createSupabaseServer();
 
   // Calculate scores from scale answers
@@ -98,6 +100,35 @@ export async function submitSurvey({ answers, teamId, memberToken, memberEmail }
       if (target > 0 && (responseCount ?? 0) >= target) {
         await supabase.from("teams").update({ results_visible: true }).eq("id", teamId);
       }
+    }
+  }
+
+  // Save qualitative responses if any
+  if (teamId && qualitativeData && qualitativeQuestions) {
+    // Get member_id from team_members
+    let memberId: string | null = null;
+    if (memberToken) {
+      const { data: memberRow } = await supabase
+        .from("team_members")
+        .select("id")
+        .eq("member_token", memberToken)
+        .single();
+      memberId = memberRow?.id ?? null;
+    }
+
+    const qualRows = Object.entries(qualitativeData)
+      .filter(([, answer]) => answer?.trim())
+      .map(([indexStr, answer]) => ({
+        team_id: teamId,
+        member_id: memberId,
+        question_index: parseInt(indexStr),
+        question_text: qualitativeQuestions[parseInt(indexStr)] || "",
+        answer: answer.trim(),
+      }));
+
+    if (qualRows.length > 0) {
+      const { error: qualError } = await supabase.from("qualitative_responses").insert(qualRows);
+      if (qualError) console.error("Failed to save qualitative responses:", qualError.message);
     }
   }
 

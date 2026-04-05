@@ -102,7 +102,7 @@ export async function getTeamByInviteCode(inviteCode: string) {
 
   const { data, error } = await supabase
     .from("teams")
-    .select("id, name, deadline, results_visible, release_mode, description, leader_name, notes, invite_message")
+    .select("id, name, deadline, results_visible, release_mode, description, leader_name, notes, invite_message, survey_version, include_management_trust, qualitative_questions")
     .eq("invite_code", inviteCode)
     .single();
 
@@ -211,6 +211,42 @@ export async function toggleResultsVisibility(adminToken: string, locale = "ja")
         inviteUrl: `${origin}/${locale}/team/join/${team.invite_code}`,
         locale,
       }).catch((e) => console.error("Notification email error:", e));
+    }
+
+    // Send qualitative responses to facilitator if any
+    const { data: qualResponses } = await supabase
+      .from("qualitative_responses")
+      .select("question_index, question_text, answer")
+      .eq("team_id", team.id)
+      .order("question_index", { ascending: true });
+
+    if (qualResponses && qualResponses.length > 0) {
+      // Get facilitator email
+      const { data: teamFull } = await supabase
+        .from("teams")
+        .select("facilitator_email")
+        .eq("id", team.id)
+        .single();
+
+      const facEmail = teamFull?.facilitator_email;
+      if (facEmail) {
+        // Group by question_index
+        const grouped = new Map<number, { questionText: string; answers: string[] }>();
+        for (const r of qualResponses) {
+          if (!grouped.has(r.question_index)) {
+            grouped.set(r.question_index, { questionText: r.question_text, answers: [] });
+          }
+          grouped.get(r.question_index)!.answers.push(r.answer);
+        }
+
+        const { sendQualitativeResponsesEmail } = await import("./email");
+        sendQualitativeResponsesEmail({
+          to: facEmail,
+          teamName: team.name,
+          responses: Array.from(grouped.values()),
+          locale,
+        }).catch((e) => console.error("Qualitative email error:", e));
+      }
     }
   }
 

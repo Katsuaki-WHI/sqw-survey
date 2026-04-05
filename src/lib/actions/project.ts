@@ -15,6 +15,9 @@ interface ProjectInput {
   surveyPurpose: string;
   locale: string;
   teams: { name: string; expectedMembers: number }[];
+  surveyVersion: string;
+  includeManagementTrust: boolean;
+  qualitativeQuestions: string[];
 }
 
 export async function createProject(input: ProjectInput) {
@@ -70,6 +73,9 @@ export async function createProject(input: ProjectInput) {
     };
     if (input.inviteMessage?.trim()) insertData.invite_message = input.inviteMessage.trim();
     if (input.facilitatorEmail?.trim()) insertData.facilitator_email = input.facilitatorEmail.trim();
+    if (input.surveyVersion) insertData.survey_version = input.surveyVersion;
+    if (input.includeManagementTrust) insertData.include_management_trust = true;
+    if (input.qualitativeQuestions.length > 0) insertData.qualitative_questions = JSON.stringify(input.qualitativeQuestions);
 
     const { error: teamError } = await supabase.from("teams").insert(insertData);
 

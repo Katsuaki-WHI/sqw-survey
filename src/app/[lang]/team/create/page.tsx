@@ -46,6 +46,11 @@ export default function TeamCreatePage() {
   const [releaseMode, setReleaseMode] = useState("manual");
   const [inviteMessage, setInviteMessage] = useState("");
   const [surveyPurpose, setSurveyPurpose] = useState("");
+  const [surveyVersion, setSurveyVersion] = useState<"26" | "40">("26");
+  const [includeManagement, setIncludeManagement] = useState(false);
+  const [includeQualitative, setIncludeQualitative] = useState(false);
+  const [qualitativeQs, setQualitativeQs] = useState<string[]>([]);
+  const [optionsOpen, setOptionsOpen] = useState(false);
 
   // STEP 2 state
   const [teams, setTeams] = useState<TeamRow[]>([{ name: "", expectedMembers: "" }]);
@@ -122,6 +127,9 @@ export default function TeamCreatePage() {
       inviteMessage,
       surveyPurpose,
       locale,
+      surveyVersion,
+      includeManagementTrust: includeManagement,
+      qualitativeQuestions: includeQualitative ? qualitativeQs.filter((q) => q.trim()) : [],
       teams: teams.map((t) => ({
         name: t.name.trim(),
         expectedMembers: parseInt(t.expectedMembers) || 1,
@@ -321,6 +329,92 @@ export default function TeamCreatePage() {
                 ))}
               </div>
               {fieldErrors.releaseMode && <p className="text-xs text-red-500 mt-1">{fieldErrors.releaseMode}</p>}
+            </div>
+
+            {/* Survey Version */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                {t.surveyVersionLabel} <span className="text-red-500">*</span>
+              </label>
+              <div className="flex flex-col gap-2">
+                {(["26", "40"] as const).map((v) => (
+                  <label key={v} className={`flex items-start gap-3 rounded-lg border px-4 py-3 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors ${surveyVersion === v ? "border-blue-500" : "border-gray-200 dark:border-gray-700"}`}>
+                    <input type="radio" checked={surveyVersion === v} onChange={() => setSurveyVersion(v)} className="text-blue-600 mt-0.5" />
+                    <div>
+                      <span className="text-sm text-gray-900 dark:text-white font-medium">
+                        {v === "26" ? t.surveyVersion26 : t.surveyVersion40}
+                      </span>
+                      <p className="text-xs text-gray-500 mt-0.5">
+                        {v === "26" ? t.surveyVersion26Desc : t.surveyVersion40Desc}
+                      </p>
+                    </div>
+                  </label>
+                ))}
+              </div>
+            </div>
+
+            {/* Optional Settings (collapsible) */}
+            <div className="border-t border-gray-200 dark:border-gray-700 pt-4">
+              <button
+                type="button"
+                onClick={() => setOptionsOpen(!optionsOpen)}
+                className="flex items-center gap-2 text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200"
+              >
+                <span className={`transition-transform ${optionsOpen ? "rotate-90" : ""}`}>&#9654;</span>
+                {t.optionalSettingsLabel}
+              </button>
+
+              {optionsOpen && (
+                <div className="mt-4 flex flex-col gap-4">
+                  {/* Management Trust */}
+                  <label className="flex items-start gap-3 rounded-lg border border-gray-200 dark:border-gray-700 px-4 py-3 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800">
+                    <input type="checkbox" checked={includeManagement} onChange={(e) => setIncludeManagement(e.target.checked)} className="mt-0.5" />
+                    <div>
+                      <span className="text-sm text-gray-900 dark:text-white font-medium">{t.managementTrustLabel}</span>
+                      <p className="text-xs text-gray-500 mt-0.5">{t.managementTrustDesc}</p>
+                    </div>
+                  </label>
+
+                  {/* Qualitative Questions */}
+                  <label className="flex items-start gap-3 rounded-lg border border-gray-200 dark:border-gray-700 px-4 py-3 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800">
+                    <input type="checkbox" checked={includeQualitative} onChange={(e) => {
+                      setIncludeQualitative(e.target.checked);
+                      if (e.target.checked && qualitativeQs.length === 0) {
+                        setQualitativeQs([t.qualitativeDefault]);
+                      }
+                    }} className="mt-0.5" />
+                    <div>
+                      <span className="text-sm text-gray-900 dark:text-white font-medium">{t.qualitativeLabel}</span>
+                      <p className="text-xs text-gray-500 mt-0.5">{t.qualitativeDesc}</p>
+                    </div>
+                  </label>
+
+                  {/* Qualitative question inputs */}
+                  {includeQualitative && (
+                    <div className="ml-8 flex flex-col gap-3">
+                      <p className="text-xs text-blue-600 dark:text-blue-400">{t.qualitativeAiHint}</p>
+                      {qualitativeQs.map((q, i) => (
+                        <div key={i} className="flex gap-2">
+                          <input
+                            type="text"
+                            value={q}
+                            onChange={(e) => setQualitativeQs((prev) => prev.map((v, j) => j === i ? e.target.value : v))}
+                            className={INPUT_CLASS}
+                          />
+                          {qualitativeQs.length > 1 && (
+                            <button type="button" onClick={() => setQualitativeQs((prev) => prev.filter((_, j) => j !== i))} className="text-red-400 hover:text-red-500 text-lg px-2">×</button>
+                          )}
+                        </div>
+                      ))}
+                      {qualitativeQs.length < 5 && (
+                        <button type="button" onClick={() => setQualitativeQs((prev) => [...prev, ""])} className="text-sm text-blue-600 hover:text-blue-500">
+                          {t.addQuestion}
+                        </button>
+                      )}
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
 
             {/* Invite Message */}

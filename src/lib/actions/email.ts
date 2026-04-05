@@ -134,3 +134,42 @@ export async function sendResultsPublishedEmail({
     return { error: "Failed to send email" };
   }
 }
+
+interface QualitativeEmailParams {
+  to: string;
+  teamName: string;
+  responses: { questionText: string; answers: string[] }[];
+  locale: string;
+}
+
+export async function sendQualitativeResponsesEmail({
+  to,
+  teamName,
+  responses,
+  locale,
+}: QualitativeEmailParams) {
+  const isEn = locale === "en";
+
+  const subject = isEn
+    ? `[SQW Survey 2] Open-ended responses for "${teamName}" are ready`
+    : `【SQWサーベイ2】「${teamName}」の定性回答が届いています`;
+
+  const responseHtml = responses
+    .map((r) => {
+      const answerList = r.answers.map((a) => `<li style="margin-bottom:8px;">${a}</li>`).join("");
+      return `<h3 style="margin-top:16px;">${r.questionText}</h3><ul>${answerList}</ul>`;
+    })
+    .join("");
+
+  const html = isEn
+    ? `<h2>Open-ended responses for "${teamName}"</h2>${responseHtml}<hr/><p style="color:#9ca3af;font-size:12px;">SQW Survey - Work Happiness Inc.</p>`
+    : `<h2>「${teamName}」の定性回答</h2>${responseHtml}<hr/><p style="color:#9ca3af;font-size:12px;">SQWサーベイ - Work Happiness Inc.</p>`;
+
+  try {
+    await resend.emails.send({ from: FROM, to, subject, html });
+    return { success: true };
+  } catch (error) {
+    console.error("Failed to send qualitative email:", error);
+    return { error: "Failed to send email" };
+  }
+}

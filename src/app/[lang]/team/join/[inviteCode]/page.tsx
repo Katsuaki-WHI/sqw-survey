@@ -20,6 +20,9 @@ interface TeamInfo {
   leader_name: string | null;
   notes: string | null;
   invite_message: string | null;
+  survey_version: string | null;
+  include_management_trust: boolean | null;
+  qualitative_questions: string[] | null;
 }
 
 export default function TeamJoinPage() {
@@ -94,7 +97,7 @@ export default function TeamJoinPage() {
     setStarted(true);
   }
 
-  async function handleSurveySubmit(answers: Answers): Promise<ResultsData | void> {
+  async function handleSurveySubmit(answers: Answers, qualitativeData?: Record<number, string>): Promise<ResultsData | void> {
     if (!team || !memberToken) return;
 
     const result = await submitSurvey({
@@ -102,6 +105,8 @@ export default function TeamJoinPage() {
       teamId: team.id,
       memberToken,
       memberEmail: joinEmail || undefined,
+      qualitativeData,
+      qualitativeQuestions: (team.qualitative_questions as string[]) || undefined,
     });
 
     if ("error" in result) {
@@ -146,6 +151,12 @@ export default function TeamJoinPage() {
     return (
       <SurveyFlow
         onSubmit={handleSurveySubmit}
+        surveyConfig={{
+          version: (team.survey_version as "26" | "40") || "26",
+          includeManagementTrust: team.include_management_trust === true,
+          qualitativeQuestions: (team.qualitative_questions as string[]) || [],
+        }}
+        qualitativeQuestions={(team.qualitative_questions as string[]) || undefined}
         teamContext={
           (team.leader_name || team.notes)
             ? { leaderName: team.leader_name, notes: team.notes }
