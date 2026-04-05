@@ -20,6 +20,8 @@ export async function createTeam(formData: FormData) {
   const expectedMembersStr = formData.get("expected_members") as string;
   const expectedMembers = expectedMembersStr ? parseInt(expectedMembersStr, 10) : null;
   const surveyPurpose = (formData.get("survey_purpose") as string) || null;
+  const adminEmail = (formData.get("admin_email") as string) || null;
+  const locale = (formData.get("locale") as string) || "ja";
 
   if (!name || name.trim().length === 0) {
     return { error: "Team name is required" };
@@ -46,11 +48,28 @@ export async function createTeam(formData: FormData) {
     company_size: companySize || null,
     expected_members: expectedMembers,
     survey_purpose: surveyPurpose || null,
+    admin_email: adminEmail?.trim() || null,
   });
 
   if (error) {
     console.error("Failed to create team:", error);
     return { error: "Failed to create team" };
+  }
+
+  // Send email in background (don't block)
+  if (adminEmail?.trim()) {
+    const { sendTeamCreatedEmail } = await import("./email");
+    const origin = process.env.NEXT_PUBLIC_SITE_URL || "https://survey.workhappiness.co.jp";
+    sendTeamCreatedEmail({
+      to: adminEmail.trim(),
+      teamName: name.trim(),
+      adminUrl: `${origin}/${locale}/team/admin/${adminToken}`,
+      inviteUrl: `${origin}/${locale}/team/join/${inviteCode}`,
+      deadline: deadline ? new Date(deadline).toLocaleDateString(locale === "en" ? "en-US" : "ja-JP", {
+        year: "numeric", month: "long", day: "numeric", hour: "2-digit", minute: "2-digit",
+      }) : null,
+      locale,
+    }).catch((e) => console.error("Email send error:", e));
   }
 
   return { inviteCode, adminToken };
@@ -119,25 +138,48 @@ export async function getTeamStats(teamId: string) {
   };
 }
 
-export async function toggleResultsVisibility(adminToken: string) {
+export async function toggleResultsVisibility(adminToken: string, locale = "ja") {
   const supabase = await createSupabaseServer();
 
   const { data: team } = await supabase
     .from("teams")
-    .select("id, results_visible")
+    .select("id, name, invite_code, results_visible")
     .eq("admin_token", adminToken)
     .single();
 
   if (!team) return { error: "Team not found" };
 
+  const newVisible = !team.results_visible;
+
   const { error } = await supabase
     .from("teams")
-    .update({ results_visible: !team.results_visible })
+    .update({ results_visible: newVisible })
     .eq("id", team.id);
 
   if (error) return { error: "Failed to update" };
 
-  return { results_visible: !team.results_visible };
+  // Send notification emails when results are being published
+  if (newVisible) {
+    const { data: members } = await supabase
+      .from("team_members")
+      .select("email")
+      .eq("team_id", team.id)
+      .not("email", "is", null);
+
+    const emails = (members || []).map((m) => m.email).filter(Boolean) as string[];
+    if (emails.length > 0) {
+      const { sendResultsPublishedEmail } = await import("./email");
+      const origin = process.env.NEXT_PUBLIC_SITE_URL || "https://survey.workhappiness.co.jp";
+      sendResultsPublishedEmail({
+        to: emails,
+        teamName: team.name,
+        inviteUrl: `${origin}/${locale}/team/join/${team.invite_code}`,
+        locale,
+      }).catch((e) => console.error("Notification email error:", e));
+    }
+  }
+
+  return { results_visible: newVisible };
 }
 
 export async function updateDeadline(adminToken: string, newDeadline: string | null) {

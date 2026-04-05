@@ -136,7 +136,12 @@
     "invitedBy": "This survey is an invitation from {leaderName}",
     "teamDescription": "About the Team",
     "leaderInfo": "Leader / Manager",
-    "surveyNotes": "Notes for Respondents"
+    "surveyNotes": "Notes for Respondents",
+    "adminEmailLabel": "Admin Email Address",
+    "adminEmailPlaceholder": "e.g., admin@example.com",
+    "adminEmailHint": "Admin URL will be sent to this email address",
+    "memberEmailLabel": "Get notified when team results are available (optional)",
+    "memberEmailPlaceholder": "e.g., your@email.com"
   },
   "metadata": {
     "title": "SQW Survey | Square Wheel Survey",

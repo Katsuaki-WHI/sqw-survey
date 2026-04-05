@@ -12,6 +12,7 @@ import WagonIllustration from "./WagonIllustration";
 import ScoreRadarChart from "./ScoreRadarChart";
 import InsightCards from "./InsightCards";
 import EngagementMap, { type EngagementPoint } from "./EngagementMap";
+import SpeedMeter from "./SpeedMeter";
 import PdfDownloadButton from "./PdfDownloadButton";
 
 interface CategoryScore {
@@ -87,6 +88,9 @@ export default function ResultsView({ data, title, mode }: ResultsViewProps) {
         {title}
       </h1>
 
+      {/* Speed meter */}
+      <SpeedMeter speed={data.wagonSpeed} teamAverage={data.teamAverage} />
+
       {/* Composite wagon illustration (1 layered picture) */}
       <WagonComposite
         categoryScores={data.categoryScores as Partial<Record<QuestionCategory, CategoryScore>>}
@@ -157,14 +161,6 @@ export default function ResultsView({ data, title, mode }: ResultsViewProps) {
           </div>
         </div>
       )}
-
-      {/* Overall summary */}
-      <div className="rounded-lg bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 p-6 w-full text-center">
-        <p className="text-sm text-gray-500 mb-1">{t.teamAvgLabel}</p>
-        <p className="text-3xl font-bold text-gray-900 dark:text-white">
-          {data.teamAverage.toFixed(2)} <span className="text-lg text-gray-500">/ 5.00</span>
-        </p>
-      </div>
 
       {/* Footer */}
       <p className="text-xs text-gray-400 text-center">

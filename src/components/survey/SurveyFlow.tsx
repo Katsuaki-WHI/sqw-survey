@@ -25,14 +25,16 @@ interface TeamContext {
 
 interface SurveyFlowProps {
   /** Called with answers when survey is submitted. Can return ResultsData to display, or void for local calculation. */
-  onSubmit?: (answers: Answers) => Promise<ResultsData | void>;
+  onSubmit?: (answers: Answers, email?: string) => Promise<ResultsData | void>;
   /** Extra content to show below results (e.g., link to team results) */
   completedExtra?: React.ReactNode;
   /** Team context info to display during survey */
   teamContext?: TeamContext;
+  /** Show email notification field (for team surveys) */
+  showEmailField?: boolean;
 }
 
-export default function SurveyFlow({ onSubmit, completedExtra, teamContext }: SurveyFlowProps) {
+export default function SurveyFlow({ onSubmit, completedExtra, teamContext, showEmailField }: SurveyFlowProps) {
   const { locale, dict } = useLocale();
   const t = dict.survey;
   const isEn = locale === "en";
@@ -42,6 +44,7 @@ export default function SurveyFlow({ onSubmit, completedExtra, teamContext }: Su
   const [completed, setCompleted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [resultsData, setResultsData] = useState<ResultsData | null>(null);
+  const [memberEmail, setMemberEmail] = useState("");
 
   const isFreetextStep = step === SCALE_QUESTIONS.length;
   const currentQuestion = !isFreetextStep ? SCALE_QUESTIONS[step] : null;
@@ -65,7 +68,7 @@ export default function SurveyFlow({ onSubmit, completedExtra, teamContext }: Su
       let results: ResultsData | null = null;
 
       if (onSubmit) {
-        const submitted = await onSubmit(answers);
+        const submitted = await onSubmit(answers, memberEmail || undefined);
         if (submitted) {
           results = submitted;
         }
@@ -279,6 +282,23 @@ export default function SurveyFlow({ onSubmit, completedExtra, teamContext }: Su
                 </div>
               ))}
             </div>
+
+            {/* Email notification field (team surveys only) */}
+            {showEmailField && (
+              <div className="w-full max-w-lg mt-4">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  {dict.team.memberEmailLabel}
+                </label>
+                <input
+                  type="email"
+                  placeholder={dict.team.memberEmailPlaceholder}
+                  value={memberEmail}
+                  onChange={(e) => setMemberEmail(e.target.value)}
+                  className="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-3 text-gray-900 dark:text-white bg-white dark:bg-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+            )}
+
             <button
               onClick={handleSubmit}
               disabled={submitting}

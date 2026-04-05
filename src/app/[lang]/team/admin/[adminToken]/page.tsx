@@ -161,7 +161,7 @@ export default function AdminDashboardPage() {
 
   async function handleToggleVisibility() {
     setToggling(true);
-    const result = await toggleResultsVisibility(adminToken);
+    const result = await toggleResultsVisibility(adminToken, locale);
     if (!("error" in result) && team) {
       setTeam({ ...team, results_visible: result.results_visible });
     }

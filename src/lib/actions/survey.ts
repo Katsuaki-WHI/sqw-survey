@@ -7,9 +7,10 @@ interface SubmitSurveyParams {
   answers: Record<number, number | string>;
   teamId?: string;
   memberToken?: string;
+  memberEmail?: string;
 }
 
-export async function submitSurvey({ answers, teamId, memberToken }: SubmitSurveyParams) {
+export async function submitSurvey({ answers, teamId, memberToken, memberEmail }: SubmitSurveyParams) {
   const supabase = await createSupabaseServer();
 
   // Calculate scores from scale answers
@@ -70,9 +71,13 @@ export async function submitSurvey({ answers, teamId, memberToken }: SubmitSurve
 
   // Link session to team member if applicable
   if (teamId && memberToken) {
+    const updates: Record<string, unknown> = { session_id: session.id };
+    if (memberEmail?.trim()) {
+      updates.email = memberEmail.trim();
+    }
     await supabase
       .from("team_members")
-      .update({ session_id: session.id })
+      .update(updates)
       .eq("member_token", memberToken)
       .eq("team_id", teamId);
   }

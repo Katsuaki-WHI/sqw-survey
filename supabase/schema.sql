@@ -25,6 +25,7 @@ create table if not exists teams (
   company_size text,                         -- 企業規模
   expected_members integer,                  -- 回答予定人数
   survey_purpose text,                       -- サーベイの目的（任意）
+  admin_email text,                          -- 管理者メールアドレス
   created_at timestamptz default now() not null
 );
 
@@ -73,6 +74,7 @@ create table if not exists team_members (
   team_id uuid not null references teams(id) on delete cascade,
   session_id uuid references survey_sessions(id) on delete set null,
   member_token text unique not null,        -- Cookie保存用の識別トークン
+  email text,                              -- メンバーのメールアドレス（任意）
   created_at timestamptz default now() not null
 );
 

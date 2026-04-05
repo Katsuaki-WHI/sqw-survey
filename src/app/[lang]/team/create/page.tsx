@@ -81,6 +81,18 @@ export default function TeamCreatePage() {
               {t.requiredFields}
             </legend>
 
+            {/* Hidden locale for server action */}
+            <input type="hidden" name="locale" value={locale} />
+
+            {/* Admin Email */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                {t.adminEmailLabel} <span className="text-red-500">*</span>
+              </label>
+              <input name="admin_email" type="email" required placeholder={t.adminEmailPlaceholder} className={INPUT_CLASS} />
+              <p className="text-xs text-gray-500 mt-1">{t.adminEmailHint}</p>
+            </div>
+
             {/* Team Name */}
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">

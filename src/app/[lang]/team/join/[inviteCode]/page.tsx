@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useLocale } from "@/lib/i18n/context";
 import { getTeamByInviteCode, joinTeam } from "@/lib/actions/team";
 import { submitSurvey } from "@/lib/actions/survey";
@@ -26,6 +26,7 @@ export default function TeamJoinPage() {
   const { locale, dict } = useLocale();
   const t = dict.team;
   const params = useParams();
+  const router = useRouter();
   const inviteCode = params.inviteCode as string;
 
   const [team, setTeam] = useState<TeamInfo | null>(null);
@@ -56,12 +57,14 @@ export default function TeamJoinPage() {
       setExistingMemberToken(existing);
       const existingSession = getCookie(`sqw_completed_${data.id}`);
       if (existingSession) {
-        setAlreadyDone(true);
+        // Redirect to personal results page
+        router.replace(`/${locale}/team/results/${existing}`);
+        return;
       }
     }
 
     setLoading(false);
-  }, [inviteCode]);
+  }, [inviteCode, locale, router]);
 
   useEffect(() => {
     loadTeam();
@@ -81,13 +84,14 @@ export default function TeamJoinPage() {
     setStarted(true);
   }
 
-  async function handleSurveySubmit(answers: Answers): Promise<ResultsData | void> {
+  async function handleSurveySubmit(answers: Answers, email?: string): Promise<ResultsData | void> {
     if (!team || !memberToken) return;
 
     const result = await submitSurvey({
       answers,
       teamId: team.id,
       memberToken,
+      memberEmail: email,
     });
 
     if ("error" in result) {
@@ -132,6 +136,7 @@ export default function TeamJoinPage() {
     return (
       <SurveyFlow
         onSubmit={handleSurveySubmit}
+        showEmailField
         teamContext={
           (team.leader_name || team.notes)
             ? { leaderName: team.leader_name, notes: team.notes }
