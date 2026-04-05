@@ -9,14 +9,14 @@ interface SpeedMeterProps {
 
 const SIZE = 300;
 const CX = SIZE / 2;
-const CY = SIZE / 2 + 20;
-const RADIUS = 110;
-const STROKE = 18;
+const CY = SIZE / 2 + 10;
+const RADIUS = 100;
+const STROKE = 16;
 
 /** Speed (0-200) to angle in radians. 0km = -180°(left), 200km = 0°(right) */
 function speedToAngle(speed: number): number {
   const clamped = Math.max(0, Math.min(200, speed));
-  return Math.PI - (clamped / 200) * Math.PI; // π to 0
+  return Math.PI - (clamped / 200) * Math.PI;
 }
 
 function polarToXY(angle: number, r: number): { x: number; y: number } {
@@ -25,17 +25,16 @@ function polarToXY(angle: number, r: number): { x: number; y: number } {
 
 /** Speed to color */
 function speedColor(speed: number): string {
-  if (speed >= 150) return "#16a34a"; // green
-  if (speed >= 100) return "#ca8a04"; // yellow-ish
-  if (speed >= 50) return "#ea580c";  // orange
-  return "#dc2626"; // red
+  if (speed >= 150) return "#16a34a";
+  if (speed >= 100) return "#ca8a04";
+  if (speed >= 50) return "#ea580c";
+  return "#dc2626";
 }
 
 function arcPath(startAngle: number, endAngle: number, r: number): string {
   const start = polarToXY(startAngle, r);
   const end = polarToXY(endAngle, r);
   const largeArc = Math.abs(startAngle - endAngle) > Math.PI ? 1 : 0;
-  // SVG arc sweeps clockwise (y-axis inverted), so sweep=0 for our coordinate system
   return `M ${start.x} ${start.y} A ${r} ${r} 0 ${largeArc} 0 ${end.x} ${end.y}`;
 }
 
@@ -44,11 +43,10 @@ export default function SpeedMeter({ speed, teamAverage }: SpeedMeterProps) {
   const isEn = locale === "en";
 
   const needleAngle = speedToAngle(speed);
-  const needleTip = polarToXY(needleAngle, RADIUS - 8);
-  const needleBase1 = polarToXY(needleAngle + Math.PI / 2, 5);
-  const needleBase2 = polarToXY(needleAngle - Math.PI / 2, 5);
+  const needleTip = polarToXY(needleAngle, RADIUS - 6);
+  const needleBase1 = polarToXY(needleAngle + Math.PI / 2, 4);
+  const needleBase2 = polarToXY(needleAngle - Math.PI / 2, 4);
 
-  // Color segments: red(0-50), orange(50-100), yellow(100-150), green(150-200)
   const segments = [
     { from: 0, to: 50, color: "#fecaca", active: "#dc2626" },
     { from: 50, to: 100, color: "#fed7aa", active: "#ea580c" },
@@ -56,16 +54,25 @@ export default function SpeedMeter({ speed, teamAverage }: SpeedMeterProps) {
     { from: 150, to: 200, color: "#bbf7d0", active: "#16a34a" },
   ];
 
-  // Scale tick marks
-  const ticks = [0, 25, 50, 75, 100, 125, 150, 175, 200];
+  const ticks = [0, 50, 100, 150, 200];
+  const minorTicks = [25, 75, 125, 175];
 
-  const svgH = SIZE / 2 + 50;
+  // Layout: title at y=18, gauge center at CY=160, speed text at CY+28, avg at CY+46
+  const SVG_H = CY + 56;
 
   return (
     <div className="flex flex-col items-center">
-      {/* To swap gauge background: place image at public/images/speedometer-bg.png
-          and set SPEEDOMETER_USE_IMAGE=true in SpeedMeter.tsx */}
-      <svg viewBox={`0 0 ${SIZE} ${svgH}`} width={SIZE} className="max-w-full h-auto">
+      {/* To swap gauge background: place image at public/images/speedometer-bg.png */}
+      <svg viewBox={`0 0 ${SIZE} ${SVG_H}`} width={SIZE} className="max-w-full h-auto">
+        {/* Title label at top */}
+        <text
+          x={CX} y={18}
+          textAnchor="middle" fontSize="13" fontWeight="bold"
+          fill="#374151"
+        >
+          {isEn ? "Wagon Speed" : "ワゴン推進力"}
+        </text>
+
         {/* Background arc segments */}
         {segments.map((seg) => {
           const a1 = speedToAngle(seg.from);
@@ -96,26 +103,29 @@ export default function SpeedMeter({ speed, teamAverage }: SpeedMeterProps) {
           />
         )}
 
-        {/* Tick marks and labels */}
+        {/* Major tick marks and labels */}
         {ticks.map((v) => {
           const angle = speedToAngle(v);
           const outer = polarToXY(angle, RADIUS + STROKE / 2 + 2);
-          const inner = polarToXY(angle, RADIUS + STROKE / 2 - 4);
-          const label = polarToXY(angle, RADIUS + STROKE / 2 + 14);
+          const inner = polarToXY(angle, RADIUS + STROKE / 2 - 5);
+          const label = polarToXY(angle, RADIUS + STROKE / 2 + 15);
           return (
             <g key={v}>
-              <line
-                x1={inner.x} y1={inner.y} x2={outer.x} y2={outer.y}
-                stroke="#9ca3af" strokeWidth="1.5"
-              />
-              <text
-                x={label.x} y={label.y}
-                textAnchor="middle" dominantBaseline="middle"
-                fontSize="9" fill="#9ca3af"
-              >
+              <line x1={inner.x} y1={inner.y} x2={outer.x} y2={outer.y} stroke="#9ca3af" strokeWidth="1.5" />
+              <text x={label.x} y={label.y} textAnchor="middle" dominantBaseline="middle" fontSize="9" fill="#9ca3af">
                 {v}
               </text>
             </g>
+          );
+        })}
+
+        {/* Minor tick marks */}
+        {minorTicks.map((v) => {
+          const angle = speedToAngle(v);
+          const outer = polarToXY(angle, RADIUS + STROKE / 2 + 1);
+          const inner = polarToXY(angle, RADIUS + STROKE / 2 - 3);
+          return (
+            <line key={v} x1={inner.x} y1={inner.y} x2={outer.x} y2={outer.y} stroke="#d1d5db" strokeWidth="1" />
           );
         })}
 
@@ -129,26 +139,27 @@ export default function SpeedMeter({ speed, teamAverage }: SpeedMeterProps) {
         />
 
         {/* Center cap */}
-        <circle cx={CX} cy={CY} r={8} fill="#374151" stroke="white" strokeWidth="2" />
+        <circle cx={CX} cy={CY} r={7} fill="#374151" stroke="white" strokeWidth="2" />
 
-        {/* Speed value + unit */}
+        {/* Speed value */}
         <text
-          x={CX} y={CY + 32}
-          textAnchor="middle" fontSize="30" fontWeight="bold"
+          x={CX} y={CY + 28}
+          textAnchor="middle" fontSize="28" fontWeight="bold"
           fill={speedColor(speed)}
         >
           {speed}
-          <tspan fontSize="14" fill="#6b7280"> km/h</tspan>
+          <tspan fontSize="13" fill="#6b7280"> km/h</tspan>
+        </text>
+
+        {/* Team average */}
+        <text
+          x={CX} y={CY + 46}
+          textAnchor="middle" fontSize="11"
+          fill="#9ca3af"
+        >
+          {isEn ? "Avg" : "平均"}: {teamAverage.toFixed(2)} / 5.00
         </text>
       </svg>
-
-      {/* Labels below SVG */}
-      <p className="text-base font-bold text-gray-700 dark:text-gray-300 mt-1">
-        {isEn ? "Wagon Speed" : "ワゴン推進力"}
-      </p>
-      <p className="text-sm text-gray-400 mt-1">
-        {isEn ? "Team Average" : "平均スコア"}: {teamAverage.toFixed(2)} / 5.00
-      </p>
     </div>
   );
 }
