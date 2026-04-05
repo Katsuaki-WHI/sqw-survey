@@ -114,9 +114,9 @@ function GaugeTicks() {
       {/* Number labels */}
       {labelTicks.map((v) => {
         const angle = speedToAngle(v);
-        const pos = polarToXY(angle, RADIUS + STROKE / 2 + 16);
+        const pos = polarToXY(angle, RADIUS + STROKE / 2 + 34);
         return (
-          <text key={`L${v}`} x={pos.x} y={pos.y} textAnchor="middle" dominantBaseline="middle" fontSize="10" fill="#6b7280">
+          <text key={`L${v}`} x={pos.x} y={pos.y} textAnchor="middle" dominantBaseline="middle" fontSize="11" fontWeight="bold" fill="#1f2937">
             {v}
           </text>
         );
