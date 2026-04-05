@@ -263,20 +263,23 @@ export async function getTeamResults(adminToken: string) {
     sessionAnswers.get(a.session_id)!.set(a.question_id, a.score);
   }
 
-  console.log(`[getTeamResults] sessions: ${sessionIds.length}, sessionAnswers: ${sessionAnswers.size}`);
+  console.log(`[getTeamResults] sessionIds: ${sessionIds.length}, answers: ${(answers || []).length}, sessionAnswers: ${sessionAnswers.size}`);
   for (const [sid, sa] of sessionAnswers.entries()) {
-    console.log(`  session ${sid.slice(0, 8)}: Q02=${sa.get(2)}, Q13=${sa.get(13)}, Q19=${sa.get(19)}, Q26=${sa.get(26)}`);
+    console.log(`  session ${sid.slice(0, 8)}: Q02=${sa.get(2)}, Q13=${sa.get(13)}, Q19=${sa.get(19)}, Q26=${sa.get(26)}, keys=${Array.from(sa.keys()).length}`);
   }
 
+  // Build engagement points - one per session, always included
   const engagementPoints: { direction: number; contribution: number; happiness: number }[] = [];
-  for (const sa of sessionAnswers.values()) {
-    const dir = Math.max(1, sa.get(2) ?? 1);
-    const q13 = sa.get(13) ?? 1;
-    const q19 = sa.get(19) ?? 1;
+  for (const sid of sessionIds) {
+    const sa = sessionAnswers.get(sid);
+    const dir = Math.max(1, sa?.get(2) ?? 1);
+    const q13 = sa?.get(13) ?? 1;
+    const q19 = sa?.get(19) ?? 1;
     const contrib = Math.max(1, (q13 + q19) / 2);
-    const hap = sa.get(26) ?? 1;
+    const hap = sa?.get(26) ?? 1;
     engagementPoints.push({ direction: dir, contribution: contrib, happiness: hap });
   }
+  console.log(`[getTeamResults] engagementPoints: ${engagementPoints.length}`);
 
   // Get member count
   const { count: memberCount } = await supabase
@@ -413,20 +416,24 @@ export async function getTeamResultsByInviteCode(inviteCode: string) {
     sessionAnswers.get(a.session_id)!.set(a.question_id, a.score);
   }
 
-  console.log(`[getTeamResultsByInviteCode] sessions: ${sessionIdList.length}, sessionAnswers: ${sessionAnswers.size}`);
+  console.log(`[getTeamResultsByInviteCode] sessionIdList: ${sessionIdList.length}, answers: ${(answers || []).length}, sessionAnswers: ${sessionAnswers.size}`);
   for (const [sid, sa] of sessionAnswers.entries()) {
-    console.log(`  session ${sid.slice(0, 8)}: Q02=${sa.get(2)}, Q13=${sa.get(13)}, Q19=${sa.get(19)}, Q26=${sa.get(26)}`);
+    console.log(`  session ${sid.slice(0, 8)}: Q02=${sa.get(2)}, Q13=${sa.get(13)}, Q19=${sa.get(19)}, Q26=${sa.get(26)}, keys=${Array.from(sa.keys()).length}`);
   }
 
+  // Build engagement points - one per session, always included
   const engagementPoints: { direction: number; contribution: number; happiness: number }[] = [];
-  for (const sMap of sessionAnswers.values()) {
-    const dir = Math.max(1, sMap.get(2) ?? 1);
-    const q13 = sMap.get(13) ?? 1;
-    const q19 = sMap.get(19) ?? 1;
+  // Ensure every session gets a point even if no answers found in sessionAnswers
+  for (const sid of sessionIdList) {
+    const sMap = sessionAnswers.get(sid);
+    const dir = Math.max(1, sMap?.get(2) ?? 1);
+    const q13 = sMap?.get(13) ?? 1;
+    const q19 = sMap?.get(19) ?? 1;
     const contrib = Math.max(1, (q13 + q19) / 2);
-    const hap = sMap.get(26) ?? 1;
+    const hap = sMap?.get(26) ?? 1;
     engagementPoints.push({ direction: dir, contribution: contrib, happiness: hap });
   }
+  console.log(`[getTeamResultsByInviteCode] engagementPoints: ${engagementPoints.length}`);
 
   return {
     team,

@@ -116,55 +116,13 @@ export async function getMemberResults(memberToken: string) {
     questionScores[a.question_id] = a.score;
   }
 
-  // Build self engagement point
+  // Build self-only engagement point (individual results show only own dot)
   const direction = Math.max(1, questionScores[2] ?? 1);
   const q13 = questionScores[13] ?? 1;
   const q19 = questionScores[19] ?? 1;
   const contribution = Math.max(1, (q13 + q19) / 2);
   const happiness = questionScores[26] ?? 1;
-  const selfPoint = { direction, contribution, happiness, isSelf: true };
-
-  // Get other team members' engagement data (if in a team)
-  const engagementPoints: { direction: number; contribution: number; happiness: number; isSelf?: boolean }[] = [];
-
-  if (member.team_id) {
-    const { data: teamSessions } = await supabase
-      .from("survey_sessions")
-      .select("id")
-      .eq("team_id", member.team_id)
-      .not("completed_at", "is", null);
-
-    const otherSessionIds = (teamSessions || [])
-      .map((s) => s.id)
-      .filter((id) => id !== member.session_id);
-
-    if (otherSessionIds.length > 0) {
-      const { data: otherAnswers } = await supabase
-        .from("survey_answers")
-        .select("question_id, score, session_id")
-        .in("session_id", otherSessionIds)
-        .in("question_id", [2, 13, 19, 26])
-        .not("score", "is", null);
-
-      const sessionMap = new Map<string, Map<number, number>>();
-      for (const a of otherAnswers || []) {
-        if (!sessionMap.has(a.session_id)) sessionMap.set(a.session_id, new Map());
-        sessionMap.get(a.session_id)!.set(a.question_id, a.score);
-      }
-
-      for (const sa of sessionMap.values()) {
-        const d = Math.max(1, sa.get(2) ?? 1);
-        const c13 = sa.get(13) ?? 1;
-        const c19 = sa.get(19) ?? 1;
-        const c = Math.max(1, (c13 + c19) / 2);
-        const h = sa.get(26) ?? 1;
-        engagementPoints.push({ direction: d, contribution: c, happiness: h });
-      }
-    }
-  }
-
-  // Self point goes last (rendered on top)
-  engagementPoints.push(selfPoint);
+  const engagementPoints = [{ direction, contribution, happiness, isSelf: true }];
 
   return {
     ...session,
