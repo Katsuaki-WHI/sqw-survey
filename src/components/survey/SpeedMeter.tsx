@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useLocale } from "@/lib/i18n/context";
 
 interface SpeedMeterProps {
@@ -9,10 +10,11 @@ interface SpeedMeterProps {
 
 const SIZE = 300;
 const CX = SIZE / 2;
-// Gauge center pushed down to make room for title above
 const CY = 185;
 const RADIUS = 95;
 const STROKE = 16;
+
+const BG_IMAGE = "/images/speedometer-bg.png";
 
 function speedToAngle(speed: number): number {
   const clamped = Math.max(0, Math.min(200, speed));
@@ -37,35 +39,94 @@ function arcPath(startAngle: number, endAngle: number, r: number): string {
   return `M ${start.x} ${start.y} A ${r} ${r} 0 ${largeArc} 0 ${end.x} ${end.y}`;
 }
 
-export default function SpeedMeter({ speed }: SpeedMeterProps) {
-  const { locale } = useLocale();
-  const isEn = locale === "en";
-
-  const needleAngle = speedToAngle(speed);
-  const needleTip = polarToXY(needleAngle, RADIUS - 6);
-  const needleBase1 = polarToXY(needleAngle + Math.PI / 2, 4);
-  const needleBase2 = polarToXY(needleAngle - Math.PI / 2, 4);
-
+/** SVG fallback gauge (arcs + ticks) — shown when background image is not available */
+function SvgGauge({ speed }: { speed: number }) {
   const segments = [
     { from: 0, to: 50, color: "#fecaca", active: "#dc2626" },
     { from: 50, to: 100, color: "#fed7aa", active: "#ea580c" },
     { from: 100, to: 150, color: "#fef08a", active: "#ca8a04" },
     { from: 150, to: 200, color: "#bbf7d0", active: "#16a34a" },
   ];
-
   const ticks = [0, 50, 100, 150, 200];
   const minorTicks = [25, 75, 125, 175];
 
-  // Title y=20, gauge top edge = CY - RADIUS - STROKE/2 = 185-95-8 = 82
-  // Gap between title bottom (~33) and gauge top (82) = 49px — plenty of room
-  // Speed text y = CY+26 = 211, SVG_H = 225
+  return (
+    <>
+      {segments.map((seg) => {
+        const a1 = speedToAngle(seg.from);
+        const a2 = speedToAngle(seg.to);
+        const isActive = speed >= seg.from;
+        return (
+          <path
+            key={seg.from}
+            d={arcPath(a1, a2, RADIUS)}
+            fill="none"
+            stroke={isActive ? seg.active : seg.color}
+            strokeWidth={STROKE}
+            strokeLinecap="butt"
+            opacity={isActive ? (speed >= seg.to ? 0.3 : 0.6) : 0.2}
+          />
+        );
+      })}
+
+      {speed > 0 && (
+        <path
+          d={arcPath(speedToAngle(0), speedToAngle(Math.min(speed, 200)), RADIUS)}
+          fill="none"
+          stroke={speedColor(speed)}
+          strokeWidth={STROKE}
+          strokeLinecap="round"
+          opacity="0.8"
+        />
+      )}
+
+      {ticks.map((v) => {
+        const angle = speedToAngle(v);
+        const outer = polarToXY(angle, RADIUS + STROKE / 2 + 2);
+        const inner = polarToXY(angle, RADIUS + STROKE / 2 - 5);
+        const label = polarToXY(angle, RADIUS + STROKE / 2 + 15);
+        return (
+          <g key={v}>
+            <line x1={inner.x} y1={inner.y} x2={outer.x} y2={outer.y} stroke="#9ca3af" strokeWidth="1.5" />
+            <text x={label.x} y={label.y} textAnchor="middle" dominantBaseline="middle" fontSize="9" fill="#9ca3af">
+              {v}
+            </text>
+          </g>
+        );
+      })}
+
+      {minorTicks.map((v) => {
+        const angle = speedToAngle(v);
+        const outer = polarToXY(angle, RADIUS + STROKE / 2 + 1);
+        const inner = polarToXY(angle, RADIUS + STROKE / 2 - 3);
+        return (
+          <line key={v} x1={inner.x} y1={inner.y} x2={outer.x} y2={outer.y} stroke="#d1d5db" strokeWidth="1" />
+        );
+      })}
+    </>
+  );
+}
+
+export default function SpeedMeter({ speed }: SpeedMeterProps) {
+  const { locale } = useLocale();
+  const isEn = locale === "en";
+  const [bgLoaded, setBgLoaded] = useState(false);
+  const [bgError, setBgError] = useState(false);
+
+  const needleAngle = speedToAngle(speed);
+  const needleTip = polarToXY(needleAngle, RADIUS - 6);
+  const needleBase1 = polarToXY(needleAngle + Math.PI / 2, 4);
+  const needleBase2 = polarToXY(needleAngle - Math.PI / 2, 4);
+
   const SVG_H = 225;
+  // Background image area: covers the gauge region
+  const imgTop = CY - RADIUS - STROKE / 2 - 18;
+  const imgH = RADIUS + STROKE / 2 + 18;
 
   return (
     <div className="flex flex-col items-center">
-      {/* To swap gauge background: place image at public/images/speedometer-bg.png */}
       <svg viewBox={`0 0 ${SIZE} ${SVG_H}`} width={SIZE} className="max-w-full h-auto">
-        {/* Title label — well above the gauge arc */}
+        {/* Title label */}
         <text
           x={CX} y={20}
           textAnchor="middle" fontSize="14" fontWeight="bold"
@@ -74,63 +135,23 @@ export default function SpeedMeter({ speed }: SpeedMeterProps) {
           {isEn ? "Wagon Speed" : "ワゴン推進力"}
         </text>
 
-        {/* Background arc segments */}
-        {segments.map((seg) => {
-          const a1 = speedToAngle(seg.from);
-          const a2 = speedToAngle(seg.to);
-          const isActive = speed >= seg.from;
-          return (
-            <path
-              key={seg.from}
-              d={arcPath(a1, a2, RADIUS)}
-              fill="none"
-              stroke={isActive ? seg.active : seg.color}
-              strokeWidth={STROKE}
-              strokeLinecap="butt"
-              opacity={isActive ? (speed >= seg.to ? 0.3 : 0.6) : 0.2}
-            />
-          );
-        })}
-
-        {/* Active arc */}
-        {speed > 0 && (
-          <path
-            d={arcPath(speedToAngle(0), speedToAngle(Math.min(speed, 200)), RADIUS)}
-            fill="none"
-            stroke={speedColor(speed)}
-            strokeWidth={STROKE}
-            strokeLinecap="round"
-            opacity="0.8"
+        {/* Background image (hidden until loaded, replaces SVG arcs) */}
+        {!bgError && (
+          <image
+            href={BG_IMAGE}
+            x={(SIZE - SIZE * 0.9) / 2} y={imgTop}
+            width={SIZE * 0.9} height={imgH}
+            preserveAspectRatio="xMidYMid meet"
+            opacity={bgLoaded ? 1 : 0}
+            onLoad={() => setBgLoaded(true)}
+            onError={() => setBgError(true)}
           />
         )}
 
-        {/* Major ticks + labels */}
-        {ticks.map((v) => {
-          const angle = speedToAngle(v);
-          const outer = polarToXY(angle, RADIUS + STROKE / 2 + 2);
-          const inner = polarToXY(angle, RADIUS + STROKE / 2 - 5);
-          const label = polarToXY(angle, RADIUS + STROKE / 2 + 15);
-          return (
-            <g key={v}>
-              <line x1={inner.x} y1={inner.y} x2={outer.x} y2={outer.y} stroke="#9ca3af" strokeWidth="1.5" />
-              <text x={label.x} y={label.y} textAnchor="middle" dominantBaseline="middle" fontSize="9" fill="#9ca3af">
-                {v}
-              </text>
-            </g>
-          );
-        })}
+        {/* SVG gauge fallback — shown when image is not loaded */}
+        {!bgLoaded && <SvgGauge speed={speed} />}
 
-        {/* Minor ticks */}
-        {minorTicks.map((v) => {
-          const angle = speedToAngle(v);
-          const outer = polarToXY(angle, RADIUS + STROKE / 2 + 1);
-          const inner = polarToXY(angle, RADIUS + STROKE / 2 - 3);
-          return (
-            <line key={v} x1={inner.x} y1={inner.y} x2={outer.x} y2={outer.y} stroke="#d1d5db" strokeWidth="1" />
-          );
-        })}
-
-        {/* Needle */}
+        {/* Needle (always rendered on top) */}
         <polygon
           points={`${needleTip.x},${needleTip.y} ${needleBase1.x},${needleBase1.y} ${CX},${CY} ${needleBase2.x},${needleBase2.y}`}
           fill={speedColor(speed)}
@@ -142,7 +163,7 @@ export default function SpeedMeter({ speed }: SpeedMeterProps) {
         {/* Center cap */}
         <circle cx={CX} cy={CY} r={7} fill="#374151" stroke="white" strokeWidth="2" />
 
-        {/* Speed value — below the needle pivot, inside the flat bottom of the half-circle */}
+        {/* Speed value */}
         <text
           x={CX} y={CY + 26}
           textAnchor="middle" fontSize="26" fontWeight="bold"
