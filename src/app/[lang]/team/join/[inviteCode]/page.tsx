@@ -146,22 +146,11 @@ export default function TeamJoinPage() {
           memberToken ? (
             <div className="flex flex-col items-center gap-3">
               <Link
-                href={`/${locale}/team/results/${memberToken}`}
+                href={`/${locale}/team/join/${inviteCode}`}
                 className="text-sm text-blue-600 hover:underline"
               >
                 {dict.survey.viewYourResults}
               </Link>
-              {(team.results_visible ||
-                team.release_mode === "immediate" ||
-                (team.release_mode === "on_deadline" && team.deadline && new Date(team.deadline) < new Date())
-              ) && (
-                <Link
-                  href={`/${locale}/team/join/${inviteCode}/results`}
-                  className="text-sm text-green-600 hover:underline"
-                >
-                  {dict.survey.viewTeamResults}
-                </Link>
-              )}
             </div>
           ) : undefined
         }

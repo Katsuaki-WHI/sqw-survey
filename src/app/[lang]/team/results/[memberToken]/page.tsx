@@ -114,12 +114,21 @@ export default function MemberResultsPage() {
             {t.viewTeamResults}
           </Link>
         )}
-        <Link
-          href={`/${locale}`}
-          className="rounded-full bg-gray-800 px-6 py-3 text-white hover:bg-gray-700 transition-colors"
-        >
-          {t.backToTop}
-        </Link>
+        {teamInfo?.inviteCode ? (
+          <Link
+            href={`/${locale}/team/join/${teamInfo.inviteCode}`}
+            className="rounded-full bg-gray-800 px-6 py-3 text-white hover:bg-gray-700 transition-colors"
+          >
+            {t.backToTop}
+          </Link>
+        ) : (
+          <Link
+            href={`/${locale}`}
+            className="rounded-full bg-gray-800 px-6 py-3 text-white hover:bg-gray-700 transition-colors"
+          >
+            {t.backToTop}
+          </Link>
+        )}
       </div>
     </div>
   );
