@@ -168,7 +168,8 @@ export default function TeamCreatePage() {
 
           {/* Admin URL */}
           <div className="rounded-lg border border-yellow-200 dark:border-yellow-800 bg-yellow-50 dark:bg-yellow-950 p-4 mb-6">
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{t.adminUrlLabel}</label>
+            <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-1">{t.adminUrlLabel}</label>
+            <p className="text-xs text-gray-600 dark:text-gray-400 mb-3">{t.adminUrlDesc}</p>
             <div className="flex gap-2 items-center">
               <input readOnly value={adminUrl} className="flex-1 rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm text-gray-900 dark:text-white bg-gray-50 dark:bg-gray-800" />
               <CopyLinkButton text={adminUrl} />
@@ -177,21 +178,25 @@ export default function TeamCreatePage() {
           </div>
 
           {/* Team invite URLs */}
-          <div className="flex flex-col gap-4 mb-8">
-            {created.teams.map((team) => {
-              const inviteUrl = `${origin}/${locale}/team/join/${team.inviteCode}`;
-              return (
-                <div key={team.inviteCode} className="rounded-lg border border-gray-200 dark:border-gray-700 p-4">
-                  <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    {team.name} ({team.expectedMembers}{isEn ? " members" : "名"})
-                  </p>
-                  <div className="flex gap-2 items-center">
-                    <input readOnly value={inviteUrl} className="flex-1 rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm text-gray-900 dark:text-white bg-gray-50 dark:bg-gray-800" />
-                    <CopyLinkButton text={inviteUrl} />
+          <div className="mb-8">
+            <h2 className="text-sm font-bold text-gray-700 dark:text-gray-300 mb-1">{t.inviteUrlsTitle}</h2>
+            <p className="text-xs text-gray-600 dark:text-gray-400 mb-4">{t.inviteUrlsDesc}</p>
+            <div className="flex flex-col gap-4">
+              {created.teams.map((team) => {
+                const inviteUrl = `${origin}/${locale}/team/join/${team.inviteCode}`;
+                return (
+                  <div key={team.inviteCode} className="rounded-lg border border-gray-200 dark:border-gray-700 p-4">
+                    <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      {team.name} ({team.expectedMembers}{isEn ? " members" : "名"})
+                    </p>
+                    <div className="flex gap-2 items-center">
+                      <input readOnly value={inviteUrl} className="flex-1 rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm text-gray-900 dark:text-white bg-gray-50 dark:bg-gray-800" />
+                      <CopyLinkButton text={inviteUrl} />
+                    </div>
                   </div>
-                </div>
-              );
-            })}
+                );
+              })}
+            </div>
           </div>
 
           <div className="text-center">

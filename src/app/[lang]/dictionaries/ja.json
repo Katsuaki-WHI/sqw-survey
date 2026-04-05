@@ -165,7 +165,11 @@
     "teamsSummary": "チーム一覧",
     "projectCreatedTitle": "プロジェクトが作成されました！",
     "projectCreatedDesc": "各チームの招待リンクをメンバーに共有してください。管理画面から結果を確認できます。",
-    "deadlineRequired": "回答期限を入力してください"
+    "deadlineRequired": "回答期限を入力してください",
+    "adminUrlDesc": "このリンクからプロジェクト全体の管理画面に入れます。回答状況の確認・結果の公開操作はここから行います。あなた専用のURLです。第三者に共有しないでください。",
+    "inviteUrlsTitle": "チームごとの招待リンク",
+    "inviteUrlsDesc": "各チームのメンバーにこのリンクを共有してください。メンバーはこのリンクから回答・結果確認をすべて行えます。",
+    "manageButton": "管理 →"
   },
   "metadata": {
     "title": "SQWサーベイ | スクエアホイールサーベイ",

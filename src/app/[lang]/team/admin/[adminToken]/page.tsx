@@ -138,6 +138,8 @@ export default function AdminDashboardPage() {
   const [resettingId, setResettingId] = useState<string | null>(null);
   const [projectTeams, setProjectTeams] = useState<{ id: string; name: string; invite_code: string; admin_token: string; expected_members: number | null }[] | null>(null);
   const [projectName, setProjectName] = useState<string | null>(null);
+  const [selectedTeamToken, setSelectedTeamToken] = useState<string | null>(null);
+  const [switchingTeam, setSwitchingTeam] = useState(false);
 
   const showToast = (msg: string) => {
     setToast(msg);
@@ -152,6 +154,7 @@ export default function AdminDashboardPage() {
       setProjectTeams(projectData.teams as typeof projectTeams);
       // Load first team as default view
       if (projectData.teams.length > 0) {
+        setSelectedTeamToken(projectData.teams[0].admin_token);
         const firstTeam = await getTeamByAdminToken(projectData.teams[0].admin_token);
         if (firstTeam) {
           setTeam(firstTeam);
@@ -196,9 +199,11 @@ export default function AdminDashboardPage() {
     loadData();
   }, [loadData]);
 
+  const activeTeamToken = selectedTeamToken || adminToken;
+
   async function handleToggleVisibility() {
     setToggling(true);
-    const result = await toggleResultsVisibility(adminToken, locale);
+    const result = await toggleResultsVisibility(activeTeamToken, locale);
     if (!("error" in result) && team) {
       setTeam({ ...team, results_visible: result.results_visible });
     }
@@ -209,7 +214,7 @@ export default function AdminDashboardPage() {
     const msg = `${t.resetConfirm}\n\n${t.resetNote}`;
     if (!window.confirm(msg)) return;
     setResettingId(memberId);
-    const result = await resetMemberResponse(adminToken, memberId);
+    const result = await resetMemberResponse(activeTeamToken, memberId);
     if (!("error" in result)) {
       showToast(t.resetSuccess);
       loadData(); // Reload all data
@@ -217,9 +222,29 @@ export default function AdminDashboardPage() {
     setResettingId(null);
   }
 
+  async function handleSwitchTeam(teamAdminToken: string) {
+    setSwitchingTeam(true);
+    setSelectedTeamToken(teamAdminToken);
+    const teamData = await getTeamByAdminToken(teamAdminToken);
+    if (teamData) {
+      setTeam(teamData);
+      if (teamData.deadline) setDeadlineInput(new Date(teamData.deadline).toISOString().slice(0, 16));
+      else setDeadlineInput("");
+      const [statsData, resultsData, membersData] = await Promise.all([
+        getTeamStats(teamData.id),
+        getTeamResults(teamAdminToken),
+        getTeamMembers(teamAdminToken),
+      ]);
+      setStats(statsData);
+      setRawResults(resultsData ? resultsData as TeamResultsRaw : null);
+      setMembers(membersData || []);
+    }
+    setSwitchingTeam(false);
+  }
+
   async function handleUpdateDeadline() {
     setUpdatingDeadline(true);
-    const result = await updateDeadline(adminToken, deadlineInput || null);
+    const result = await updateDeadline(activeTeamToken, deadlineInput || null);
     if (!("error" in result) && team) {
       setTeam({ ...team, deadline: result.deadline ?? null });
       showToast(t.deadlineUpdated);
@@ -229,7 +254,7 @@ export default function AdminDashboardPage() {
 
   async function handleRemoveDeadline() {
     setUpdatingDeadline(true);
-    const result = await updateDeadline(adminToken, null);
+    const result = await updateDeadline(activeTeamToken, null);
     if (!("error" in result) && team) {
       setTeam({ ...team, deadline: null });
       setDeadlineInput("");
@@ -240,7 +265,7 @@ export default function AdminDashboardPage() {
 
   async function handleUpdateReleaseMode(mode: ReleaseMode) {
     setUpdatingMode(true);
-    const result = await updateReleaseMode(adminToken, mode);
+    const result = await updateReleaseMode(activeTeamToken, mode);
     if (!("error" in result) && team) {
       setTeam({
         ...team,
@@ -309,13 +334,31 @@ export default function AdminDashboardPage() {
             <div className="flex flex-col gap-2">
               {projectTeams.map((pt) => {
                 const ptInvite = `${origin}/${locale}/team/join/${pt.invite_code}`;
+                const isSelected = selectedTeamToken === pt.admin_token;
                 return (
-                  <div key={pt.id} className="flex items-center justify-between rounded-lg border border-gray-100 dark:border-gray-800 px-4 py-3">
+                  <div key={pt.id} className={`flex items-center justify-between rounded-lg border-2 px-4 py-3 transition-colors ${
+                    isSelected
+                      ? "border-blue-500 bg-blue-50 dark:bg-blue-950"
+                      : "border-gray-100 dark:border-gray-800"
+                  }`}>
                     <div>
                       <p className="text-sm font-medium text-gray-900 dark:text-white">{pt.name}</p>
                       <p className="text-xs text-gray-500">{pt.expected_members}{isEn ? " members" : "名"}</p>
                     </div>
-                    <CopyLinkButton text={ptInvite} />
+                    <div className="flex items-center gap-2">
+                      <CopyLinkButton text={ptInvite} />
+                      <button
+                        onClick={() => handleSwitchTeam(pt.admin_token)}
+                        disabled={switchingTeam || isSelected}
+                        className={`text-xs px-3 py-1.5 rounded transition-colors ${
+                          isSelected
+                            ? "bg-blue-600 text-white"
+                            : "border border-blue-300 dark:border-blue-700 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-950"
+                        } disabled:opacity-50`}
+                      >
+                        {switchingTeam && selectedTeamToken === pt.admin_token ? t.updating : t.manageButton}
+                      </button>
+                    </div>
                   </div>
                 );
               })}
