@@ -61,6 +61,7 @@ function seededJitter(index: number, seed: number): number {
 }
 
 function computePlottedPoints(points: EngagementPoint[]): PlottedPoint[] {
+  console.log('[computePlottedPoints] input:', JSON.stringify(points));
   // Round to 2 decimal places for exact-match grouping
   const round = (v: number) => Math.round(v * 100) / 100;
 
@@ -113,6 +114,7 @@ function computePlottedPoints(points: EngagementPoint[]): PlottedPoint[] {
     }
   }
 
+  console.log('[computePlottedPoints] output:', JSON.stringify(plotted));
   return plotted;
 }
 
