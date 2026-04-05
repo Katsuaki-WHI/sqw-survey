@@ -129,14 +129,17 @@ function DotWithOverlap({
   label?: string;
   isEn: boolean;
 }) {
+  // For exact overlaps, only render the first dot (index 0) with ring + count
+  if (p.overlapCount > 1 && p.overlapIndex > 0) return null;
+
   const cx = toPixel(p.plotX);
   const cy = SIZE - toPixel(p.plotY) + PAD;
   const color = happinessColor(p.happiness);
 
   return (
     <g>
-      {/* Concentric ring for exact overlaps (show on first dot only) */}
-      {p.overlapCount > 1 && p.overlapIndex === 0 && (
+      {/* Concentric ring for exact overlaps */}
+      {p.overlapCount > 1 && (
         <circle
           cx={cx}
           cy={cy}
@@ -157,8 +160,8 @@ function DotWithOverlap({
         stroke="white"
         strokeWidth={p.isSelf ? 2 : 1.5}
       />
-      {/* Overlap count badge (show on first dot of group with 2+ members) */}
-      {p.overlapCount > 1 && p.overlapIndex === 0 && (
+      {/* Overlap count badge */}
+      {p.overlapCount > 1 && (
         <text
           x={cx}
           y={cy + 3.5}
@@ -197,6 +200,11 @@ export default function EngagementMap({
 
   const midPx = toPixel(MID);
   const plotted = computePlottedPoints(points);
+
+  console.log(`[EngagementMap] points: ${points.length}, plotted: ${plotted.length}, mode: ${mode}`);
+  plotted.forEach((p, i) => {
+    console.log(`  dot${i}: dir=${p.direction}, cont=${p.contribution}, hap=${p.happiness}, isSelf=${p.isSelf}, overlap=${p.overlapCount}/${p.overlapIndex}, plot=(${p.plotX.toFixed(2)},${p.plotY.toFixed(2)})`);
+  });
 
   const quadrants = [
     { x: PAD + INNER * 0.75, svgY: PAD + INNER * 0.20, ja: "エンゲージ型", en: "Engaged", color: "#16a34a" },

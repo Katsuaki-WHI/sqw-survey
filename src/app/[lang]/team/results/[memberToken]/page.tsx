@@ -38,6 +38,7 @@ export default function MemberResultsPage() {
     ]);
 
     if (resultData) {
+      console.log(`[MemberResultsPage] engagementPoints:`, JSON.stringify(resultData.engagementPoints));
       setResults({
         teamAverage: Number(resultData.team_average) || 0,
         wagonSpeed: Number(resultData.wagon_speed) || 0,

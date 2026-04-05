@@ -122,7 +122,8 @@ export async function getMemberResults(memberToken: string) {
   const q19 = questionScores[19] ?? 1;
   const contribution = Math.max(1, (q13 + q19) / 2);
   const happiness = questionScores[26] ?? 1;
-  const engagementPoints = [{ direction, contribution, happiness, isSelf: true }];
+  const engagementPoints = [{ direction, contribution, happiness, isSelf: true as const }];
+  console.log(`[getMemberResults] engagementPoints:`, JSON.stringify(engagementPoints));
 
   return {
     ...session,
