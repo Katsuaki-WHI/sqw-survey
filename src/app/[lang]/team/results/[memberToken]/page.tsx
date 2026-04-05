@@ -138,8 +138,8 @@ export default function MemberResultsPage() {
           {tt.bookmarkNotice}
         </p>
 
-        {/* Retake button */}
-        {teamInfo?.inviteCode && teamInfo.teamId && (
+        {/* Retake button — hidden when team results are published */}
+        {teamInfo?.inviteCode && teamInfo.teamId && !teamInfo.resultsVisible && (
           <div className="flex flex-col items-center gap-2 mt-2 pt-4 border-t border-gray-200 dark:border-gray-700 w-full">
             <button
               onClick={() => {
