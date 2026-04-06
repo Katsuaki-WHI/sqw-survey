@@ -43,6 +43,7 @@ export default function TeamJoinPage() {
   const [joinName, setJoinName] = useState("");
   const [emailError, setEmailError] = useState(false);
   const [emailBlurred, setEmailBlurred] = useState(false);
+  const [joinRole, setJoinRole] = useState<string>("");
 
   const loadTeam = useCallback(async () => {
     const data = await getTeamByInviteCode(inviteCode);
@@ -90,7 +91,7 @@ export default function TeamJoinPage() {
 
     let token = memberToken;
     if (!token) {
-      token = await joinTeam(team.id, joinName || undefined);
+      token = await joinTeam(team.id, joinName || undefined, joinRole || undefined);
       if (!token) return;
       setMemberToken(token);
       document.cookie = `sqw_member_${team.id}=${token}; path=/; max-age=${60 * 60 * 24 * 30}; SameSite=Lax`;
@@ -307,6 +308,26 @@ export default function TeamJoinPage() {
               {emailError && (
                 <p className="text-xs text-red-500 mt-1">{t.emailFormatError}</p>
               )}
+            </div>
+
+            {/* Role selection */}
+            <div className="w-full max-w-sm text-left">
+              <label className="block text-sm text-gray-600 dark:text-gray-400 mb-2">
+                {t.roleLabel}
+              </label>
+              <div className="flex flex-col gap-1.5">
+                {([
+                  { value: "leader", label: t.roleLeader },
+                  { value: "member", label: t.roleMember },
+                  { value: "depends", label: t.roleDepends },
+                ] as const).map((opt) => (
+                  <label key={opt.value} className="flex items-center gap-2 cursor-pointer text-sm text-gray-700 dark:text-gray-300">
+                    <input type="radio" name="role" checked={joinRole === opt.value} onChange={() => setJoinRole(opt.value)} className="text-blue-600" />
+                    {opt.label}
+                  </label>
+                ))}
+              </div>
+              <p className="text-xs text-gray-400 mt-1">{t.roleNote}</p>
             </div>
 
             <button

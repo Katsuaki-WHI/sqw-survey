@@ -417,6 +417,13 @@ export default function TeamCreatePage() {
               )}
             </div>
 
+            {/* Leader definition hint */}
+            <div className="rounded-lg bg-blue-50 dark:bg-blue-950 border border-blue-200 dark:border-blue-800 p-4">
+              <p className="text-sm font-medium text-blue-800 dark:text-blue-300 mb-2">{t.leaderDefinitionTitle}</p>
+              <p className="text-xs text-blue-700 dark:text-blue-400 mb-2">{t.leaderDefinitionHint}</p>
+              <p className="text-xs text-blue-600 dark:text-blue-400 whitespace-pre-line">{t.leaderDefinitionExample}</p>
+            </div>
+
             {/* Invite Message */}
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{t.inviteMessageLabel}</label>

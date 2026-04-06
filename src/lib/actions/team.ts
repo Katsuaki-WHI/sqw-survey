@@ -110,7 +110,7 @@ export async function getTeamByInviteCode(inviteCode: string) {
   return data;
 }
 
-export async function joinTeam(teamId: string, respondentName?: string) {
+export async function joinTeam(teamId: string, respondentName?: string, role?: string) {
   const memberToken = generateMemberToken();
   const supabase = await createSupabaseServer();
 
@@ -119,6 +119,7 @@ export async function joinTeam(teamId: string, respondentName?: string) {
     member_token: memberToken,
   };
   if (respondentName?.trim()) insertData.respondent_name = respondentName.trim();
+  if (role) insertData.role = role;
 
   const { error } = await supabase.from("team_members").insert(insertData);
 
