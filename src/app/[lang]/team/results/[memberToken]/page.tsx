@@ -224,6 +224,7 @@ export default function MemberResultsPage() {
                 >
                   {tt.aiReportButton}
                 </button>
+                <p className="text-sm text-gray-500 dark:text-gray-400 mt-3 text-left whitespace-pre-line">{tt.aiReportPrivacy}</p>
               </div>
             )}
 

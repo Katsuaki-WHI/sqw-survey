@@ -199,6 +199,7 @@
     "aiReportTitle": "AI Report",
     "aiReportSavePdf": "Save as PDF",
     "aiReportError": "Failed to generate report. Please try again later.",
+    "aiReportPrivacy": "Privacy Notice\n・This report is generated based on your personal data only\n・Organizers and admins cannot view the content of your report\n・Please save your report yourself after generation\n・Re-issuance of reports is not available",
     "aiReportPurchaseTitle": "Team AI Report Purchase Confirmation",
     "aiReportPurchaseBody": "The Team AI Report is one report per team. If someone has already purchased it, this will be a duplicate purchase.\n\nWe recommend checking with your leader or survey organizer before purchasing.\n\n*Once purchased and generated, the report is available to all team members for free.\n*Purchases are non-refundable.",
     "aiReportPurchaseConfirm": "I understand. Proceed",
