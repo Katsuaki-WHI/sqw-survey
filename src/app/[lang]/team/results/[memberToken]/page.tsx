@@ -6,6 +6,7 @@ import { useLocale } from "@/lib/i18n/context";
 import { getMemberResults } from "@/lib/actions/survey";
 import { getTeamByMemberToken } from "@/lib/actions/team";
 import ResultsView, { type ResultsData } from "@/components/survey/ResultsView";
+import { CATEGORY_CONFIG } from "@/lib/survey/questions";
 import LanguageToggle from "@/components/LanguageToggle";
 import CopyLinkButton from "@/components/ui/CopyLinkButton";
 import Link from "next/link";
@@ -15,6 +16,7 @@ export default function MemberResultsPage() {
   const { locale, dict } = useLocale();
   const t = dict.survey;
   const tt = dict.team;
+  const isEn = locale === "en";
   const params = useParams();
   const memberToken = params.memberToken as string;
 
@@ -187,76 +189,120 @@ export default function MemberResultsPage() {
           {tt.bookmarkNotice}
         </p>
 
-        {/* AI Report */}
-        {teamInfo?.teamId && (
-          <div className="w-full mt-4">
-            {!aiReport && !aiReportLoading && (
-              <div className="rounded-lg border border-purple-200 dark:border-purple-800 bg-purple-50 dark:bg-purple-950 p-4 text-center">
-                <p className="text-xs text-purple-600 dark:text-purple-400 mb-3">{tt.aiReportDesc}</p>
-                <button
-                  onClick={async () => {
-                    setAiReportLoading(true);
-                    setAiReportError("");
-                    try {
-                      // Check cache first
-                      const cacheRes = await fetch(`/api/ai-report/cache?memberToken=${memberToken}&reportType=personal&language=${locale}`);
-                      const cacheData = await cacheRes.json();
-                      if (cacheData.cached) {
-                        setAiReport(cacheData.content);
-                        setAiReportLoading(false);
-                        return;
-                      }
-                      // Generate
-                      const res = await fetch("/api/ai-report/personal", {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({ teamId: teamInfo.teamId, memberToken, language: locale }),
-                      });
-                      const data = await res.json();
-                      if (data.report) setAiReport(data.report);
-                      else setAiReportError(data.error || tt.aiReportError);
-                    } catch {
-                      setAiReportError(tt.aiReportError);
-                    }
-                    setAiReportLoading(false);
-                  }}
-                  className="rounded-full bg-purple-600 px-6 py-2 text-sm font-medium text-white hover:bg-purple-500 transition-colors"
-                >
-                  {tt.aiReportButton}
-                </button>
-                <p className="text-sm text-gray-500 dark:text-gray-400 mt-3 text-left whitespace-pre-line">{tt.aiReportPrivacy}</p>
+        {/* ============================== */}
+        {/* CTA Section: 3 Blocks         */}
+        {/* ============================== */}
+        {teamInfo?.teamId && results && (() => {
+          // Compute lowest 3 categories
+          const teamCats = ["landscape","road","rope","tire","body","attitude","cargo","diversity","happiness"] as const;
+          const catEntries = teamCats
+            .map((cat) => ({ cat, score: results.categoryScores[cat]?.avg ?? 0, label: isEn ? CATEGORY_CONFIG[cat].labelEn : CATEGORY_CONFIG[cat].label }))
+            .filter((e) => e.score > 0)
+            .sort((a, b) => a.score - b.score)
+            .slice(0, 3);
+
+          return (
+            <div className="w-full flex flex-col gap-6 mt-8">
+
+              {/* Block 1: Gap Preview */}
+              <div className="rounded-lg border border-gray-200 dark:border-gray-700 p-5">
+                <h3 className="text-base font-bold text-gray-800 dark:text-gray-200 mb-4">{tt.ctaGapTitle}</h3>
+                <div className="flex flex-col gap-2">
+                  {catEntries.map((e) => (
+                    <div key={e.cat} className="flex items-center justify-between text-sm py-2 border-b border-gray-100 dark:border-gray-800 last:border-0">
+                      <span className="text-gray-700 dark:text-gray-300">{e.label}</span>
+                      <div className="flex items-center gap-4">
+                        <span className="font-mono font-bold text-gray-900 dark:text-white">{tt.ctaGapYou} {e.score.toFixed(2)}</span>
+                        <span className="text-gray-400 text-xs">{tt.ctaGapTeamAvg}</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
-            )}
 
-            {aiReportLoading && (
-              <div className="rounded-lg border border-purple-200 dark:border-purple-800 p-6 text-center">
-                <div className="animate-spin inline-block w-6 h-6 border-2 border-purple-600 border-t-transparent rounded-full mb-3" />
-                <p className="text-sm text-purple-600">{tt.aiReportGenerating}</p>
-              </div>
-            )}
+              {/* Block 2: Personal AI Report CTA */}
+              {!aiReport && !aiReportLoading && (
+                <div className="rounded-xl border-2 border-purple-300 dark:border-purple-700 bg-gradient-to-br from-purple-50 to-white dark:from-purple-950 dark:to-gray-900 p-6 shadow-sm">
+                  <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-3">{tt.ctaPersonalTitle}</h3>
+                  <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">{tt.ctaPersonalDesc}</p>
 
-            {aiReportError && (
-              <p className="text-sm text-red-500 text-center">{aiReportError}</p>
-            )}
+                  <ul className="text-sm text-gray-700 dark:text-gray-300 space-y-2 mb-4">
+                    {[tt.ctaPersonalItem1, tt.ctaPersonalItem2, tt.ctaPersonalItem3, tt.ctaPersonalItem4].map((item, i) => (
+                      <li key={i} className="flex items-start gap-2">
+                        <span className="text-purple-500 shrink-0">&#128275;</span>
+                        <span>{item}</span>
+                      </li>
+                    ))}
+                  </ul>
 
-            {aiReport && (
-              <div className="rounded-lg border border-purple-200 dark:border-purple-800 p-6">
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-lg font-bold text-purple-800 dark:text-purple-300">{tt.aiReportTitle}</h3>
+                  <p className="text-sm text-orange-700 dark:text-orange-400 font-medium mb-5 italic">{tt.ctaUrgency}</p>
+
                   <button
-                    onClick={() => window.print()}
-                    className="text-xs text-gray-500 hover:text-gray-700 border border-gray-300 rounded px-3 py-1"
+                    onClick={async () => {
+                      console.log("[CTA] Personal AI Report purchase initiated");
+                      setAiReportLoading(true);
+                      setAiReportError("");
+                      try {
+                        const cacheRes = await fetch(`/api/ai-report/cache?memberToken=${memberToken}&reportType=personal&language=${locale}`);
+                        const cacheData = await cacheRes.json();
+                        if (cacheData.cached) { setAiReport(cacheData.content); setAiReportLoading(false); return; }
+                        const res = await fetch("/api/ai-report/personal", {
+                          method: "POST", headers: { "Content-Type": "application/json" },
+                          body: JSON.stringify({ teamId: teamInfo.teamId, memberToken, language: locale }),
+                        });
+                        const data = await res.json();
+                        if (data.report) setAiReport(data.report);
+                        else setAiReportError(data.error || tt.aiReportError);
+                      } catch { setAiReportError(tt.aiReportError); }
+                      setAiReportLoading(false);
+                    }}
+                    className="w-full rounded-full bg-purple-600 px-6 py-3 text-base font-bold text-white hover:bg-purple-500 transition-colors shadow-md"
                   >
-                    {tt.aiReportSavePdf}
+                    {tt.ctaPersonalButton}
                   </button>
+
+                  <p className="text-xs text-gray-400 mt-4 whitespace-pre-line leading-relaxed">{tt.ctaPersonalNote}</p>
                 </div>
-                <div className="prose prose-sm dark:prose-invert max-w-none">
-                  <ReactMarkdown>{aiReport}</ReactMarkdown>
+              )}
+
+              {aiReportLoading && (
+                <div className="rounded-xl border-2 border-purple-300 dark:border-purple-700 p-8 text-center">
+                  <div className="animate-spin inline-block w-8 h-8 border-3 border-purple-600 border-t-transparent rounded-full mb-4" />
+                  <p className="text-sm text-purple-600 font-medium">{tt.aiReportGenerating}</p>
                 </div>
+              )}
+
+              {aiReportError && <p className="text-sm text-red-500 text-center">{aiReportError}</p>}
+
+              {aiReport && (
+                <div className="rounded-xl border border-purple-200 dark:border-purple-800 p-6">
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-lg font-bold text-purple-800 dark:text-purple-300">{tt.aiReportTitle}</h3>
+                    <button onClick={() => window.print()} className="text-xs text-gray-500 hover:text-gray-700 border border-gray-300 rounded px-3 py-1">
+                      {tt.aiReportSavePdf}
+                    </button>
+                  </div>
+                  <div className="prose prose-sm dark:prose-invert max-w-none">
+                    <ReactMarkdown>{aiReport}</ReactMarkdown>
+                  </div>
+                </div>
+              )}
+
+              {/* Block 3: Team Leader Teaser */}
+              <div className="rounded-lg border border-gray-200 dark:border-gray-700 p-5 bg-gray-50 dark:bg-gray-900">
+                <h3 className="text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">{tt.ctaLeaderTitle}</h3>
+                <p className="text-xs text-gray-500 dark:text-gray-400 mb-3">{tt.ctaLeaderDesc}</p>
+                <button
+                  disabled
+                  className="rounded-full border border-gray-300 dark:border-gray-600 px-5 py-2 text-sm text-gray-400 cursor-not-allowed"
+                >
+                  {tt.ctaLeaderButton}
+                </button>
               </div>
-            )}
-          </div>
-        )}
+
+            </div>
+          );
+        })()}
 
       </div>
     </div>
