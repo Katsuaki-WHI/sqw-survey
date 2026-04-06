@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { createSupabaseServer } from "@/lib/supabase/server";
-import { AI_REPORT_SYSTEM_PROMPT } from "@/lib/ai/whi-philosophy";
+import { AI_REPORT_SYSTEM_PROMPT, TEAM_REPORT_PROMPT_JA, TEAM_REPORT_PROMPT_EN } from "@/lib/ai/whi-philosophy";
 import { CATEGORY_CONFIG } from "@/lib/survey/questions";
 
 export async function POST(request: NextRequest) {
@@ -93,8 +93,18 @@ export async function POST(request: NextRequest) {
     .slice(0, 3)
     .map(([cat, s]) => `${CATEGORY_CONFIG[cat as keyof typeof CATEGORY_CONFIG]?.label || cat}: SD=${s.sd}, avg=${s.avg}`);
 
+  // Get Q26 scores for at-risk detection
+  const q26Scores: number[] = [];
+  for (const a of allAnswers || []) {
+    if (a.question_id === 26) q26Scores.push(a.score);
+  }
+  const q26Min = q26Scores.length > 0 ? Math.min(...q26Scores) : 0;
+  const q26AllAbove3 = q26Scores.every((s) => s >= 3.0);
+
   // Get prompt
-  let systemPrompt = AI_REPORT_SYSTEM_PROMPT;
+  const isEn = language === "en";
+  const defaultPrompt = isEn ? TEAM_REPORT_PROMPT_EN : TEAM_REPORT_PROMPT_JA;
+  let systemPrompt = defaultPrompt;
   const { data: promptRow } = await supabase
     .from("ai_prompts")
     .select("content")
@@ -103,8 +113,6 @@ export async function POST(request: NextRequest) {
     .eq("is_active", true)
     .single();
   if (promptRow?.content) systemPrompt = promptRow.content;
-
-  const isEn = language === "en";
   const statsStr = Object.entries(categoryStats)
     .map(([cat, s]) => `  ${CATEGORY_CONFIG[cat as keyof typeof CATEGORY_CONFIG]?.label || cat}: avg=${s.avg}, min=${s.min}, max=${s.max}, SD=${s.sd}`)
     .join("\n");
@@ -125,6 +133,11 @@ ${highVariance.join("\n")}
 
 Overall team average: ${overallAverage}
 
+Q26 (Happiness) analysis:
+- Minimum Q26 score: ${q26Min}
+- All members above 3.0: ${q26AllAbove3 ? "Yes" : "No"}
+- Number of Q26 responses: ${q26Scores.length}
+
 Write the report in English using Markdown formatting.`
     : `以下のデータをもとにチームAIレポートを生成してください。
 
@@ -141,6 +154,11 @@ ${statsStr}
 ${highVariance.join("\n")}
 
 チーム全体の平均スコア：${overallAverage}
+
+Q26（幸福度）分析：
+- Q26最低スコア：${q26Min}
+- 全員3.0以上：${q26AllAbove3 ? "はい" : "いいえ"}
+- Q26回答数：${q26Scores.length}名
 
 Markdownフォーマットで日本語のレポートを作成してください。`;
 

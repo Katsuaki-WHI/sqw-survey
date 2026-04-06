@@ -1,6 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createSupabaseServer } from "@/lib/supabase/server";
-import { AI_REPORT_SYSTEM_PROMPT } from "@/lib/ai/whi-philosophy";
+import { PERSONAL_REPORT_PROMPT_JA, PERSONAL_REPORT_PROMPT_EN, TEAM_REPORT_PROMPT_JA, TEAM_REPORT_PROMPT_EN } from "@/lib/ai/whi-philosophy";
+
+function getDefaultPrompt(type: string, language: string): string {
+  if (type === "personal" && language === "ja") return PERSONAL_REPORT_PROMPT_JA;
+  if (type === "personal" && language === "en") return PERSONAL_REPORT_PROMPT_EN;
+  if (type === "team" && language === "ja") return TEAM_REPORT_PROMPT_JA;
+  if (type === "team" && language === "en") return TEAM_REPORT_PROMPT_EN;
+  return PERSONAL_REPORT_PROMPT_JA;
+}
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
@@ -18,10 +26,16 @@ export async function GET(request: NextRequest) {
     .eq("is_active", true)
     .single();
 
-  // If no active prompt, return default
+  // If no active prompt, auto-seed and return default
   if (!active) {
+    const defaultContent = getDefaultPrompt(type, language);
+    // Auto-seed initial prompt
+    await supabase.from("ai_prompts").insert({
+      type, language, content: defaultContent, version: 1, is_active: true,
+      updated_at: new Date().toISOString(),
+    });
     return NextResponse.json({
-      active: { content: AI_REPORT_SYSTEM_PROMPT, version: 0 },
+      active: { content: defaultContent, version: 1 },
       history: [],
     });
   }

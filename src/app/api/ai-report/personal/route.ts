@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { createSupabaseServer } from "@/lib/supabase/server";
-import { AI_REPORT_SYSTEM_PROMPT } from "@/lib/ai/whi-philosophy";
+import { AI_REPORT_SYSTEM_PROMPT, PERSONAL_REPORT_PROMPT_JA, PERSONAL_REPORT_PROMPT_EN } from "@/lib/ai/whi-philosophy";
 import { CATEGORY_CONFIG } from "@/lib/survey/questions";
 
 export async function POST(request: NextRequest) {
@@ -112,8 +112,10 @@ export async function POST(request: NextRequest) {
     }
   }
 
-  // Get prompt from DB or fallback
-  let systemPrompt = AI_REPORT_SYSTEM_PROMPT;
+  // Get prompt from DB or fallback to version-specific prompt
+  const isEn = language === "en";
+  const defaultPrompt = isEn ? PERSONAL_REPORT_PROMPT_EN : PERSONAL_REPORT_PROMPT_JA;
+  let systemPrompt = defaultPrompt;
   const { data: promptRow } = await supabase
     .from("ai_prompts")
     .select("content")
@@ -123,14 +125,27 @@ export async function POST(request: NextRequest) {
     .single();
   if (promptRow?.content) systemPrompt = promptRow.content;
 
-  const isEn = language === "en";
   const name = member.respondent_name || (isEn ? "you" : "あなた");
+
+  // Engagement coordinate type
+  const q26 = memberCatAvg.happiness ?? 3;
+  const q02 = memberCatAvg.landscape ?? 3;
+  let engagementType = "unknown";
+  if (q26 >= 3.5 && q02 >= 3.5) engagementType = isEn ? "Engaged" : "エンゲージ型";
+  else if (q26 < 3.5 && q02 >= 3.5) engagementType = isEn ? "Vision-Driven" : "理念先行型";
+  else if (q26 >= 3.5 && q02 < 3.5) engagementType = isEn ? "Action-Driven" : "実行先行型";
+  else engagementType = isEn ? "At-Risk" : "離脱リスク型";
   const catScoresStr = Object.entries(memberCatAvg)
     .map(([cat, avg]) => `  ${CATEGORY_CONFIG[cat as keyof typeof CATEGORY_CONFIG]?.label || cat}: ${avg}`)
     .join("\n");
   const teamAvgStr = Object.entries(teamAvg)
     .map(([cat, avg]) => `  ${CATEGORY_CONFIG[cat as keyof typeof CATEGORY_CONFIG]?.label || cat}: ${avg}`)
     .join("\n");
+
+  // Get individual Q scores for engagement analysis
+  const individualScores = answers?.reduce((acc, a) => { acc[a.question_id] = a.score; return acc; }, {} as Record<number, number>) || {};
+  const q26Score = individualScores[26] ?? 0;
+  const q02Score = individualScores[2] ?? 0;
 
   const userMessage = isEn
     ? `Generate a personal AI report based on the following data.
@@ -146,6 +161,11 @@ ${catScoresStr}
 
 Team average scores (by category):
 ${teamAvgStr}
+
+Key engagement scores:
+- Q26 (Happiness): ${q26Score}
+- Q02 (Mission/Vision pride): ${q02Score}
+- Engagement coordinate type: ${engagementType}
 
 Categories with significant perception gaps (diff >= 0.5):
 ${gapCategories.length > 0 ? gapCategories.join("\n") : "None"}
@@ -165,6 +185,11 @@ ${catScoresStr}
 
 チーム平均スコア（カテゴリ別）：
 ${teamAvgStr}
+
+エンゲージメント関連スコア：
+- Q26（幸福度）：${q26Score}
+- Q02（ミッション・ビジョンへの誇り）：${q02Score}
+- エンゲージメント座標タイプ：${engagementType}
 
 認識ギャップが大きいカテゴリ（差が0.5以上）：
 ${gapCategories.length > 0 ? gapCategories.join("\n") : "なし"}
