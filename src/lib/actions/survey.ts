@@ -132,6 +132,29 @@ export async function submitSurvey({ answers, teamId, memberToken, memberEmail, 
     }
   }
 
+  // Add to benchmark DB (non-blocking)
+  if (teamId) {
+    const { data: teamMeta } = await supabase
+      .from("teams")
+      .select("survey_version, industry, company_size, expected_members")
+      .eq("id", teamId)
+      .single();
+
+    if (teamMeta) {
+      import("@/lib/survey/benchmark").then(({ addToBenchmark }) => {
+        addToBenchmark({
+          teamId,
+          surveyVersion: (teamMeta.survey_version as "26" | "40") || "26",
+          scores: scaleAnswers,
+          industry: teamMeta.industry,
+          companySize: teamMeta.company_size,
+          teamSize: teamMeta.expected_members,
+          isCustom: false,
+        }).catch((e) => console.error("[benchmark] Error:", e));
+      });
+    }
+  }
+
   return {
     sessionId: session.id,
     teamAverage,
