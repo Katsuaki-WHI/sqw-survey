@@ -180,6 +180,16 @@ Markdownフォーマットで日本語のレポートを作成してください
       messages: [{ role: "user", content: userMessage }],
     });
     const report = msg.content[0].type === "text" ? msg.content[0].text : "";
+
+    // Save to cache (non-blocking)
+    supabase.from("ai_report_cache").insert({
+      team_id: teamId,
+      member_token: memberToken,
+      report_type: "personal",
+      language: language || "ja",
+      content: report,
+    }).then(() => {});
+
     return NextResponse.json({ report, generatedAt: new Date().toISOString() });
   } catch (e) {
     console.error("[ai-report/personal] Error:", e);

@@ -198,6 +198,15 @@ export default function MemberResultsPage() {
                     setAiReportLoading(true);
                     setAiReportError("");
                     try {
+                      // Check cache first
+                      const cacheRes = await fetch(`/api/ai-report/cache?memberToken=${memberToken}&reportType=personal&language=${locale}`);
+                      const cacheData = await cacheRes.json();
+                      if (cacheData.cached) {
+                        setAiReport(cacheData.content);
+                        setAiReportLoading(false);
+                        return;
+                      }
+                      // Generate
                       const res = await fetch("/api/ai-report/personal", {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },

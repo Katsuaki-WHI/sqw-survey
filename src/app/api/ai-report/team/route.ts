@@ -7,8 +7,8 @@ import { CATEGORY_CONFIG } from "@/lib/survey/questions";
 export async function POST(request: NextRequest) {
   const { teamId, adminToken, language } = await request.json();
 
-  if (!adminToken) {
-    return NextResponse.json({ error: "Missing adminToken" }, { status: 400 });
+  if (!adminToken && !teamId) {
+    return NextResponse.json({ error: "Missing adminToken or teamId" }, { status: 400 });
   }
   if (!process.env.ANTHROPIC_API_KEY) {
     return NextResponse.json({ error: "AIレポート機能は現在準備中です" }, { status: 503 });
@@ -16,17 +16,29 @@ export async function POST(request: NextRequest) {
 
   const supabase = await createSupabaseServer();
 
-  const { data: team } = await supabase
-    .from("teams")
-    .select("id, name, industry, company_size")
-    .eq("admin_token", adminToken)
-    .single();
+  let team: { id: string; name: string; industry: string | null; company_size: string | null } | null = null;
+
+  if (adminToken && adminToken !== "__member_request__") {
+    const { data } = await supabase
+      .from("teams")
+      .select("id, name, industry, company_size")
+      .eq("admin_token", adminToken)
+      .single();
+    team = data;
+  } else if (teamId) {
+    const { data } = await supabase
+      .from("teams")
+      .select("id, name, industry, company_size")
+      .eq("id", teamId)
+      .single();
+    team = data;
+  }
 
   if (!team) {
     return NextResponse.json({ error: "Team not found" }, { status: 404 });
   }
 
-  const resolvedTeamId = teamId || team.id;
+  const resolvedTeamId = team.id;
 
   const { data: sessions } = await supabase
     .from("survey_sessions")
@@ -141,6 +153,15 @@ Markdownフォーマットで日本語のレポートを作成してください
       messages: [{ role: "user", content: userMessage }],
     });
     const report = msg.content[0].type === "text" ? msg.content[0].text : "";
+
+    // Save to cache (non-blocking)
+    supabase.from("ai_report_cache").insert({
+      team_id: resolvedTeamId,
+      report_type: "team",
+      language: language || "ja",
+      content: report,
+    }).then(() => {});
+
     return NextResponse.json({ report, generatedAt: new Date().toISOString() });
   } catch (e) {
     console.error("[ai-report/team] Error:", e);

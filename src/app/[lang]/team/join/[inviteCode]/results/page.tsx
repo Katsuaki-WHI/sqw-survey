@@ -9,6 +9,7 @@ import { calcWagonSpeed, calcWagonSpeedFromEngagement } from "@/lib/survey/scori
 import ResultsView, { type ResultsData } from "@/components/survey/ResultsView";
 import LanguageToggle from "@/components/LanguageToggle";
 import Link from "next/link";
+import ReactMarkdown from "react-markdown";
 
 interface QuestionAvg {
   question_id: number;
@@ -21,12 +22,18 @@ export default function TeamResultsPage() {
   const params = useParams();
   const inviteCode = params.inviteCode as string;
 
+  const tt = dict.team;
   const [teamName, setTeamName] = useState("");
+  const [teamId, setTeamId] = useState<string | null>(null);
   const [results, setResults] = useState<ResultsData | null>(null);
   const [notVisible, setNotVisible] = useState(false);
   const [notFound, setNotFound] = useState(false);
   const [responseCount, setResponseCount] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [aiReport, setAiReport] = useState<string | null>(null);
+  const [aiReportLoading, setAiReportLoading] = useState(false);
+  const [aiReportError, setAiReportError] = useState("");
+  const [showPurchaseModal, setShowPurchaseModal] = useState(false);
 
   const load = useCallback(async () => {
     const data = await getTeamResultsByInviteCode(inviteCode);
@@ -38,6 +45,7 @@ export default function TeamResultsPage() {
     }
 
     setTeamName(data.team.name);
+    setTeamId(data.team.id);
 
     if (!data.visible) {
       setNotVisible(true);
@@ -171,6 +179,95 @@ export default function TeamResultsPage() {
         title={`${teamName} - ${t.teamResultsTitle}`}
         mode="team"
       />
+
+      {/* Team AI Report */}
+      {teamId && (
+        <div className="w-full max-w-3xl mx-auto mt-8">
+          {!aiReport && !aiReportLoading && (
+            <div className="rounded-lg border border-purple-200 dark:border-purple-800 bg-purple-50 dark:bg-purple-950 p-4 text-center">
+              <p className="text-xs text-purple-600 dark:text-purple-400 mb-3">{tt.aiReportTeamDesc}</p>
+              <button
+                onClick={async () => {
+                  // Check cache first
+                  const cacheRes = await fetch(`/api/ai-report/cache?teamId=${teamId}&reportType=team&language=${locale}`);
+                  const cacheData = await cacheRes.json();
+                  if (cacheData.cached) {
+                    setAiReport(cacheData.content);
+                    return;
+                  }
+                  setShowPurchaseModal(true);
+                }}
+                className="rounded-full bg-purple-600 px-6 py-2 text-sm font-medium text-white hover:bg-purple-500 transition-colors"
+              >
+                {tt.aiReportTeamButton}
+              </button>
+            </div>
+          )}
+          {aiReportLoading && (
+            <div className="rounded-lg border border-purple-200 dark:border-purple-800 p-6 text-center">
+              <div className="animate-spin inline-block w-6 h-6 border-2 border-purple-600 border-t-transparent rounded-full mb-3" />
+              <p className="text-sm text-purple-600">{tt.aiReportGenerating}</p>
+            </div>
+          )}
+          {aiReportError && <p className="text-sm text-red-500 text-center mt-2">{aiReportError}</p>}
+          {aiReport && (
+            <div className="rounded-lg border border-purple-200 dark:border-purple-800 p-6">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-bold text-purple-800 dark:text-purple-300">{tt.aiReportTitle}</h3>
+                <button onClick={() => window.print()} className="text-xs text-gray-500 hover:text-gray-700 border border-gray-300 rounded px-3 py-1">
+                  {tt.aiReportSavePdf}
+                </button>
+              </div>
+              <div className="prose prose-sm dark:prose-invert max-w-none">
+                <ReactMarkdown>{aiReport}</ReactMarkdown>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Purchase confirmation modal */}
+      {showPurchaseModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
+          <div className="bg-white dark:bg-gray-900 rounded-xl shadow-xl max-w-md w-full p-6">
+            <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">{tt.aiReportPurchaseTitle}</h3>
+            <p className="text-sm text-gray-600 dark:text-gray-400 whitespace-pre-line mb-6">{tt.aiReportPurchaseBody}</p>
+            <div className="flex gap-3">
+              <button
+                onClick={() => setShowPurchaseModal(false)}
+                className="flex-1 rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
+              >
+                {tt.aiReportPurchaseCancel}
+              </button>
+              <button
+                onClick={async () => {
+                  setShowPurchaseModal(false);
+                  setAiReportLoading(true);
+                  setAiReportError("");
+                  try {
+                    // Use invite code to find admin token — team report needs adminToken
+                    // For member-initiated reports, we use a special endpoint
+                    const res = await fetch("/api/ai-report/team", {
+                      method: "POST",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({ teamId, adminToken: "__member_request__", language: locale }),
+                    });
+                    const data = await res.json();
+                    if (data.report) setAiReport(data.report);
+                    else setAiReportError(data.error || tt.aiReportError);
+                  } catch {
+                    setAiReportError(tt.aiReportError);
+                  }
+                  setAiReportLoading(false);
+                }}
+                className="flex-1 rounded-lg bg-purple-600 px-4 py-2 text-sm font-medium text-white hover:bg-purple-500"
+              >
+                {tt.aiReportPurchaseConfirm}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="flex flex-col items-center gap-4 mt-8">
         <Link
