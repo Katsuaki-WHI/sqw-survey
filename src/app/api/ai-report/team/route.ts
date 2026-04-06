@@ -4,21 +4,21 @@ import { createSupabaseServer } from "@/lib/supabase/server";
 import { AI_REPORT_SYSTEM_PROMPT } from "@/lib/ai/whi-philosophy";
 import { CATEGORY_CONFIG } from "@/lib/survey/questions";
 
-const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY || "" });
-
 export async function POST(request: NextRequest) {
   const { teamId, adminToken, language } = await request.json();
 
   if (!adminToken) {
     return NextResponse.json({ error: "Missing adminToken" }, { status: 400 });
   }
+  if (!process.env.ANTHROPIC_API_KEY) {
+    return NextResponse.json({ error: "AIレポート機能は現在準備中です" }, { status: 503 });
+  }
 
   const supabase = await createSupabaseServer();
 
-  // Verify admin token and get team
   const { data: team } = await supabase
     .from("teams")
-    .select("id, name")
+    .select("id, name, industry, company_size")
     .eq("admin_token", adminToken)
     .single();
 
@@ -28,7 +28,6 @@ export async function POST(request: NextRequest) {
 
   const resolvedTeamId = teamId || team.id;
 
-  // Get all completed sessions
   const { data: sessions } = await supabase
     .from("survey_sessions")
     .select("id")
@@ -40,15 +39,16 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "No responses" }, { status: 400 });
   }
 
-  // Get all answers
   const { data: allAnswers } = await supabase
     .from("survey_answers")
-    .select("question_id, score, session_id")
+    .select("question_id, score")
     .in("session_id", sessionIds)
     .not("score", "is", null);
 
   // Calculate per-category stats
-  const categoryStats: Record<string, { scores: number[]; avg: number; min: number; max: number; sd: number }> = {};
+  const categoryStats: Record<string, { avg: number; min: number; max: number; sd: number }> = {};
+  let overallSum = 0;
+  let overallCount = 0;
 
   for (const [cat, config] of Object.entries(CATEGORY_CONFIG)) {
     const scores: number[] = [];
@@ -59,23 +59,27 @@ export async function POST(request: NextRequest) {
     }
     if (scores.length === 0) continue;
     const avg = scores.reduce((a, b) => a + b, 0) / scores.length;
-    const min = Math.min(...scores);
-    const max = Math.max(...scores);
     const variance = scores.reduce((sum, s) => sum + (s - avg) ** 2, 0) / scores.length;
     categoryStats[cat] = {
-      scores,
       avg: Math.round(avg * 100) / 100,
-      min,
-      max,
+      min: Math.min(...scores),
+      max: Math.max(...scores),
       sd: Math.round(Math.sqrt(variance) * 100) / 100,
     };
+    if (cat !== "management") {
+      overallSum += scores.reduce((a, b) => a + b, 0);
+      overallCount += scores.length;
+    }
   }
 
-  // Build stats summary
-  const statsSummary: Record<string, { avg: number; min: number; max: number; sd: number }> = {};
-  for (const [cat, stats] of Object.entries(categoryStats)) {
-    statsSummary[cat] = { avg: stats.avg, min: stats.min, max: stats.max, sd: stats.sd };
-  }
+  const overallAverage = overallCount > 0 ? Math.round((overallSum / overallCount) * 100) / 100 : 0;
+
+  // High variance categories
+  const highVariance = Object.entries(categoryStats)
+    .filter(([cat]) => cat !== "management")
+    .sort((a, b) => b[1].sd - a[1].sd)
+    .slice(0, 3)
+    .map(([cat, s]) => `${CATEGORY_CONFIG[cat as keyof typeof CATEGORY_CONFIG]?.label || cat}: SD=${s.sd}, avg=${s.avg}`);
 
   // Get prompt
   let systemPrompt = AI_REPORT_SYSTEM_PROMPT;
@@ -89,21 +93,61 @@ export async function POST(request: NextRequest) {
   if (promptRow?.content) systemPrompt = promptRow.content;
 
   const isEn = language === "en";
+  const statsStr = Object.entries(categoryStats)
+    .map(([cat, s]) => `  ${CATEGORY_CONFIG[cat as keyof typeof CATEGORY_CONFIG]?.label || cat}: avg=${s.avg}, min=${s.min}, max=${s.max}, SD=${s.sd}`)
+    .join("\n");
+
   const userMessage = isEn
-    ? `Generate a team survey report.\n\nTeam: ${team.name}\nResponse count: ${sessionIds.length}\n\nCategory statistics (avg / min / max / SD):\n${JSON.stringify(statsSummary, null, 2)}\n\nWrite the report in English.`
-    : `チームのサーベイレポートを生成してください。\n\nチーム名: ${team.name}\n回答者数: ${sessionIds.length}名\n\nカテゴリ別統計（平均/最小/最大/SD）:\n${JSON.stringify(statsSummary, null, 2)}\n\n日本語でレポートを作成してください。`;
+    ? `Generate a team AI report based on the following data.
 
-  if (!process.env.ANTHROPIC_API_KEY) {
-    return NextResponse.json({ error: "ANTHROPIC_API_KEY not configured" }, { status: 500 });
+Team: ${team.name}
+Industry: ${team.industry || "not specified"}
+Company size: ${team.company_size || "not specified"}
+Response count: ${sessionIds.length}
+
+Category statistics:
+${statsStr}
+
+Categories with highest perception gaps (highest SD):
+${highVariance.join("\n")}
+
+Overall team average: ${overallAverage}
+
+Write the report in English using Markdown formatting.`
+    : `以下のデータをもとにチームAIレポートを生成してください。
+
+チーム情報：
+- チーム名：${team.name}
+- 業種：${team.industry || "未指定"}
+- 企業規模：${team.company_size || "未指定"}
+- 回答者数：${sessionIds.length}名
+
+カテゴリ別統計：
+${statsStr}
+
+認識ギャップが最も大きいカテゴリ（標準偏差が高い順）：
+${highVariance.join("\n")}
+
+チーム全体の平均スコア：${overallAverage}
+
+Markdownフォーマットで日本語のレポートを作成してください。`;
+
+  try {
+    const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+    const msg = await anthropic.messages.create({
+      model: "claude-sonnet-4-20250514",
+      max_tokens: 4000,
+      system: systemPrompt,
+      messages: [{ role: "user", content: userMessage }],
+    });
+    const report = msg.content[0].type === "text" ? msg.content[0].text : "";
+    return NextResponse.json({ report, generatedAt: new Date().toISOString() });
+  } catch (e) {
+    console.error("[ai-report/team] Error:", e);
+    return NextResponse.json({
+      error: isEn
+        ? "Failed to generate report. Please try again later."
+        : "レポートの生成に失敗しました。しばらく経ってから再度お試しください。",
+    }, { status: 500 });
   }
-
-  const msg = await anthropic.messages.create({
-    model: "claude-sonnet-4-20250514",
-    max_tokens: 4000,
-    system: systemPrompt,
-    messages: [{ role: "user", content: userMessage }],
-  });
-
-  const report = msg.content[0].type === "text" ? msg.content[0].text : "";
-  return NextResponse.json({ report });
 }

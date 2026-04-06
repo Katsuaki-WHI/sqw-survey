@@ -21,6 +21,7 @@ import LanguageToggle from "@/components/LanguageToggle";
 import CopyLinkButton from "@/components/ui/CopyLinkButton";
 import ResultsView, { type ResultsData } from "@/components/survey/ResultsView";
 import Link from "next/link";
+import ReactMarkdown from "react-markdown";
 
 interface TeamData {
   id: string;
@@ -141,6 +142,9 @@ export default function AdminDashboardPage() {
   const [projectName, setProjectName] = useState<string | null>(null);
   const [selectedTeamToken, setSelectedTeamToken] = useState<string | null>(null);
   const [switchingTeam, setSwitchingTeam] = useState(false);
+  const [aiReport, setAiReport] = useState<string | null>(null);
+  const [aiReportLoading, setAiReportLoading] = useState(false);
+  const [aiReportError, setAiReportError] = useState("");
 
   const showToast = (msg: string) => {
     setToast(msg);
@@ -626,6 +630,57 @@ export default function AdminDashboardPage() {
               title={`${team.name} - ${t.teamResults}`}
               mode="team"
             />
+
+            {/* Team AI Report */}
+            <div className="mt-8">
+              {!aiReport && !aiReportLoading && (
+                <div className="rounded-lg border border-purple-200 dark:border-purple-800 bg-purple-50 dark:bg-purple-950 p-4 text-center">
+                  <p className="text-xs text-purple-600 dark:text-purple-400 mb-3">{t.aiReportTeamDesc}</p>
+                  <button
+                    onClick={async () => {
+                      setAiReportLoading(true);
+                      setAiReportError("");
+                      try {
+                        const res = await fetch("/api/ai-report/team", {
+                          method: "POST",
+                          headers: { "Content-Type": "application/json" },
+                          body: JSON.stringify({ adminToken: activeTeamToken, language: locale }),
+                        });
+                        const data = await res.json();
+                        if (data.report) setAiReport(data.report);
+                        else setAiReportError(data.error || t.aiReportError);
+                      } catch {
+                        setAiReportError(t.aiReportError);
+                      }
+                      setAiReportLoading(false);
+                    }}
+                    className="rounded-full bg-purple-600 px-6 py-2 text-sm font-medium text-white hover:bg-purple-500 transition-colors"
+                  >
+                    {t.aiReportTeamButton}
+                  </button>
+                </div>
+              )}
+              {aiReportLoading && (
+                <div className="rounded-lg border border-purple-200 dark:border-purple-800 p-6 text-center">
+                  <div className="animate-spin inline-block w-6 h-6 border-2 border-purple-600 border-t-transparent rounded-full mb-3" />
+                  <p className="text-sm text-purple-600">{t.aiReportGenerating}</p>
+                </div>
+              )}
+              {aiReportError && <p className="text-sm text-red-500 text-center mt-2">{aiReportError}</p>}
+              {aiReport && (
+                <div className="rounded-lg border border-purple-200 dark:border-purple-800 p-6">
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-lg font-bold text-purple-800 dark:text-purple-300">{t.aiReportTitle}</h3>
+                    <button onClick={() => window.print()} className="text-xs text-gray-500 hover:text-gray-700 border border-gray-300 rounded px-3 py-1">
+                      {t.aiReportSavePdf}
+                    </button>
+                  </div>
+                  <div className="prose prose-sm dark:prose-invert max-w-none">
+                    <ReactMarkdown>{aiReport}</ReactMarkdown>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         ) : (
           <div className="rounded-lg border border-gray-200 dark:border-gray-700 p-6 text-center">

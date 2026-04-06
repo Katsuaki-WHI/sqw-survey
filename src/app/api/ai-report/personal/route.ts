@@ -4,29 +4,35 @@ import { createSupabaseServer } from "@/lib/supabase/server";
 import { AI_REPORT_SYSTEM_PROMPT } from "@/lib/ai/whi-philosophy";
 import { CATEGORY_CONFIG } from "@/lib/survey/questions";
 
-const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY || "" });
-
 export async function POST(request: NextRequest) {
   const body = await request.json();
 
   // Test mode
   if (body.test) {
     if (!process.env.ANTHROPIC_API_KEY) {
-      return NextResponse.json({ message: "ANTHROPIC_API_KEY not configured" });
+      return NextResponse.json({ report: "AIレポート機能は現在準備中です。ANTHROPIC_API_KEYを設定してください。" });
     }
-    const msg = await anthropic.messages.create({
-      model: "claude-sonnet-4-20250514",
-      max_tokens: 500,
-      system: AI_REPORT_SYSTEM_PROMPT,
-      messages: [{ role: "user", content: "テストデータで短い個人レポートサンプルを100文字で生成してください。" }],
-    });
-    const text = msg.content[0].type === "text" ? msg.content[0].text : "";
-    return NextResponse.json({ report: text });
+    const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+    try {
+      const msg = await anthropic.messages.create({
+        model: "claude-sonnet-4-20250514",
+        max_tokens: 500,
+        system: AI_REPORT_SYSTEM_PROMPT,
+        messages: [{ role: "user", content: "テストデータで短い個人レポートサンプルを200文字で生成してください。スコアは全カテゴリ3.5と仮定。" }],
+      });
+      const text = msg.content[0].type === "text" ? msg.content[0].text : "";
+      return NextResponse.json({ report: text, generatedAt: new Date().toISOString() });
+    } catch (e) {
+      return NextResponse.json({ report: `テスト生成エラー: ${e}` });
+    }
   }
 
   const { teamId, memberToken, language } = body;
   if (!teamId || !memberToken) {
     return NextResponse.json({ error: "Missing teamId or memberToken" }, { status: 400 });
+  }
+  if (!process.env.ANTHROPIC_API_KEY) {
+    return NextResponse.json({ error: "AIレポート機能は現在準備中です" }, { status: 503 });
   }
 
   const supabase = await createSupabaseServer();
@@ -34,7 +40,7 @@ export async function POST(request: NextRequest) {
   // Get member data
   const { data: member } = await supabase
     .from("team_members")
-    .select("session_id, role")
+    .select("session_id, role, respondent_name")
     .eq("member_token", memberToken)
     .single();
 
@@ -58,10 +64,17 @@ export async function POST(request: NextRequest) {
       }
     }
   }
-  const memberCategoryScores: Record<string, number> = {};
+  const memberCatAvg: Record<string, number> = {};
   for (const [cat, scores] of Object.entries(memberScores)) {
-    memberCategoryScores[cat] = Math.round((scores.reduce((a, b) => a + b, 0) / scores.length) * 100) / 100;
+    memberCatAvg[cat] = Math.round((scores.reduce((a, b) => a + b, 0) / scores.length) * 100) / 100;
   }
+
+  // Get team info
+  const { data: team } = await supabase
+    .from("teams")
+    .select("name, industry, company_size, survey_version")
+    .eq("id", teamId)
+    .single();
 
   // Get team averages
   const { data: sessions } = await supabase
@@ -86,13 +99,18 @@ export async function POST(request: NextRequest) {
       }
     }
   }
-  const teamAverage: Record<string, number> = {};
+  const teamAvg: Record<string, number> = {};
   for (const [cat, scores] of Object.entries(teamScores)) {
-    teamAverage[cat] = Math.round((scores.reduce((a, b) => a + b, 0) / scores.length) * 100) / 100;
+    teamAvg[cat] = Math.round((scores.reduce((a, b) => a + b, 0) / scores.length) * 100) / 100;
   }
 
-  // Get team name
-  const { data: team } = await supabase.from("teams").select("name").eq("id", teamId).single();
+  // Find gap categories (diff >= 0.5)
+  const gapCategories: string[] = [];
+  for (const cat of Object.keys(memberCatAvg)) {
+    if (teamAvg[cat] && Math.abs(memberCatAvg[cat] - teamAvg[cat]) >= 0.5) {
+      gapCategories.push(`${CATEGORY_CONFIG[cat as keyof typeof CATEGORY_CONFIG]?.label || cat}: 個人${memberCatAvg[cat]} vs チーム${teamAvg[cat]}`);
+    }
+  }
 
   // Get prompt from DB or fallback
   let systemPrompt = AI_REPORT_SYSTEM_PROMPT;
@@ -106,21 +124,69 @@ export async function POST(request: NextRequest) {
   if (promptRow?.content) systemPrompt = promptRow.content;
 
   const isEn = language === "en";
+  const name = member.respondent_name || (isEn ? "you" : "あなた");
+  const catScoresStr = Object.entries(memberCatAvg)
+    .map(([cat, avg]) => `  ${CATEGORY_CONFIG[cat as keyof typeof CATEGORY_CONFIG]?.label || cat}: ${avg}`)
+    .join("\n");
+  const teamAvgStr = Object.entries(teamAvg)
+    .map(([cat, avg]) => `  ${CATEGORY_CONFIG[cat as keyof typeof CATEGORY_CONFIG]?.label || cat}: ${avg}`)
+    .join("\n");
+
   const userMessage = isEn
-    ? `Generate a personal survey report for this team member.\n\nTeam: ${team?.name}\nRole: ${member.role || "not specified"}\nResponse count: ${sessionIds.length}\n\nMember scores by category:\n${JSON.stringify(memberCategoryScores, null, 2)}\n\nTeam average by category:\n${JSON.stringify(teamAverage, null, 2)}\n\nWrite the report in English.`
-    : `このチームメンバーの個人サーベイレポートを生成してください。\n\nチーム名: ${team?.name}\n立場: ${member.role || "未指定"}\n回答者数: ${sessionIds.length}名\n\n個人スコア（カテゴリ別）:\n${JSON.stringify(memberCategoryScores, null, 2)}\n\nチーム平均（カテゴリ別）:\n${JSON.stringify(teamAverage, null, 2)}\n\n日本語でレポートを作成してください。`;
+    ? `Generate a personal AI report based on the following data.
 
-  if (!process.env.ANTHROPIC_API_KEY) {
-    return NextResponse.json({ error: "ANTHROPIC_API_KEY not configured" }, { status: 500 });
+Respondent: ${name}
+Team: ${team?.name || "Unknown"}
+Role: ${member.role || "not specified"}
+Industry: ${team?.industry || "not specified"}
+Company size: ${team?.company_size || "not specified"}
+
+Personal scores (by category):
+${catScoresStr}
+
+Team average scores (by category):
+${teamAvgStr}
+
+Categories with significant perception gaps (diff >= 0.5):
+${gapCategories.length > 0 ? gapCategories.join("\n") : "None"}
+
+Write the report in English using Markdown formatting.`
+    : `以下のデータをもとに個人AIレポートを生成してください。
+
+回答者情報：
+- 名前：${name}
+- チーム名：${team?.name || "不明"}
+- 立場：${member.role || "未指定"}
+- 業種：${team?.industry || "未指定"}
+- 企業規模：${team?.company_size || "未指定"}
+
+個人スコア（カテゴリ別）：
+${catScoresStr}
+
+チーム平均スコア（カテゴリ別）：
+${teamAvgStr}
+
+認識ギャップが大きいカテゴリ（差が0.5以上）：
+${gapCategories.length > 0 ? gapCategories.join("\n") : "なし"}
+
+Markdownフォーマットで日本語のレポートを作成してください。`;
+
+  try {
+    const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+    const msg = await anthropic.messages.create({
+      model: "claude-sonnet-4-20250514",
+      max_tokens: 4000,
+      system: systemPrompt,
+      messages: [{ role: "user", content: userMessage }],
+    });
+    const report = msg.content[0].type === "text" ? msg.content[0].text : "";
+    return NextResponse.json({ report, generatedAt: new Date().toISOString() });
+  } catch (e) {
+    console.error("[ai-report/personal] Error:", e);
+    return NextResponse.json({
+      error: isEn
+        ? "Failed to generate report. Please try again later."
+        : "レポートの生成に失敗しました。しばらく経ってから再度お試しください。",
+    }, { status: 500 });
   }
-
-  const msg = await anthropic.messages.create({
-    model: "claude-sonnet-4-20250514",
-    max_tokens: 4000,
-    system: systemPrompt,
-    messages: [{ role: "user", content: userMessage }],
-  });
-
-  const report = msg.content[0].type === "text" ? msg.content[0].text : "";
-  return NextResponse.json({ report });
 }

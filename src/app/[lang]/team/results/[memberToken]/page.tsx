@@ -9,6 +9,7 @@ import ResultsView, { type ResultsData } from "@/components/survey/ResultsView";
 import LanguageToggle from "@/components/LanguageToggle";
 import CopyLinkButton from "@/components/ui/CopyLinkButton";
 import Link from "next/link";
+import ReactMarkdown from "react-markdown";
 
 export default function MemberResultsPage() {
   const { locale, dict } = useLocale();
@@ -24,6 +25,9 @@ export default function MemberResultsPage() {
   const [notifyEmail, setNotifyEmail] = useState("");
   const [emailRegistered, setEmailRegistered] = useState(false);
   const [emailSubmitting, setEmailSubmitting] = useState(false);
+  const [aiReport, setAiReport] = useState<string | null>(null);
+  const [aiReportLoading, setAiReportLoading] = useState(false);
+  const [aiReportError, setAiReportError] = useState("");
 
   const load = useCallback(async () => {
     const cookieMatch = document.cookie
@@ -182,6 +186,67 @@ export default function MemberResultsPage() {
         <p className="text-sm text-gray-500 dark:text-gray-400 text-center">
           {tt.bookmarkNotice}
         </p>
+
+        {/* AI Report */}
+        {teamInfo?.teamId && (
+          <div className="w-full mt-4">
+            {!aiReport && !aiReportLoading && (
+              <div className="rounded-lg border border-purple-200 dark:border-purple-800 bg-purple-50 dark:bg-purple-950 p-4 text-center">
+                <p className="text-xs text-purple-600 dark:text-purple-400 mb-3">{tt.aiReportDesc}</p>
+                <button
+                  onClick={async () => {
+                    setAiReportLoading(true);
+                    setAiReportError("");
+                    try {
+                      const res = await fetch("/api/ai-report/personal", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ teamId: teamInfo.teamId, memberToken, language: locale }),
+                      });
+                      const data = await res.json();
+                      if (data.report) setAiReport(data.report);
+                      else setAiReportError(data.error || tt.aiReportError);
+                    } catch {
+                      setAiReportError(tt.aiReportError);
+                    }
+                    setAiReportLoading(false);
+                  }}
+                  className="rounded-full bg-purple-600 px-6 py-2 text-sm font-medium text-white hover:bg-purple-500 transition-colors"
+                >
+                  {tt.aiReportButton}
+                </button>
+              </div>
+            )}
+
+            {aiReportLoading && (
+              <div className="rounded-lg border border-purple-200 dark:border-purple-800 p-6 text-center">
+                <div className="animate-spin inline-block w-6 h-6 border-2 border-purple-600 border-t-transparent rounded-full mb-3" />
+                <p className="text-sm text-purple-600">{tt.aiReportGenerating}</p>
+              </div>
+            )}
+
+            {aiReportError && (
+              <p className="text-sm text-red-500 text-center">{aiReportError}</p>
+            )}
+
+            {aiReport && (
+              <div className="rounded-lg border border-purple-200 dark:border-purple-800 p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-lg font-bold text-purple-800 dark:text-purple-300">{tt.aiReportTitle}</h3>
+                  <button
+                    onClick={() => window.print()}
+                    className="text-xs text-gray-500 hover:text-gray-700 border border-gray-300 rounded px-3 py-1"
+                  >
+                    {tt.aiReportSavePdf}
+                  </button>
+                </div>
+                <div className="prose prose-sm dark:prose-invert max-w-none">
+                  <ReactMarkdown>{aiReport}</ReactMarkdown>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
 
       </div>
     </div>
