@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { createSupabaseServer } from "@/lib/supabase/server";
 import { AI_REPORT_SYSTEM_PROMPT, PERSONAL_REPORT_PROMPT_JA, PERSONAL_REPORT_PROMPT_EN } from "@/lib/ai/whi-philosophy";
+import { HTML_OUTPUT_INSTRUCTIONS_JA, HTML_OUTPUT_INSTRUCTIONS_EN } from "@/lib/ai/html-template";
 import { CATEGORY_CONFIG } from "@/lib/survey/questions";
 
 export async function POST(request: NextRequest) {
@@ -114,8 +115,9 @@ export async function POST(request: NextRequest) {
 
   // Get prompt from DB or fallback to version-specific prompt
   const isEn = language === "en";
+  const htmlInstructions = isEn ? HTML_OUTPUT_INSTRUCTIONS_EN : HTML_OUTPUT_INSTRUCTIONS_JA;
   const defaultPrompt = isEn ? PERSONAL_REPORT_PROMPT_EN : PERSONAL_REPORT_PROMPT_JA;
-  let systemPrompt = defaultPrompt;
+  let basePrompt = defaultPrompt;
   const { data: promptRow } = await supabase
     .from("ai_prompts")
     .select("content")
@@ -123,7 +125,8 @@ export async function POST(request: NextRequest) {
     .eq("language", language || "ja")
     .eq("is_active", true)
     .single();
-  if (promptRow?.content) systemPrompt = promptRow.content;
+  if (promptRow?.content) basePrompt = promptRow.content;
+  const systemPrompt = basePrompt + htmlInstructions;
 
   const name = member.respondent_name || (isEn ? "you" : "あなた");
 
@@ -170,7 +173,7 @@ Key engagement scores:
 Categories with significant perception gaps (diff >= 0.5):
 ${gapCategories.length > 0 ? gapCategories.join("\n") : "None"}
 
-Write the report in English using Markdown formatting.`
+Write the report in English using HTML formatting.`
     : `以下のデータをもとに個人AIレポートを生成してください。
 
 回答者情報：
@@ -194,7 +197,7 @@ ${teamAvgStr}
 認識ギャップが大きいカテゴリ（差が0.5以上）：
 ${gapCategories.length > 0 ? gapCategories.join("\n") : "なし"}
 
-Markdownフォーマットで日本語のレポートを作成してください。`;
+HTML形式で日本語のレポートを作成してください。`;
 
   try {
     const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });

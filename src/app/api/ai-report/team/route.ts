@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { createSupabaseServer } from "@/lib/supabase/server";
 import { AI_REPORT_SYSTEM_PROMPT, TEAM_REPORT_PROMPT_JA, TEAM_REPORT_PROMPT_EN } from "@/lib/ai/whi-philosophy";
+import { HTML_OUTPUT_INSTRUCTIONS_JA, HTML_OUTPUT_INSTRUCTIONS_EN } from "@/lib/ai/html-template";
 import { CATEGORY_CONFIG } from "@/lib/survey/questions";
 
 export async function POST(request: NextRequest) {
@@ -103,8 +104,9 @@ export async function POST(request: NextRequest) {
 
   // Get prompt
   const isEn = language === "en";
+  const htmlInstructions = isEn ? HTML_OUTPUT_INSTRUCTIONS_EN : HTML_OUTPUT_INSTRUCTIONS_JA;
   const defaultPrompt = isEn ? TEAM_REPORT_PROMPT_EN : TEAM_REPORT_PROMPT_JA;
-  let systemPrompt = defaultPrompt;
+  let basePrompt = defaultPrompt;
   const { data: promptRow } = await supabase
     .from("ai_prompts")
     .select("content")
@@ -112,7 +114,8 @@ export async function POST(request: NextRequest) {
     .eq("language", language || "ja")
     .eq("is_active", true)
     .single();
-  if (promptRow?.content) systemPrompt = promptRow.content;
+  if (promptRow?.content) basePrompt = promptRow.content;
+  const systemPrompt = basePrompt + htmlInstructions;
   const statsStr = Object.entries(categoryStats)
     .map(([cat, s]) => `  ${CATEGORY_CONFIG[cat as keyof typeof CATEGORY_CONFIG]?.label || cat}: avg=${s.avg}, min=${s.min}, max=${s.max}, SD=${s.sd}`)
     .join("\n");
@@ -138,7 +141,7 @@ Q26 (Happiness) analysis:
 - All members above 3.0: ${q26AllAbove3 ? "Yes" : "No"}
 - Number of Q26 responses: ${q26Scores.length}
 
-Write the report in English using Markdown formatting.`
+Write the report in English using HTML formatting.`
     : `以下のデータをもとにチームAIレポートを生成してください。
 
 チーム情報：
@@ -160,7 +163,7 @@ Q26（幸福度）分析：
 - 全員3.0以上：${q26AllAbove3 ? "はい" : "いいえ"}
 - Q26回答数：${q26Scores.length}名
 
-Markdownフォーマットで日本語のレポートを作成してください。`;
+HTML形式で日本語のレポートを作成してください。`;
 
   try {
     const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });

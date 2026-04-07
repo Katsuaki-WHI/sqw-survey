@@ -21,7 +21,6 @@ import LanguageToggle from "@/components/LanguageToggle";
 import CopyLinkButton from "@/components/ui/CopyLinkButton";
 import ResultsView, { type ResultsData } from "@/components/survey/ResultsView";
 import Link from "next/link";
-import ReactMarkdown from "react-markdown";
 
 interface TeamData {
   id: string;
@@ -675,9 +674,11 @@ export default function AdminDashboardPage() {
                       {t.aiReportSavePdf}
                     </button>
                   </div>
-                  <div className="prose prose-sm dark:prose-invert max-w-none">
-                    <ReactMarkdown>{aiReport}</ReactMarkdown>
-                  </div>
+                  <div
+                    className="ai-report-content"
+                    style={{ fontFamily: "'Noto Sans JP', sans-serif", lineHeight: 1.8 }}
+                    dangerouslySetInnerHTML={{ __html: aiReport }}
+                  />
                 </div>
               )}
             </div>

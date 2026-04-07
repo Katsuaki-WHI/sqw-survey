@@ -9,7 +9,6 @@ import { calcWagonSpeed, calcWagonSpeedFromEngagement } from "@/lib/survey/scori
 import ResultsView, { type ResultsData } from "@/components/survey/ResultsView";
 import LanguageToggle from "@/components/LanguageToggle";
 import Link from "next/link";
-import ReactMarkdown from "react-markdown";
 import { CATEGORY_LABELS, getStrengthComment, getImprovementComment, getGapComment, getEngagementQuadrant, getSummaryComment } from "@/lib/survey/insight-comments";
 
 interface QuestionAvg {
@@ -319,9 +318,11 @@ export default function TeamResultsPage() {
                   {tt.aiReportSavePdf}
                 </button>
               </div>
-              <div className="prose prose-sm dark:prose-invert max-w-none">
-                <ReactMarkdown>{aiReport}</ReactMarkdown>
-              </div>
+              <div
+                className="ai-report-content"
+                style={{ fontFamily: "'Noto Sans JP', sans-serif", lineHeight: 1.8 }}
+                dangerouslySetInnerHTML={{ __html: aiReport }}
+              />
             </div>
           )}
         </div>
