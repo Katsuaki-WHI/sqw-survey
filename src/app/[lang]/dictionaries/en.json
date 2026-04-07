@@ -199,6 +199,7 @@
     "aiReportTitle": "AI Report",
     "aiReportSavePdf": "Save as PDF",
     "aiReportError": "Failed to generate report. Please try again later.",
+    "teamInsightsTitle": "Team Insights",
     "ctaGapTitle": "When team results are published, the gaps will become visible",
     "ctaGapYou": "You",
     "ctaGapTeamAvg": "Team average?",

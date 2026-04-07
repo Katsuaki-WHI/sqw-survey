@@ -10,6 +10,7 @@ import ResultsView, { type ResultsData } from "@/components/survey/ResultsView";
 import LanguageToggle from "@/components/LanguageToggle";
 import Link from "next/link";
 import ReactMarkdown from "react-markdown";
+import { CATEGORY_LABELS, getStrengthComment, getImprovementComment, getGapComment, getEngagementQuadrant, getSummaryComment } from "@/lib/survey/insight-comments";
 
 interface QuestionAvg {
   question_id: number;
@@ -179,6 +180,106 @@ export default function TeamResultsPage() {
         title={`${teamName} - ${t.teamResultsTitle}`}
         mode="team"
       />
+
+      {/* Team Insights Section */}
+      {results && (() => {
+        const isEn = locale === "en";
+        const teamCats = ["landscape","road","rope","tire","body","attitude","cargo","diversity","happiness"] as const;
+        const catEntries = teamCats
+          .map((cat) => ({ cat, score: results.categoryScores[cat]?.avg ?? 0 }))
+          .filter((e) => e.score > 0);
+
+        const highest = [...catEntries].sort((a, b) => b.score - a.score)[0];
+        const lowest = [...catEntries].sort((a, b) => a.score - b.score)[0];
+
+        // Gap: use questionSDs if available
+        let gapCat: string | null = null;
+        if (results.questionSDs) {
+          // Aggregate SD by category
+          const catSDs: Record<string, number[]> = {};
+          for (const [qIdStr, sd] of Object.entries(results.questionSDs)) {
+            const qId = Number(qIdStr);
+            for (const [cat, config] of Object.entries(CATEGORY_CONFIG)) {
+              if (config.questionIds.includes(qId) && cat !== "management") {
+                if (!catSDs[cat]) catSDs[cat] = [];
+                catSDs[cat].push(sd);
+              }
+            }
+          }
+          let maxSD = 0;
+          for (const [cat, sds] of Object.entries(catSDs)) {
+            const avg = sds.reduce((a, b) => a + b, 0) / sds.length;
+            if (avg > maxSD) { maxSD = avg; gapCat = cat; }
+          }
+          if (maxSD < 0.3) gapCat = null; // too small to show
+        }
+
+        // Engagement quadrant
+        const happinessAvg = results.categoryScores.happiness?.avg ?? 3;
+        const missionAvg = results.categoryScores.landscape?.avg ?? 3;
+        const quadrant = getEngagementQuadrant(happinessAvg, missionAvg);
+        const summaryComment = getSummaryComment(quadrant, isEn);
+
+        const getCatLabel = (cat: string) => {
+          const label = CATEGORY_LABELS[cat];
+          return label ? (isEn ? label.en : label.ja) : cat;
+        };
+
+        return (
+          <div className="w-full max-w-3xl mx-auto mt-8">
+            <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-6">{tt.teamInsightsTitle}</h2>
+            <div className="flex flex-col gap-4">
+
+              {/* Strength card */}
+              {highest && (() => {
+                const c = getStrengthComment(getCatLabel(highest.cat), highest.score.toFixed(2), isEn);
+                return (
+                  <div className="rounded-lg border-2 border-green-200 dark:border-green-800 bg-green-50 dark:bg-green-950 p-5">
+                    <h3 className="text-sm font-bold text-green-800 dark:text-green-300 mb-2">{CATEGORY_LABELS[highest.cat]?.icon} {getCatLabel(highest.cat)}</h3>
+                    <p className="text-sm text-gray-800 dark:text-gray-200 mb-2">{c.main}</p>
+                    <p className="text-xs text-gray-400 dark:text-gray-500">{c.locked}</p>
+                  </div>
+                );
+              })()}
+
+              {/* Improvement card */}
+              {lowest && lowest.cat !== highest?.cat && (() => {
+                const c = getImprovementComment(getCatLabel(lowest.cat), lowest.score.toFixed(2), isEn);
+                return (
+                  <div className="rounded-lg border-2 border-orange-200 dark:border-orange-800 bg-orange-50 dark:bg-orange-950 p-5">
+                    <h3 className="text-sm font-bold text-orange-800 dark:text-orange-300 mb-2">{CATEGORY_LABELS[lowest.cat]?.icon} {getCatLabel(lowest.cat)}</h3>
+                    <p className="text-sm text-gray-800 dark:text-gray-200 mb-2">{c.main}</p>
+                    <p className="text-xs text-gray-400 dark:text-gray-500">{c.locked}</p>
+                  </div>
+                );
+              })()}
+
+              {/* Gap card */}
+              {gapCat && (() => {
+                const c = getGapComment(getCatLabel(gapCat), isEn);
+                return (
+                  <div className="rounded-lg border-2 border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-950 p-5">
+                    <h3 className="text-sm font-bold text-blue-800 dark:text-blue-300 mb-2">{CATEGORY_LABELS[gapCat]?.icon} {getCatLabel(gapCat)}</h3>
+                    <p className="text-sm text-gray-800 dark:text-gray-200 mb-2">{c.main}</p>
+                    <p className="text-xs text-gray-600 dark:text-gray-400 mb-2">{c.data}</p>
+                    <p className="text-xs text-gray-400 dark:text-gray-500">{c.locked}</p>
+                  </div>
+                );
+              })()}
+
+              {/* Summary card */}
+              <div className="rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 p-5">
+                <h3 className="text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
+                  {isEn ? "Engagement Status" : "エンゲージメント状態"}
+                </h3>
+                <p className="text-sm text-gray-800 dark:text-gray-200 mb-2">{summaryComment.main}</p>
+                <p className="text-xs text-gray-400 dark:text-gray-500">{summaryComment.locked}</p>
+              </div>
+
+            </div>
+          </div>
+        );
+      })()}
 
       {/* Team AI Report */}
       {teamId && (
