@@ -2,8 +2,15 @@
 
 import { Resend } from "resend";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
 const FROM = "SQW Survey <onboarding@resend.dev>";
+
+function getResend() {
+  if (!process.env.RESEND_API_KEY) {
+    console.error("[email] RESEND_API_KEY is not configured");
+    return null;
+  }
+  return new Resend(process.env.RESEND_API_KEY);
+}
 
 interface TeamCreatedEmailParams {
   to: string;
@@ -67,10 +74,14 @@ export async function sendTeamCreatedEmail({
 `;
 
   try {
-    await resend.emails.send({ from: FROM, to, subject, html });
+    const resend = getResend();
+    if (!resend) return { error: "Email service not configured" };
+    console.log(`[email] Sending team created email to ${to}`);
+    const result = await resend.emails.send({ from: FROM, to, subject, html });
+    console.log(`[email] Send result:`, JSON.stringify(result));
     return { success: true };
   } catch (error) {
-    console.error("Failed to send team created email:", error);
+    console.error("[email] Failed to send team created email:", error);
     return { error: "Failed to send email" };
   }
 }
@@ -123,14 +134,16 @@ export async function sendResultsPublishedEmail({
 `;
 
   try {
-    // Send to each recipient individually (Resend batch)
+    const resend = getResend();
+    if (!resend) return { error: "Email service not configured" };
+    console.log(`[email] Sending results published email to ${to.length} recipients`);
     const promises = to.map((email) =>
       resend.emails.send({ from: FROM, to: email, subject, html })
     );
     await Promise.allSettled(promises);
     return { success: true };
   } catch (error) {
-    console.error("Failed to send results published email:", error);
+    console.error("[email] Failed to send results published email:", error);
     return { error: "Failed to send email" };
   }
 }
@@ -166,10 +179,12 @@ export async function sendQualitativeResponsesEmail({
     : `<h2>「${teamName}」の定性回答</h2>${responseHtml}<hr/><p style="color:#9ca3af;font-size:12px;">SQWサーベイ - Work Happiness Inc.</p>`;
 
   try {
+    const resend = getResend();
+    if (!resend) return { error: "Email service not configured" };
     await resend.emails.send({ from: FROM, to, subject, html });
     return { success: true };
   } catch (error) {
-    console.error("Failed to send qualitative email:", error);
+    console.error("[email] Failed to send qualitative email:", error);
     return { error: "Failed to send email" };
   }
 }

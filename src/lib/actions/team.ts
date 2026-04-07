@@ -144,27 +144,55 @@ export async function getTeamByAdminToken(adminToken: string) {
   return data;
 }
 
+/**
+ * Get valid (linked) session IDs for a team.
+ * Only returns sessions that are referenced by a team_member's session_id
+ * AND have completed_at set. This prevents counting orphaned/duplicate sessions.
+ */
+async function getValidSessionIds(supabase: Awaited<ReturnType<typeof createSupabaseServer>>, teamId: string): Promise<string[]> {
+  const { data: members } = await supabase
+    .from("team_members")
+    .select("session_id")
+    .eq("team_id", teamId)
+    .not("session_id", "is", null);
+
+  const linkedSessionIds = (members || []).map((m) => m.session_id).filter(Boolean) as string[];
+  if (linkedSessionIds.length === 0) return [];
+
+  const { data: sessions } = await supabase
+    .from("survey_sessions")
+    .select("id")
+    .in("id", linkedSessionIds)
+    .not("completed_at", "is", null);
+
+  return (sessions || []).map((s) => s.id);
+}
+
 export async function getTeamStats(teamId: string) {
   const supabase = await createSupabaseServer();
 
+  // Count members with active (linked) sessions only
+  const validSessionIds = await getValidSessionIds(supabase, teamId);
+  const responseCount = validSessionIds.length;
+
+  // Member count = unique members with session_id (active respondents)
+  // Use team's expected_members as the target, memberCount for "joined" count
   const { count: memberCount } = await supabase
     .from("team_members")
     .select("*", { count: "exact", head: true })
-    .eq("team_id", teamId);
-
-  const { count: responseCount } = await supabase
-    .from("survey_sessions")
-    .select("*", { count: "exact", head: true })
     .eq("team_id", teamId)
-    .not("completed_at", "is", null);
+    .not("session_id", "is", null);
 
   // Count completed sessions without email
-  const { count: noEmailCount } = await supabase
-    .from("survey_sessions")
-    .select("*", { count: "exact", head: true })
-    .eq("team_id", teamId)
-    .not("completed_at", "is", null)
-    .is("member_email", null);
+  let noEmailCount = 0;
+  if (validSessionIds.length > 0) {
+    const { count } = await supabase
+      .from("survey_sessions")
+      .select("*", { count: "exact", head: true })
+      .in("id", validSessionIds)
+      .is("member_email", null);
+    noEmailCount = count ?? 0;
+  }
 
   return {
     memberCount: memberCount ?? 0,
@@ -311,21 +339,9 @@ export async function getTeamResults(adminToken: string) {
 
   if (!team) return null;
 
-  // Get response count
-  const { count: responseCount } = await supabase
-    .from("survey_sessions")
-    .select("*", { count: "exact", head: true })
-    .eq("team_id", team.id)
-    .not("completed_at", "is", null);
-
-  // Get completed session IDs for this team
-  const { data: sessions } = await supabase
-    .from("survey_sessions")
-    .select("id")
-    .eq("team_id", team.id)
-    .not("completed_at", "is", null);
-
-  const sessionIds = (sessions || []).map((s) => s.id);
+  // Get only valid (linked from team_members) session IDs
+  const sessionIds = await getValidSessionIds(supabase, team.id);
+  const responseCount = sessionIds.length;
 
   if (sessionIds.length === 0) {
     return {
@@ -474,22 +490,9 @@ export async function getTeamResultsByInviteCode(inviteCode: string) {
     return { team, visible: false, questionAverages: null, responseCount: 0 };
   }
 
-  // Get response count
-  const { count: responseCount } = await supabase
-    .from("survey_sessions")
-    .select("*", { count: "exact", head: true })
-    .eq("team_id", team.id)
-    .not("completed_at", "is", null);
-
-  // Get completed session IDs for this team
-  const { data: sessions } = await supabase
-    .from("survey_sessions")
-    .select("id")
-    .eq("team_id", team.id)
-    .not("completed_at", "is", null);
-
-  const sessionIdList = (sessions || []).map((s) => s.id);
-  const sessionIds = new Set(sessionIdList);
+  // Get only valid (linked from team_members) session IDs
+  const sessionIdList = await getValidSessionIds(supabase, team.id);
+  const responseCount = sessionIdList.length;
 
   if (sessionIdList.length === 0) {
     return {
@@ -498,7 +501,7 @@ export async function getTeamResultsByInviteCode(inviteCode: string) {
       questionAverages: [],
       questionSDs: {},
       engagementPoints: [],
-      responseCount: responseCount ?? 0,
+      responseCount: 0,
     };
   }
 
