@@ -85,7 +85,7 @@ export const PERSONAL_REPORT_PROMPT_JA = `
 ・カテゴリ名は必ず「ワゴンの部位（カテゴリ名）」の形式で表記する：
   景色（ミッション）／道筋（戦略）／ロープ（リーダーシップ）／タイヤ（仕組み）
   押す人の体（能力・意欲）／押す人の態度（風土・文化）／積荷（リソース・強み）
-  多様性（ダイバーシティ）／幸福度
+  登場人物の多彩さ（ダイバーシティ）／幸福度
   例：「押す人の態度（風土・文化）のスコアが〜」「タイヤ（仕組み）の部分に〜」
   カテゴリ名だけを単独で使わないこと。必ずワゴンの部位とセットで表現する。
 
@@ -216,7 +216,7 @@ The central question: "Are you able to bring your true self and full potential t
 ・Always use the format "Wagon Part (Category Name)" when referring to any category:
   Landscape (Mission) / Path (Strategy) / Rope (Leadership) / Wheels (Structure)
   Body (Capability & Motivation) / Attitude (Culture & Climate) / Cargo (Resources & Strengths)
-  Diversity / Happiness
+  Cast of Characters (Diversity) / Happiness
   Example: "The Attitude (Culture & Climate) part of your wagon..." / "The Wheels (Structure) show..."
   Never use category names alone — always pair with the wagon part name.
 
@@ -327,7 +327,7 @@ export const TEAM_REPORT_PROMPT_JA = `
 ・カテゴリ名は必ず「ワゴンの部位（カテゴリ名）」の形式で表記する：
   景色（ミッション）／道筋（戦略）／ロープ（リーダーシップ）／タイヤ（仕組み）
   押す人の体（能力・意欲）／押す人の態度（風土・文化）／積荷（リソース・強み）
-  多様性（ダイバーシティ）／幸福度
+  登場人物の多彩さ（ダイバーシティ）／幸福度
   例：「押す人の態度（風土・文化）のスコアが〜」「タイヤ（仕組み）の部分に〜」
   カテゴリ名だけを単独で使わないこと。必ずワゴンの部位とセットで表現する。
 
@@ -473,7 +473,7 @@ Generate the report following WHI Philosophy and these principles strictly.
 ・Always use the format "Wagon Part (Category Name)" when referring to any category:
   Landscape (Mission) / Path (Strategy) / Rope (Leadership) / Wheels (Structure)
   Body (Capability & Motivation) / Attitude (Culture & Climate) / Cargo (Resources & Strengths)
-  Diversity / Happiness
+  Cast of Characters (Diversity) / Happiness
   Example: "The Attitude (Culture & Climate) part of your wagon..." / "The Wheels (Structure) show..."
   Never use category names alone — always pair with the wagon part name.
 
