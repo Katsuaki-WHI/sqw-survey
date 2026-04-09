@@ -43,3 +43,7 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Validation Reports (社外秘・公開禁止)
+/docs/validation-reports/*.docx
+/docs/validation-reports/*.xlsx
