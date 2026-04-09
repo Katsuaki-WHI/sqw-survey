@@ -52,6 +52,29 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "No responses" }, { status: 400 });
   }
 
+  // Get qualitative responses for all team members
+  const { data: qualitativeData } = await supabase
+    .from("qualitative_responses")
+    .select("question_text, answer")
+    .in("session_id", sessionIds)
+    .limit(50);
+
+  // Get management trust scores
+  const { data: managementSessions } = await supabase
+    .from("survey_sessions")
+    .select("category_scores")
+    .in("id", sessionIds)
+    .not("completed_at", "is", null);
+
+  const managementScores: number[] = [];
+  for (const s of managementSessions || []) {
+    const scores = s.category_scores as Record<string, { avg: number }> | null;
+    if (scores?.management?.avg) managementScores.push(scores.management.avg);
+  }
+  const managementAvg = managementScores.length > 0
+    ? Math.round((managementScores.reduce((a, b) => a + b, 0) / managementScores.length) * 100) / 100
+    : null;
+
   const { data: allAnswers } = await supabase
     .from("survey_answers")
     .select("question_id, score")
@@ -141,6 +164,14 @@ Q26 (Happiness) analysis:
 - All members above 3.0: ${q26AllAbove3 ? "Yes" : "No"}
 - Number of Q26 responses: ${q26Scores.length}
 
+${qualitativeData && qualitativeData.length > 0 ? `
+[Qualitative Comments (All Team Members)]
+${qualitativeData.map((q) => `Q: ${q.question_text}\nA: ${q.answer}`).join("\n\n")}
+Note: Incorporate qualitative responses as team-wide trends. Do NOT identify individual members.` : ""}
+${managementAvg !== null ? `
+[Management Trust Score] Team average: ${managementAvg}
+Note: If there is a gap between management trust and overall team scores, mention it in the report.` : ""}
+
 Write the report in English using HTML formatting.`
     : `以下のデータをもとにチームAIレポートを生成してください。
 
@@ -153,7 +184,7 @@ Write the report in English using HTML formatting.`
 カテゴリ別統計：
 ${statsStr}
 
-認識ギャップが最も大きいカテゴリ（標準偏差が高い順）：
+メンバー間の景色の違いが最も大きいカテゴリ（標準偏差が高い順）：
 ${highVariance.join("\n")}
 
 チーム全体の平均スコア：${overallAverage}
@@ -162,6 +193,14 @@ Q26（幸福度）分析：
 - Q26最低スコア：${q26Min}
 - 全員3.0以上：${q26AllAbove3 ? "はい" : "いいえ"}
 - Q26回答数：${q26Scores.length}名
+
+${qualitativeData && qualitativeData.length > 0 ? `
+【定性コメント（自由記述・チーム全員分）】
+${qualitativeData.map((q) => `Q: ${q.question_text}\nA: ${q.answer}`).join("\n\n")}
+※定性コメントは個人が特定されないよう抽象化し、チーム全体の傾向としてレポートに反映してください。` : ""}
+${managementAvg !== null ? `
+【経営への信頼スコア】チーム平均: ${managementAvg}
+※経営スコアとチーム全体スコアにギャップがある場合は、レポート内で言及してください。` : ""}
 
 HTML形式で日本語のレポートを作成してください。`;
 
