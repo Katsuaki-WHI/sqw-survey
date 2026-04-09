@@ -10,12 +10,6 @@ export interface SurveyStats {
   lastUpdated: string;
 }
 
-function formatCount(count: number, unit: string): string {
-  if (count < 1000) return `${count}${unit}`;
-  const rounded = Math.floor(count / 1000) * 1000;
-  return `${rounded.toLocaleString("ja-JP")}${unit}以上`;
-}
-
 const LEGACY_RESPONDENTS = 117371;
 const LEGACY_TEAMS = 9021;
 
@@ -36,8 +30,8 @@ export async function getSurveyStats(): Promise<SurveyStats> {
   return {
     respondentCount: totalRespondents,
     teamCount: totalTeams,
-    respondentDisplay: formatCount(totalRespondents, "人"),
-    teamDisplay: formatCount(totalTeams, "チーム"),
+    respondentDisplay: totalRespondents.toLocaleString("ja-JP") + "人",
+    teamDisplay: totalTeams.toLocaleString("ja-JP") + "チーム",
     lastUpdated: new Date().toISOString(),
   };
 }
