@@ -182,16 +182,16 @@ export function getQuestionsForConfig(config: SurveyConfig): Question[] {
 export function getCategoryConfigForVersion(version: SurveyVersion) {
   if (version === "40") {
     return {
-      landscape:  { label: "ミッション・ビジョン・バリュー", labelEn: "Mission, Vision & Values", wagonPart: "景色", wagonPartEn: "Landscape", questionIds: [1, 2, 3, 101, 102] },
-      road:       { label: "戦略", labelEn: "Strategy", wagonPart: "道筋", wagonPartEn: "Road", questionIds: [4, 5, 103, 104] },
-      rope:       { label: "リーダーシップ・コミュニケーション", labelEn: "Leadership & Communication", wagonPart: "ロープ", wagonPartEn: "Rope", questionIds: [6, 7, 8, 105, 106] },
-      tire:       { label: "仕組み（既成概念）", labelEn: "Systems & Mindset", wagonPart: "タイヤ", wagonPartEn: "Tire", questionIds: [9, 10, 11, 107] },
-      body:       { label: "能力・意欲", labelEn: "Capability & Motivation", wagonPart: "押す人の体", wagonPartEn: "Body", questionIds: [12, 13, 14, 108, 109, 110] },
-      attitude:   { label: "風土・文化", labelEn: "Culture & Ethos", wagonPart: "押す人の態度", wagonPartEn: "Attitude", questionIds: [15, 16, 17, 18, 111] },
-      cargo:      { label: "リソース・強みの認識", labelEn: "Resources & Strengths", wagonPart: "積荷", wagonPartEn: "Cargo", questionIds: [19, 20, 21, 112, 114] },
-      diversity:  { label: "ダイバーシティ", labelEn: "Diversity", wagonPart: "多様性", wagonPartEn: "Diversity", questionIds: [22, 23, 24, 25, 113] },
-      happiness:  { label: "チームの幸福度", labelEn: "Team Happiness", wagonPart: "幸福度", wagonPartEn: "Happiness", questionIds: [26] },
-      management: { label: "経営陣への信頼", labelEn: "Trust in Management", wagonPart: "経営", wagonPartEn: "Management", questionIds: [27, 28, 29, 30, 31] },
+      landscape:  { label: "景色（ミッション）", labelEn: "Landscape (Mission)", wagonPart: "景色", wagonPartEn: "Landscape", questionIds: [1, 2, 3, 101, 102] },
+      road:       { label: "道筋（戦略）", labelEn: "Path (Strategy)", wagonPart: "道筋", wagonPartEn: "Path", questionIds: [4, 5, 103, 104] },
+      rope:       { label: "ロープ（リーダーシップ）", labelEn: "Rope (Leadership)", wagonPart: "ロープ", wagonPartEn: "Rope", questionIds: [6, 7, 8, 105, 106] },
+      tire:       { label: "タイヤ（仕組み）", labelEn: "Wheels (Structure)", wagonPart: "タイヤ", wagonPartEn: "Wheels", questionIds: [9, 10, 11, 107] },
+      body:       { label: "押す人の体（能力・意欲）", labelEn: "Body (Capability & Motivation)", wagonPart: "押す人の体", wagonPartEn: "Body", questionIds: [12, 13, 14, 108, 109, 110] },
+      attitude:   { label: "押す人の態度（風土・文化）", labelEn: "Attitude (Culture & Climate)", wagonPart: "押す人の態度", wagonPartEn: "Attitude", questionIds: [15, 16, 17, 18, 111] },
+      cargo:      { label: "積荷（リソース・強み）", labelEn: "Cargo (Resources & Strengths)", wagonPart: "積荷", wagonPartEn: "Cargo", questionIds: [19, 20, 21, 112, 114] },
+      diversity:  { label: "登場人物の多彩さ（多様性）", labelEn: "Cast of Characters (Diversity)", wagonPart: "登場人物の多彩さ", wagonPartEn: "Cast of Characters", questionIds: [22, 23, 24, 25, 113] },
+      happiness:  { label: "幸福度", labelEn: "Happiness", wagonPart: "幸福度", wagonPartEn: "Happiness", questionIds: [26] },
+      management: { label: "経営への信頼", labelEn: "Management Trust", wagonPart: "経営", wagonPartEn: "Management", questionIds: [27, 28, 29, 30, 31] },
     };
   }
 
@@ -208,14 +208,14 @@ export const CATEGORY_CONFIG: Record<
   QuestionCategory,
   { label: string; labelEn: string; wagonPart: string; wagonPartEn: string; questionIds: number[] }
 > = {
-  landscape:   { label: "ミッション・ビジョン・バリュー", labelEn: "Mission, Vision & Values", wagonPart: "景色", wagonPartEn: "Landscape", questionIds: [1, 2, 3] },
-  road:        { label: "戦略", labelEn: "Strategy", wagonPart: "道筋", wagonPartEn: "Road", questionIds: [4, 5] },
-  rope:        { label: "リーダーシップ・コミュニケーション", labelEn: "Leadership & Communication", wagonPart: "ロープ", wagonPartEn: "Rope", questionIds: [6, 7, 8] },
-  tire:        { label: "仕組み（既成概念）", labelEn: "Systems & Mindset", wagonPart: "タイヤ", wagonPartEn: "Tire", questionIds: [9, 10, 11] },
-  body:        { label: "能力・意欲", labelEn: "Capability & Motivation", wagonPart: "押す人の体", wagonPartEn: "Body", questionIds: [12, 13, 14] },
-  attitude:    { label: "風土・文化", labelEn: "Culture & Ethos", wagonPart: "押す人の態度", wagonPartEn: "Attitude", questionIds: [15, 16, 17, 18] },
-  cargo:       { label: "リソース・強みの認識", labelEn: "Resources & Strengths", wagonPart: "積荷", wagonPartEn: "Cargo", questionIds: [19, 20, 21] },
-  diversity:   { label: "ダイバーシティ", labelEn: "Diversity", wagonPart: "多様性", wagonPartEn: "Diversity", questionIds: [22, 23, 24, 25] },
-  happiness:   { label: "チームの幸福度", labelEn: "Team Happiness", wagonPart: "幸福度", wagonPartEn: "Happiness", questionIds: [26] },
-  management:  { label: "経営陣への信頼", labelEn: "Trust in Management", wagonPart: "経営", wagonPartEn: "Management", questionIds: [27, 28, 29, 30, 31] },
+  landscape:   { label: "景色（ミッション）", labelEn: "Landscape (Mission)", wagonPart: "景色", wagonPartEn: "Landscape", questionIds: [1, 2, 3] },
+  road:        { label: "道筋（戦略）", labelEn: "Path (Strategy)", wagonPart: "道筋", wagonPartEn: "Path", questionIds: [4, 5] },
+  rope:        { label: "ロープ（リーダーシップ）", labelEn: "Rope (Leadership)", wagonPart: "ロープ", wagonPartEn: "Rope", questionIds: [6, 7, 8] },
+  tire:        { label: "タイヤ（仕組み）", labelEn: "Wheels (Structure)", wagonPart: "タイヤ", wagonPartEn: "Wheels", questionIds: [9, 10, 11] },
+  body:        { label: "押す人の体（能力・意欲）", labelEn: "Body (Capability & Motivation)", wagonPart: "押す人の体", wagonPartEn: "Body", questionIds: [12, 13, 14] },
+  attitude:    { label: "押す人の態度（風土・文化）", labelEn: "Attitude (Culture & Climate)", wagonPart: "押す人の態度", wagonPartEn: "Attitude", questionIds: [15, 16, 17, 18] },
+  cargo:       { label: "積荷（リソース・強み）", labelEn: "Cargo (Resources & Strengths)", wagonPart: "積荷", wagonPartEn: "Cargo", questionIds: [19, 20, 21] },
+  diversity:   { label: "登場人物の多彩さ（多様性）", labelEn: "Cast of Characters (Diversity)", wagonPart: "登場人物の多彩さ", wagonPartEn: "Cast of Characters", questionIds: [22, 23, 24, 25] },
+  happiness:   { label: "幸福度", labelEn: "Happiness", wagonPart: "幸福度", wagonPartEn: "Happiness", questionIds: [26] },
+  management:  { label: "経営への信頼", labelEn: "Management Trust", wagonPart: "経営", wagonPartEn: "Management", questionIds: [27, 28, 29, 30, 31] },
 };
