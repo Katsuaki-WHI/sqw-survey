@@ -49,6 +49,21 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Member not found" }, { status: 404 });
   }
 
+  // Get qualitative responses
+  const { data: qualitativeData } = await supabase
+    .from("qualitative_responses")
+    .select("question_text, answer")
+    .eq("member_id", member.session_id)
+    .limit(10);
+
+  // Get management trust score from session
+  const { data: sessionData } = await supabase
+    .from("survey_sessions")
+    .select("category_scores")
+    .eq("id", member.session_id)
+    .single();
+  const managementScores = (sessionData?.category_scores as Record<string, { avg: number }> | null)?.management;
+
   // Get member's answers
   const { data: answers } = await supabase
     .from("survey_answers")
@@ -172,6 +187,13 @@ Key engagement scores:
 
 Categories with significant perception gaps (diff >= 0.5):
 ${gapCategories.length > 0 ? gapCategories.join("\n") : "None"}
+${qualitativeData && qualitativeData.length > 0 ? `
+[Qualitative Comments]
+${qualitativeData.map((q) => `Q: ${q.question_text}\nA: ${q.answer}`).join("\n\n")}
+Note: Naturally incorporate qualitative responses into insights. The first question about current work/concerns should be especially reflected in Section 2.` : ""}
+${managementScores ? `
+[Management Trust Score] Average: ${managementScores.avg?.toFixed(2) ?? "N/A"}
+Note: If there is a gap between management and team scores, mention it in Section 3.` : ""}
 
 Write the report in English using HTML formatting.`
     : `以下のデータをもとに個人AIレポートを生成してください。
@@ -196,6 +218,13 @@ ${teamAvgStr}
 
 認識ギャップが大きいカテゴリ（差が0.5以上）：
 ${gapCategories.length > 0 ? gapCategories.join("\n") : "なし"}
+${qualitativeData && qualitativeData.length > 0 ? `
+【定性コメント（自由記述）】
+${qualitativeData.map((q) => `Q: ${q.question_text}\nA: ${q.answer}`).join("\n\n")}
+※定性コメントがある場合は、レポートの示唆に自然に反映してください。特に最初の質問（現在の仕事・悩み）への回答は、セクション2の「気づきのタネ」で重点的に活用してください。` : ""}
+${managementScores ? `
+【経営への信頼スコア】平均: ${managementScores.avg?.toFixed(2) ?? "N/A"}
+※経営スコアとチームスコアのギャップがある場合は、セクション3で言及してください。` : ""}
 
 HTML形式で日本語のレポートを作成してください。`;
 
