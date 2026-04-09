@@ -226,7 +226,12 @@ HTML形式で日本語のレポートを作成してください。`;
       system: systemPrompt,
       messages: [{ role: "user", content: userMessage }],
     });
-    let report = msg.content[0].type === "text" ? msg.content[0].text : "";
+    const rawReport = msg.content[0].type === "text" ? msg.content[0].text : "";
+    let report = rawReport
+      .replace(/^```html\s*/i, "")
+      .replace(/^```\s*/i, "")
+      .replace(/\s*```$/i, "")
+      .trim();
 
     // If output was truncated, close open HTML tags
     if (msg.stop_reason === "max_tokens") {
