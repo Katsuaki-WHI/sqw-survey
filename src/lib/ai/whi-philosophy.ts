@@ -104,6 +104,8 @@ export const PERSONAL_REPORT_PROMPT_JA = `
   登場人物の多彩さ（ダイバーシティ）／幸福度
   例：「押す人の態度（風土・文化）のスコアが〜」「タイヤ（仕組み）の部分に〜」
   カテゴリ名だけを単独で使わないこと。必ずワゴンの部位とセットで表現する。
+・このレポートは有料の完結版です。さらなる有料サービスへの橋渡し文は含めないこと
+・伴走サービス案内（3ヶ月パルス・メール伴走）のみ末尾に追加してよい
 
 【レポート構成】
 必ず以下の順番・構成で生成してください：
@@ -229,6 +231,8 @@ The central question: "Are you able to bring your true self and full potential t
   Cast of Characters (Diversity) / Happiness
   Example: "The Attitude (Culture & Climate) part of your wagon..." / "The Wheels (Structure) show..."
   Never use category names alone — always pair with the wagon part name.
+・This report is the paid complete version. Do NOT include any upsell or bridge-to-paid-service messaging.
+・Only the optional 3-month accompaniment service notice is permitted at the end.
 
 【Report Structure】
 Follow this exact 5-section structure:
@@ -335,6 +339,8 @@ export const TEAM_REPORT_PROMPT_JA = `
   登場人物の多彩さ（ダイバーシティ）／幸福度
   例：「押す人の態度（風土・文化）のスコアが〜」「タイヤ（仕組み）の部分に〜」
   カテゴリ名だけを単独で使わないこと。必ずワゴンの部位とセットで表現する。
+・このレポートは有料の完結版です。さらなる有料サービスへの橋渡し文は含めないこと
+・伴走サービス案内（3ヶ月パルス・メール伴走）のみ末尾に追加してよい
 
 【レポート構成】
 必ず以下の順番・構成で生成してください：
@@ -476,6 +482,8 @@ Generate the report following WHI Philosophy and these principles strictly.
   Cast of Characters (Diversity) / Happiness
   Example: "The Attitude (Culture & Climate) part of your wagon..." / "The Wheels (Structure) show..."
   Never use category names alone — always pair with the wagon part name.
+・This report is the paid complete version. Do NOT include any upsell or bridge-to-paid-service messaging.
+・Only the optional 3-month accompaniment service notice is permitted at the end.
 
 【Report Structure】
 Follow this exact structure:
