@@ -125,19 +125,9 @@ export async function POST(request: NextRequest) {
   const q26Min = q26Scores.length > 0 ? Math.min(...q26Scores) : 0;
   const q26AllAbove3 = q26Scores.every((s) => s >= 3.0);
 
-  // Get prompt
   const isEn = language === "en";
   const htmlInstructions = isEn ? HTML_OUTPUT_INSTRUCTIONS_EN : HTML_OUTPUT_INSTRUCTIONS_JA;
-  const defaultPrompt = isEn ? TEAM_REPORT_PROMPT_EN : TEAM_REPORT_PROMPT_JA;
-  let basePrompt = defaultPrompt;
-  const { data: promptRow } = await supabase
-    .from("ai_prompts")
-    .select("content")
-    .eq("type", "team")
-    .eq("language", language || "ja")
-    .eq("is_active", true)
-    .single();
-  if (promptRow?.content) basePrompt = promptRow.content;
+  const basePrompt = isEn ? TEAM_REPORT_PROMPT_EN : TEAM_REPORT_PROMPT_JA;
   const systemPrompt = basePrompt + htmlInstructions;
   const statsStr = Object.entries(categoryStats)
     .map(([cat, s]) => `  ${CATEGORY_CONFIG[cat as keyof typeof CATEGORY_CONFIG]?.label || cat}: avg=${s.avg}, min=${s.min}, max=${s.max}, SD=${s.sd}`)

@@ -128,19 +128,9 @@ export async function POST(request: NextRequest) {
     }
   }
 
-  // Get prompt from DB or fallback to version-specific prompt
   const isEn = language === "en";
   const htmlInstructions = isEn ? HTML_OUTPUT_INSTRUCTIONS_EN : HTML_OUTPUT_INSTRUCTIONS_JA;
-  const defaultPrompt = isEn ? PERSONAL_REPORT_PROMPT_EN : PERSONAL_REPORT_PROMPT_JA;
-  let basePrompt = defaultPrompt;
-  const { data: promptRow } = await supabase
-    .from("ai_prompts")
-    .select("content")
-    .eq("type", "personal")
-    .eq("language", language || "ja")
-    .eq("is_active", true)
-    .single();
-  if (promptRow?.content) basePrompt = promptRow.content;
+  const basePrompt = isEn ? PERSONAL_REPORT_PROMPT_EN : PERSONAL_REPORT_PROMPT_JA;
   const systemPrompt = basePrompt + htmlInstructions;
 
   const name = member.respondent_name || (isEn ? "you" : "あなた");
