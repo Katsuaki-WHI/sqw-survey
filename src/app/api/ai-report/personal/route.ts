@@ -222,11 +222,16 @@ HTML形式で日本語のレポートを作成してください。`;
     const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
     const msg = await anthropic.messages.create({
       model: "claude-sonnet-4-20250514",
-      max_tokens: 4000,
+      max_tokens: 8000,
       system: systemPrompt,
       messages: [{ role: "user", content: userMessage }],
     });
-    const report = msg.content[0].type === "text" ? msg.content[0].text : "";
+    let report = msg.content[0].type === "text" ? msg.content[0].text : "";
+
+    // If output was truncated, close open HTML tags
+    if (msg.stop_reason === "max_tokens") {
+      report += "</div></div></div>";
+    }
 
     // Save to cache (non-blocking)
     supabase.from("ai_report_cache").insert({
