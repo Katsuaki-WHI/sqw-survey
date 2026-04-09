@@ -10,6 +10,7 @@ import { CATEGORY_CONFIG } from "@/lib/survey/questions";
 import LanguageToggle from "@/components/LanguageToggle";
 import CopyLinkButton from "@/components/ui/CopyLinkButton";
 import Link from "next/link";
+import { SurveyStatsDisplay } from "@/components/survey/SurveyStatsDisplay";
 
 export default function MemberResultsPage() {
   const { locale, dict } = useLocale();
@@ -107,6 +108,15 @@ export default function MemberResultsPage() {
       {/* Privacy notice */}
       <div className="mb-6 rounded-lg bg-blue-50 dark:bg-blue-950 border border-blue-200 dark:border-blue-800 px-4 py-3 text-sm text-blue-700 dark:text-blue-300 max-w-2xl text-center">
         {t.privateNotice}
+      </div>
+
+      <div className="mb-6">
+        <SurveyStatsDisplay type="respondent" variant="banner" />
+        <p className="text-center text-sm text-gray-500 mt-2">
+          {isEn ? "You are one of " : "あなたは今、"}
+          <SurveyStatsDisplay type="respondent" variant="inline" />
+          {isEn ? "" : "の一人です"}
+        </p>
       </div>
 
       <ResultsView

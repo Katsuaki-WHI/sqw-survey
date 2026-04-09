@@ -10,6 +10,7 @@ import ResultsView, { type ResultsData } from "@/components/survey/ResultsView";
 import LanguageToggle from "@/components/LanguageToggle";
 import Link from "next/link";
 import { CATEGORY_LABELS, getStrengthComment, getImprovementComment, getGapComment, getEngagementQuadrant, getSummaryComment } from "@/lib/survey/insight-comments";
+import { SurveyStatsDisplay } from "@/components/survey/SurveyStatsDisplay";
 
 interface QuestionAvg {
   question_id: number;
@@ -168,6 +169,15 @@ export default function TeamResultsPage() {
   return (
     <div className="flex flex-1 flex-col items-center px-6 py-12 bg-gradient-to-b from-blue-50 to-white dark:from-gray-900 dark:to-black">
       <LanguageToggle />
+
+      <div className="mb-6">
+        <SurveyStatsDisplay type="team" variant="banner" />
+        <p className="text-center text-sm text-gray-500 mt-2">
+          {locale === "en" ? "Your team is one of " : "あなたのチームは、"}
+          <SurveyStatsDisplay type="team" variant="inline" />
+          {locale === "en" ? "" : "の一つです"}
+        </p>
+      </div>
 
       {/* Response count badge */}
       <div className="mb-4 rounded-full bg-blue-100 dark:bg-blue-900 px-4 py-1 text-sm text-blue-700 dark:text-blue-300">
