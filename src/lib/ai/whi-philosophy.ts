@@ -82,6 +82,12 @@ export const PERSONAL_REPORT_PROMPT_JA = `
   3.「このことに気づいているあなたは、すでに変化の入口に立っています」で締める
 ・読み終わった後に「よし、やってみよう」と前向きになれる言葉を選ぶ
 ・117,371人のデータという根拠を自然に使い「このスコアパターンの人は〜」という示唆を入れる
+・カテゴリ名は必ず「ワゴンの部位（カテゴリ名）」の形式で表記する：
+  景色（ミッション）／道筋（戦略）／ロープ（リーダーシップ）／タイヤ（仕組み）
+  押す人の体（能力・意欲）／押す人の態度（風土・文化）／積荷（リソース・強み）
+  多様性（ダイバーシティ）／幸福度
+  例：「押す人の態度（風土・文化）のスコアが〜」「タイヤ（仕組み）の部分に〜」
+  カテゴリ名だけを単独で使わないこと。必ずワゴンの部位とセットで表現する。
 
 【レポート構成】
 必ず以下の順番・構成で生成してください：
@@ -207,6 +213,12 @@ The central question: "Are you able to bring your true self and full potential t
 ・Use "117,371 people's data shows..." as natural evidence
 ・Leave the reader feeling: "I want to try this tomorrow"
 ・If qualitative responses are provided, naturally weave them into insights
+・Always use the format "Wagon Part (Category Name)" when referring to any category:
+  Landscape (Mission) / Path (Strategy) / Rope (Leadership) / Wheels (Structure)
+  Body (Capability & Motivation) / Attitude (Culture & Climate) / Cargo (Resources & Strengths)
+  Diversity / Happiness
+  Example: "The Attitude (Culture & Climate) part of your wagon..." / "The Wheels (Structure) show..."
+  Never use category names alone — always pair with the wagon part name.
 
 【Report Structure】
 Follow this exact 5-section structure:
@@ -312,6 +324,12 @@ export const TEAM_REPORT_PROMPT_JA = `
 ・読み終わったリーダーが「よし、明日やってみよう」と勇気づけられることを最終ゴールとする
 ・定性コメントがある場合は「メンバーの声」として自然に織り込む
 ・経営スコアとチームスコアのギャップがある場合は示唆として活用する
+・カテゴリ名は必ず「ワゴンの部位（カテゴリ名）」の形式で表記する：
+  景色（ミッション）／道筋（戦略）／ロープ（リーダーシップ）／タイヤ（仕組み）
+  押す人の体（能力・意欲）／押す人の態度（風土・文化）／積荷（リソース・強み）
+  多様性（ダイバーシティ）／幸福度
+  例：「押す人の態度（風土・文化）のスコアが〜」「タイヤ（仕組み）の部分に〜」
+  カテゴリ名だけを単独で使わないこと。必ずワゴンの部位とセットで表現する。
 
 【レポート構成】
 必ず以下の順番・構成で生成してください：
@@ -452,6 +470,12 @@ Generate the report following WHI Philosophy and these principles strictly.
 ・If qualitative responses exist, weave them in naturally as "team members' own words"
 ・If management trust score gaps exist, use as strategic insight
 ・Leave the leader feeling: "I want to try this tomorrow"
+・Always use the format "Wagon Part (Category Name)" when referring to any category:
+  Landscape (Mission) / Path (Strategy) / Rope (Leadership) / Wheels (Structure)
+  Body (Capability & Motivation) / Attitude (Culture & Climate) / Cargo (Resources & Strengths)
+  Diversity / Happiness
+  Example: "The Attitude (Culture & Climate) part of your wagon..." / "The Wheels (Structure) show..."
+  Never use category names alone — always pair with the wagon part name.
 
 【Report Structure】
 Follow this exact structure:
