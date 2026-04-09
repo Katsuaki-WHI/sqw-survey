@@ -210,12 +210,23 @@ export default function MemberResultsPage() {
             .sort((a, b) => a.score - b.score)
             .slice(0, 3);
 
+          // Compute highest category for free preview
+          const allCatEntries = teamCats
+            .map((cat) => ({ cat, score: results.categoryScores[cat]?.avg ?? 0, label: isEn ? CATEGORY_CONFIG[cat].labelEn : CATEGORY_CONFIG[cat].label }))
+            .filter((e) => e.score > 0)
+            .sort((a, b) => b.score - a.score);
+          const topCat = allCatEntries[0];
+
           return (
             <div className="w-full flex flex-col gap-6 mt-8">
 
               {/* Block 1: Gap Preview */}
               <div className="rounded-lg border border-gray-200 dark:border-gray-700 p-5">
-                <h3 className="text-base font-bold text-gray-800 dark:text-gray-200 mb-4">{tt.ctaGapTitle}</h3>
+                <h3 className="text-base font-bold text-gray-800 dark:text-gray-200 mb-4">
+                  {isEn
+                    ? "⚠️ Points of concern in your wagon (details in the paid report)"
+                    : "⚠️ あなたのワゴンで気になるポイント（有料レポートで詳細を確認）"}
+                </h3>
                 <div className="flex flex-col gap-2">
                   {catEntries.map((e) => (
                     <div key={e.cat} className="flex items-center justify-between text-sm py-2 border-b border-gray-100 dark:border-gray-800 last:border-0">
@@ -228,6 +239,30 @@ export default function MemberResultsPage() {
                   ))}
                 </div>
               </div>
+
+              {/* Free Preview: Highest category one-liner */}
+              {topCat && (
+                <div className="bg-blue-50 dark:bg-blue-950 border border-blue-200 dark:border-blue-800 rounded-xl p-4">
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="text-xs font-bold bg-blue-600 text-white px-2 py-0.5 rounded-full">
+                      {isEn ? "Free Preview" : "無料プレビュー"}
+                    </span>
+                    <span className="text-sm font-bold text-blue-800 dark:text-blue-300">
+                      {isEn ? "Your highest category" : "あなたの最も高いカテゴリ"}
+                    </span>
+                  </div>
+                  <p className="text-sm text-blue-900 dark:text-blue-200 font-semibold">
+                    {isEn
+                      ? `"${topCat.label}" is your highest-scoring category`
+                      : `「${topCat.label}」カテゴリが最も高いスコアです`}
+                  </p>
+                  <p className="text-xs text-blue-700 dark:text-blue-400 mt-1">
+                    {isEn
+                      ? "✨ The paid report includes detailed analysis, how to leverage this strength, gaps with your team, and specific actions"
+                      : "✨ 有料レポートでは、このカテゴリの詳細分析・強みの活かし方・チームとのギャップ・具体的アクションが届きます"}
+                  </p>
+                </div>
+              )}
 
               {/* Block 2: Personal AI Report CTA */}
               {!aiReport && !aiReportLoading && (
