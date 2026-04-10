@@ -129,6 +129,7 @@ export default function ResultsView({ data, title, mode }: ResultsViewProps) {
         categoryScores={data.categoryScores}
         isEn={isEn}
         mode={mode}
+        questionSDs={data.questionSDs}
       />
 
       {/* Insight cards */}
@@ -181,16 +182,62 @@ function CategoryBreakdown({
   categoryScores,
   isEn,
   mode,
+  questionSDs,
 }: {
   teamCategories: QuestionCategory[];
   categoryScores: Record<string, { avg: number; level: string }>;
   isEn: boolean;
   mode: "individual" | "team";
+  questionSDs?: Record<number, number>;
 }) {
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
 
   const toggle = (cat: string) =>
     setExpanded((prev) => ({ ...prev, [cat]: !prev[cat] }));
+
+  // ============================================================
+  // CTA表示条件の計算
+  // ============================================================
+  const validCats = teamCategories.filter(
+    (cat) => cat !== "management" && cat !== "happiness" && categoryScores[cat]
+  );
+
+  const sortedByScore = [...validCats].sort(
+    (a, b) => (categoryScores[b]?.avg ?? 0) - (categoryScores[a]?.avg ?? 0)
+  );
+  const topCats = new Set(sortedByScore.slice(0, 3).map(String));
+  const bottomCats = new Set(sortedByScore.slice(-3).map(String));
+
+  // 高SDカテゴリ（チームのみ）
+  const CATEGORY_QUESTIONS: Record<string, number[]> = {
+    landscape: [1,2,3], path: [4,5], rope: [6,7,8],
+    wheel: [9,10,11], body: [12,13,14], attitude: [15,16,17,18],
+    cargo: [19,20,21], diversity: [22,23,24,25],
+  };
+  const highSDCats = new Set<string>();
+  if (mode === "team" && questionSDs) {
+    const catSDMap: Record<string, number> = {};
+    for (const [cat, qids] of Object.entries(CATEGORY_QUESTIONS)) {
+      const sds = qids.map((id) => questionSDs[id] ?? 0);
+      catSDMap[cat] = sds.reduce((a, b) => a + b, 0) / sds.length;
+    }
+    Object.entries(catSDMap)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 2)
+      .forEach(([cat]) => highSDCats.add(cat));
+  }
+
+  // 個人：上位3・下位3・景色・幸福度にCTA
+  // チーム：上位2・下位2・高SD2・ロープにCTA
+  const shouldShowCTA = (cat: string): boolean => {
+    if (mode === "individual") {
+      return topCats.has(cat) || bottomCats.has(cat) || cat === "landscape" || cat === "happiness";
+    } else {
+      const topTwo = new Set(sortedByScore.slice(0, 2).map(String));
+      const bottomTwo = new Set(sortedByScore.slice(-2).map(String));
+      return topTwo.has(cat) || bottomTwo.has(cat) || highSDCats.has(cat) || cat === "rope";
+    }
+  };
 
   return (
     <div className="w-full">
@@ -261,8 +308,8 @@ function CategoryBreakdown({
                 </p>
               )}
 
-              {/* Expand/collapse for detail */}
-              {detailComment && (
+              {/* Expand/collapse for detail — only for top/bottom/high-SD categories */}
+              {detailComment && shouldShowCTA(cat) && (
                 <>
                   <button
                     onClick={() => toggle(cat)}
