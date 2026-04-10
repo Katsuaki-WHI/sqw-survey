@@ -30,6 +30,7 @@ export default function MemberResultsPage() {
   const [aiReport, setAiReport] = useState<string | null>(null);
   const [aiReportLoading, setAiReportLoading] = useState(false);
   const [aiReportError, setAiReportError] = useState("");
+  const [respondentName, setRespondentName] = useState("");
 
   const load = useCallback(async () => {
     const cookieMatch = document.cookie
@@ -57,13 +58,8 @@ export default function MemberResultsPage() {
         engagementPoints: resultData.engagementPoints || [],
       });
 
-      // Set page title for PDF save filename
-      const today = new Date();
-      const dateStr = `${today.getFullYear()}${String(today.getMonth() + 1).padStart(2, "0")}${String(today.getDate()).padStart(2, "0")}`;
       const name = resultData.respondentName || (locale === "en" ? "Member" : "メンバー");
-      document.title = locale === "en"
-        ? `${dateStr}_${name}_PersonalResults`
-        : `${dateStr}_${name}_個人結果`;
+      setRespondentName(name);
     }
 
     if (teamData) {
@@ -131,6 +127,11 @@ export default function MemberResultsPage() {
         data={results}
         title={t.yourResults}
         mode="individual"
+        printTitle={(() => {
+          const d = new Date();
+          const ds = `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, "0")}${String(d.getDate()).padStart(2, "0")}`;
+          return locale === "en" ? `${ds}_${respondentName}_PersonalResults` : `${ds}_${respondentName}_個人結果`;
+        })()}
       />
 
       <div className="flex flex-col items-center gap-4 mt-8 w-full max-w-lg">

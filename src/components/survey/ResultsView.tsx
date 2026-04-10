@@ -38,6 +38,7 @@ interface ResultsViewProps {
   data: ResultsData;
   title: string;
   mode: "individual" | "team";
+  printTitle?: string;
 }
 
 function levelBarColor(avg: number): string {
@@ -71,7 +72,7 @@ const CATEGORY_IMAGE_PREFIX: Record<string, string> = {
   happiness: "happiness",
 };
 
-export default function ResultsView({ data, title, mode }: ResultsViewProps) {
+export default function ResultsView({ data, title, mode, printTitle }: ResultsViewProps) {
   const { locale, dict } = useLocale();
   const isEn = locale === "en";
   const t = dict.survey;
@@ -169,7 +170,7 @@ export default function ResultsView({ data, title, mode }: ResultsViewProps) {
         &copy; Work Happiness Inc.
       </p>
       {/* PDF download button */}
-      <PdfDownloadButton />
+      <PdfDownloadButton printTitle={printTitle} />
     </div>
   );
 }

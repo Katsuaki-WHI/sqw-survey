@@ -48,13 +48,6 @@ export default function TeamResultsPage() {
     setTeamName(data.team.name);
     setTeamId(data.team.id);
 
-    // Set page title for PDF save filename
-    const today = new Date();
-    const dateStr = `${today.getFullYear()}${String(today.getMonth() + 1).padStart(2, "0")}${String(today.getDate()).padStart(2, "0")}`;
-    document.title = locale === "en"
-      ? `${dateStr}_${data.team.name}_TeamResults`
-      : `${dateStr}_${data.team.name}_チーム結果`;
-
     if (!data.visible) {
       setNotVisible(true);
       setLoading(false);
@@ -195,6 +188,11 @@ export default function TeamResultsPage() {
         data={results}
         title={`${teamName} - ${t.teamResultsTitle}`}
         mode="team"
+        printTitle={(() => {
+          const d = new Date();
+          const ds = `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, "0")}${String(d.getDate()).padStart(2, "0")}`;
+          return locale === "en" ? `${ds}_${teamName}_TeamResults` : `${ds}_${teamName}_チーム結果`;
+        })()}
       />
 
       {/* Team Insights Section */}
