@@ -112,7 +112,7 @@ export const PERSONAL_INSIGHT_COMMENTS: InsightCommentMaster = {
     },
   },
 
-  path: {
+  road: {
     top: {
       valueComment: `道筋（戦略）のスコアが最高レベルです。チームの方向性を支持し、その戦略がパフォーマンスに貢献していると感じています。${DATA_STATS.respondentsDisplay}のデータでも、戦略への共感は幸福度と強く連動しています。`,
       valueCommentEn: `Your Path (Strategy) score is at the highest level. You support the team direction and feel it contributes to performance. Data from ${DATA_STATS.respondentsDisplay} confirms strategic alignment connects strongly with happiness.`,
@@ -178,7 +178,7 @@ export const PERSONAL_INSIGHT_COMMENTS: InsightCommentMaster = {
     },
   },
 
-  wheel: {
+  tire: {
     top: {
       valueComment: "タイヤ（仕組み・既成概念）のスコアが最高レベルです。評価の仕組みや自律性、新しいやり方への姿勢が整っています。このカテゴリが高いチームは、変化への適応力も高い傾向があります。",
       valueCommentEn: "Your Wheels (Structure & Conventions) score is at the highest level. Evaluation systems, autonomy, and openness to new approaches are all working well. Teams with high scores here tend to adapt to change more effectively.",
@@ -355,7 +355,7 @@ export const TEAM_INSIGHT_COMMENTS: InsightCommentMaster = {
     low: { valueComment: "景色（目的と誇り）のチームスコアが低めです。データでは、このカテゴリが低いチームの幸福度平均は2.43と低い状態にあります。「チームとしての方向性が見えにくい」状態かもしれません。", valueCommentEn: `Your team's Landscape (Purpose & Pride) score is low. Data shows teams with low scores here average 2.43 in happiness. The team may be in a state where "the direction is unclear."`, ctaComment: "チームの目的を再構築するための具体的なアクションを、有料レポートでお届けします。", ctaCommentEn: "The full report delivers specific actions to rebuild the team's purpose." },
     bottom: { valueComment: "景色（目的と誇り）のチームスコアが最も低いレベルです。このカテゴリが低いチームは、幸福度も成果も大きく影響を受けます。まず「このチームはなぜ存在するのか」を問い直すことが最優先です。", valueCommentEn: `Your team's Landscape (Purpose & Pride) score is at the lowest level. Teams with low scores here experience significant impact on both happiness and performance. The top priority is re-examining "why does this team exist."`, ctaComment: "有料レポートで、チームの再起動に向けた最初の一歩をお届けします。", ctaCommentEn: "The full report delivers the first step toward team renewal." },
   },
-  path: {
+  road: {
     top: { valueComment: "道筋（戦略）のチームスコアが最高レベルです。チームの戦略への共感と、その戦略がパフォーマンスに貢献しているという実感が高い状態です。このカテゴリが高いチームは変化への対応力も高い傾向があります。", valueCommentEn: "Your team's Path (Strategy) score is at the highest level. Team members strongly support the strategy and feel it contributes to performance. Teams with high scores here tend to be more adaptable to change.", ctaComment: "この戦略力をさらに活かすための示唆が、有料レポートにあります。", ctaCommentEn: "The full report has insights for leveraging this strategic strength further." },
     high: { valueComment: "道筋（戦略）のチームスコアが高い状態です。戦略への共感がチームの推進力になっています。", valueCommentEn: "Your team's Path (Strategy) score is high. Strategic alignment is driving the team forward.", ctaComment: "戦略をさらに浸透させるためのアクションが、有料レポートにあります。", ctaCommentEn: "The full report has actions to further embed the strategy." },
     mid: { valueComment: "道筋（戦略）のチームスコアは中程度です。戦略への共感に個人差がある可能性があります。全員が「この戦略でいこう」と思える状態になると、チームの推進力が大きく変わります。", valueCommentEn: `Your team's Path (Strategy) score is at a middle level. There may be individual differences in strategic alignment. When everyone can say "let's go with this strategy," the team's momentum changes significantly.`, ctaComment: "戦略共有を加速するための具体的なアクションを、有料レポートでお届けします。", ctaCommentEn: "The full report delivers specific actions to accelerate strategic alignment." },
@@ -369,7 +369,7 @@ export const TEAM_INSIGHT_COMMENTS: InsightCommentMaster = {
     low: { valueComment: "ロープ（リーダーの関わり）のチームスコアが低めです。リーダーとメンバーの間に距離感がある可能性があります。このカテゴリは、チームの幸福度と成果の両方に影響します。", valueCommentEn: "Your team's Rope (Leadership & Engagement) score is low. There may be a distance between the leader and members. This category affects both team happiness and performance.", ctaComment: "リーダーとメンバーの距離を縮めるための具体的なアクションを、有料レポートでお届けします。", ctaCommentEn: "The full report delivers specific actions to close the gap between leader and members." },
     bottom: { valueComment: "ロープ（リーダーの関わり）のチームスコアが最も低いレベルです。リーダーシップの機能不全がチーム全体に影響している可能性があります。早急な対応が必要な状態です。", valueCommentEn: "Your team's Rope (Leadership & Engagement) score is at the lowest level. Leadership dysfunction may be affecting the entire team. Urgent action is needed.", ctaComment: "有料レポートで、最優先で取り組むべきリーダーシップアクションをお届けします。", ctaCommentEn: "The full report delivers the leadership actions to tackle first." },
   },
-  wheel: {
+  tire: {
     top: { valueComment: "タイヤ（仕組み・既成概念）のチームスコアが最高レベルです。評価の仕組みや自律性、新しいやり方への姿勢が整っており、チームが機動的に動けている状態です。", valueCommentEn: "Your team's Wheels (Structure & Conventions) score is at the highest level. Evaluation systems, autonomy, and openness to new approaches are all in place, allowing the team to move agilely.", ctaComment: "この機動力をさらに高めるための示唆が、有料レポートにあります。", ctaCommentEn: "The full report has insights for further enhancing this agility." },
     high: { valueComment: "タイヤ（仕組み・既成概念）のチームスコアが高い状態です。仕組みが機能しており、チームが自律的に動けています。", valueCommentEn: "Your team's Wheels (Structure & Conventions) score is high. Systems are functioning and the team can operate autonomously.", ctaComment: "仕組みをさらに改善するためのアクションが、有料レポートにあります。", ctaCommentEn: "The full report has actions to further improve your systems." },
     mid: { valueComment: "タイヤ（仕組み・既成概念）のチームスコアは中程度です。「評価が不明確」「前例に縛られている」という感覚を持つメンバーがいる可能性があります。", valueCommentEn: "Your team's Wheels (Structure & Conventions) score is at a middle level. Some members may feel evaluation is unclear or that they are bound by precedent.", ctaComment: "仕組みを改善するための具体的なアクションを、有料レポートでお届けします。", ctaCommentEn: "The full report delivers specific actions to improve your systems." },
