@@ -307,38 +307,6 @@ export default function TeamResultsPage() {
       {/* Team AI Report */}
       {teamId && results && (
         <div className="w-full max-w-3xl mx-auto mt-8">
-          {/* Free Preview: Team's highest category */}
-          {(() => {
-            const teamCatsPreview = ["landscape","road","rope","tire","body","attitude","cargo","diversity","happiness"] as const;
-            const topTeamCat = teamCatsPreview
-              .map((cat) => ({ cat, score: results.categoryScores[cat]?.avg ?? 0, label: locale === "en" ? CATEGORY_CONFIG[cat].labelEn : CATEGORY_CONFIG[cat].label }))
-              .filter((e) => e.score > 0)
-              .sort((a, b) => b.score - a.score)[0];
-
-            if (!topTeamCat) return null;
-            return (
-              <div className="bg-green-50 dark:bg-green-950 border border-green-200 dark:border-green-800 rounded-xl p-4 mb-4">
-                <div className="flex items-center gap-2 mb-2">
-                  <span className="text-xs font-bold bg-green-600 text-white px-2 py-0.5 rounded-full">
-                    {locale === "en" ? "Free Preview" : "無料プレビュー"}
-                  </span>
-                  <span className="text-sm font-bold text-green-800 dark:text-green-300">
-                    {locale === "en" ? "Team's highest category" : "チームの最も高いカテゴリ"}
-                  </span>
-                </div>
-                <p className="text-sm text-green-900 dark:text-green-200 font-semibold">
-                  {locale === "en"
-                    ? `"${topTeamCat.label}" is your team's strongest category`
-                    : `「${topTeamCat.label}」カテゴリがチームの強みです`}
-                </p>
-                <p className="text-xs text-green-700 dark:text-green-400 mt-1">
-                  {locale === "en"
-                    ? "✨ The paid report includes member perception gaps, priority improvement areas, and specific leadership suggestions"
-                    : "✨ 有料レポートでは、メンバー間の認識ギャップ・改善優先カテゴリ・リーダーへの具体的示唆が届きます"}
-                </p>
-              </div>
-            );
-          })()}
 
           {!aiReport && !aiReportLoading && (
             <div className="rounded-lg border border-purple-200 dark:border-purple-800 bg-purple-50 dark:bg-purple-950 p-4 text-center">
