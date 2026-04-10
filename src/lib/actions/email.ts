@@ -87,21 +87,24 @@ export async function sendTeamCreatedEmail({
 }
 
 interface ResultsPublishedEmailParams {
-  to: string[];
+  recipients: { email: string; memberToken: string | null }[];
   teamName: string;
   inviteUrl: string;
+  baseUrl: string;
   locale: string;
 }
 
 export async function sendResultsPublishedEmail({
-  to,
+  recipients,
   teamName,
   inviteUrl,
+  baseUrl,
   locale,
 }: ResultsPublishedEmailParams) {
-  if (to.length === 0) return { success: true };
+  if (recipients.length === 0) return { success: true };
 
   const isEn = locale === "en";
+  const lang = isEn ? "en" : "ja";
 
   const subject = isEn
     ? `[SQW Survey 2] Team results for "${teamName}" are now available`
@@ -109,37 +112,54 @@ export async function sendResultsPublishedEmail({
 
   const resultsUrl = `${inviteUrl}/results`;
 
-  const html = isEn
-    ? `
+  try {
+    const resend = getResend();
+    if (!resend) return { error: "Email service not configured" };
+    console.log(`[email] Sending results published email to ${recipients.length} recipients`);
+
+    const promises = recipients.map((r) => {
+      const personalUrl = r.memberToken ? `${baseUrl}/${lang}/team/results/${r.memberToken}` : null;
+      const personalBlock = personalUrl
+        ? isEn
+          ? `
+<h3>■ Your Personal Results Page (bookmark recommended)</h3>
+<p><a href="${personalUrl}" style="display:inline-block;background:#028090;color:white;padding:12px 24px;border-radius:8px;text-decoration:none;font-weight:bold;">View Your Results</a></p>
+<p style="font-size:13px;color:#6b7280;">This URL is your personal results page. You can access it from any device.</p>
+<p style="font-size:13px;color:#6b7280;"><a href="${personalUrl}">${personalUrl}</a></p>
+`
+          : `
+<h3>■ あなた個人の結果ページ（ブックマーク推奨）</h3>
+<p><a href="${personalUrl}" style="display:inline-block;background:#028090;color:white;padding:12px 24px;border-radius:8px;text-decoration:none;font-weight:bold;">あなたの結果を見る</a></p>
+<p style="font-size:13px;color:#6b7280;">このURLはあなただけの個人結果ページです。別のデバイスからもアクセスできます。</p>
+<p style="font-size:13px;color:#6b7280;"><a href="${personalUrl}">${personalUrl}</a></p>
+`
+        : "";
+
+      const html = isEn
+        ? `
 <h2>Team results for "${teamName}" are now available</h2>
 <p>Your team's survey results have been published. View them below:</p>
 
 <p><a href="${resultsUrl}" style="display:inline-block;background:#2563eb;color:white;padding:12px 24px;border-radius:8px;text-decoration:none;font-weight:bold;">View Team Results</a></p>
-
 <p style="font-size:13px;color:#6b7280;">Or visit: <a href="${resultsUrl}">${resultsUrl}</a></p>
-
+${personalBlock}
 <hr/>
 <p style="color:#9ca3af;font-size:12px;">SQW Survey - Work Happiness Inc.</p>
 `
-    : `
+        : `
 <h2>「${teamName}」のチーム結果が公開されました</h2>
 <p>チームのサーベイ結果が公開されました。以下から確認できます：</p>
 
 <p><a href="${resultsUrl}" style="display:inline-block;background:#2563eb;color:white;padding:12px 24px;border-radius:8px;text-decoration:none;font-weight:bold;">チーム結果を見る</a></p>
-
 <p style="font-size:13px;color:#6b7280;">またはこちら: <a href="${resultsUrl}">${resultsUrl}</a></p>
-
+${personalBlock}
 <hr/>
 <p style="color:#9ca3af;font-size:12px;">SQWサーベイ - Work Happiness Inc.</p>
 `;
 
-  try {
-    const resend = getResend();
-    if (!resend) return { error: "Email service not configured" };
-    console.log(`[email] Sending results published email to ${to.length} recipients`);
-    const promises = to.map((email) =>
-      resend.emails.send({ from: FROM, to: email, subject, html })
-    );
+      return resend.emails.send({ from: FROM, to: r.email, subject, html });
+    });
+
     await Promise.allSettled(promises);
     return { success: true };
   } catch (error) {

@@ -225,21 +225,38 @@ export async function toggleResultsVisibility(adminToken: string, locale = "ja")
   if (newVisible) {
     const { data: sessions } = await supabase
       .from("survey_sessions")
-      .select("member_email")
+      .select("id, member_email")
       .eq("team_id", team.id)
       .not("completed_at", "is", null)
       .not("member_email", "is", null);
 
-    const emails = (sessions || []).map((s) => s.member_email).filter(Boolean) as string[];
-    if (emails.length > 0) {
-      const { sendResultsPublishedEmail } = await import("./email");
-      const origin = process.env.NEXT_PUBLIC_SITE_URL || "https://survey.workhappiness.co.jp";
-      sendResultsPublishedEmail({
-        to: emails,
-        teamName: team.name,
-        inviteUrl: `${origin}/${locale}/team/join/${team.invite_code}`,
-        locale,
-      }).catch((e) => console.error("Notification email error:", e));
+    if (sessions && sessions.length > 0) {
+      const sessionIds = sessions.map((s) => s.id);
+      const { data: members } = await supabase
+        .from("team_members")
+        .select("session_id, member_token")
+        .in("session_id", sessionIds);
+
+      const tokenMap: Record<string, string> = {};
+      for (const m of members || []) {
+        if (m.session_id && m.member_token) tokenMap[m.session_id] = m.member_token;
+      }
+
+      const recipients = sessions
+        .filter((s) => s.member_email)
+        .map((s) => ({ email: s.member_email as string, memberToken: tokenMap[s.id] || null }));
+
+      if (recipients.length > 0) {
+        const { sendResultsPublishedEmail } = await import("./email");
+        const origin = process.env.NEXT_PUBLIC_SITE_URL || "https://survey.workhappiness.co.jp";
+        sendResultsPublishedEmail({
+          recipients,
+          teamName: team.name,
+          inviteUrl: `${origin}/${locale}/team/join/${team.invite_code}`,
+          baseUrl: origin,
+          locale,
+        }).catch((e) => console.error("Notification email error:", e));
+      }
     }
 
     // Send qualitative responses to facilitator if any
