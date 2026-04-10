@@ -191,7 +191,7 @@ export default function TeamResultsPage() {
         printTitle={(() => {
           const d = new Date();
           const ds = `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, "0")}${String(d.getDate()).padStart(2, "0")}`;
-          return locale === "en" ? `${ds}_${teamName}_TeamResults` : `${ds}_${teamName}_チーム結果`;
+          return locale === "en" ? `${ds}_SQWSurvey_TeamResults_${teamName}` : `${ds}_SQWサーベイ_チーム結果_${teamName}`;
         })()}
       />
 

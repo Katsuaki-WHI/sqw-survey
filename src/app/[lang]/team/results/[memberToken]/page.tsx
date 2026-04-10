@@ -130,7 +130,7 @@ export default function MemberResultsPage() {
         printTitle={(() => {
           const d = new Date();
           const ds = `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, "0")}${String(d.getDate()).padStart(2, "0")}`;
-          return locale === "en" ? `${ds}_${respondentName}_PersonalResults` : `${ds}_${respondentName}_個人結果`;
+          return locale === "en" ? `${ds}_SQWSurvey_PersonalResults_${respondentName}` : `${ds}_SQWサーベイ_個人結果_${respondentName}`;
         })()}
       />
 
