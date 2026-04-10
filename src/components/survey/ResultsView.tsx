@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import Image from "next/image";
 import type { QuestionCategory } from "@/lib/survey/questions";
 import { CATEGORY_CONFIG } from "@/lib/survey/questions";
@@ -129,7 +128,6 @@ export default function ResultsView({ data, title, mode }: ResultsViewProps) {
         categoryScores={data.categoryScores}
         isEn={isEn}
         mode={mode}
-        questionSDs={data.questionSDs}
       />
 
       {/* Insight cards */}
@@ -182,63 +180,12 @@ function CategoryBreakdown({
   categoryScores,
   isEn,
   mode,
-  questionSDs,
 }: {
   teamCategories: QuestionCategory[];
   categoryScores: Record<string, { avg: number; level: string }>;
   isEn: boolean;
   mode: "individual" | "team";
-  questionSDs?: Record<number, number>;
 }) {
-  const [expanded, setExpanded] = useState<Record<string, boolean>>({});
-
-  const toggle = (cat: string) =>
-    setExpanded((prev) => ({ ...prev, [cat]: !prev[cat] }));
-
-  // ============================================================
-  // CTA表示条件の計算
-  // ============================================================
-  const validCats = teamCategories.filter(
-    (cat) => cat !== "management" && cat !== "happiness" && categoryScores[cat]
-  );
-
-  const sortedByScore = [...validCats].sort(
-    (a, b) => (categoryScores[b]?.avg ?? 0) - (categoryScores[a]?.avg ?? 0)
-  );
-  const topCats = new Set(sortedByScore.slice(0, 3).map(String));
-  const bottomCats = new Set(sortedByScore.slice(-3).map(String));
-
-  // 高SDカテゴリ（チームのみ）
-  const CATEGORY_QUESTIONS: Record<string, number[]> = {
-    landscape: [1,2,3], path: [4,5], rope: [6,7,8],
-    wheel: [9,10,11], body: [12,13,14], attitude: [15,16,17,18],
-    cargo: [19,20,21], diversity: [22,23,24,25],
-  };
-  const highSDCats = new Set<string>();
-  if (mode === "team" && questionSDs) {
-    const catSDMap: Record<string, number> = {};
-    for (const [cat, qids] of Object.entries(CATEGORY_QUESTIONS)) {
-      const sds = qids.map((id) => questionSDs[id] ?? 0);
-      catSDMap[cat] = sds.reduce((a, b) => a + b, 0) / sds.length;
-    }
-    Object.entries(catSDMap)
-      .sort((a, b) => b[1] - a[1])
-      .slice(0, 2)
-      .forEach(([cat]) => highSDCats.add(cat));
-  }
-
-  // 個人：上位3・下位3・景色・幸福度にCTA
-  // チーム：上位2・下位2・高SD2・ロープにCTA
-  const shouldShowCTA = (cat: string): boolean => {
-    if (mode === "individual") {
-      return topCats.has(cat) || bottomCats.has(cat) || cat === "landscape" || cat === "happiness";
-    } else {
-      const topTwo = new Set(sortedByScore.slice(0, 2).map(String));
-      const bottomTwo = new Set(sortedByScore.slice(-2).map(String));
-      return topTwo.has(cat) || bottomTwo.has(cat) || highSDCats.has(cat) || cat === "rope";
-    }
-  };
-
   return (
     <div className="w-full">
       <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
@@ -263,10 +210,6 @@ function CategoryBreakdown({
           const shortComment = insight
             ? (isEn ? insight.valueCommentEn : insight.valueComment)
             : "";
-          const detailComment = insight
-            ? (isEn ? insight.ctaCommentEn : insight.ctaComment)
-            : "";
-          const isExpanded = expanded[cat] ?? false;
 
           return (
             <div key={cat} className="rounded-lg border border-gray-200 dark:border-gray-700 p-3">
@@ -308,27 +251,6 @@ function CategoryBreakdown({
                 </p>
               )}
 
-              {/* Expand/collapse for detail — only for top/bottom/high-SD categories */}
-              {detailComment && shouldShowCTA(cat) && (
-                <>
-                  <button
-                    onClick={() => toggle(cat)}
-                    className="mt-1 text-xs text-blue-600 dark:text-blue-400 hover:underline"
-                    data-print-hide=""
-                  >
-                    {isExpanded
-                      ? (isEn ? "Hide details" : "詳細を閉じる")
-                      : (isEn ? "Show details" : "詳細を見る")}
-                  </button>
-                  {/* Screen: show only when expanded. Print: always show via data-print-expand */}
-                  <p
-                    className={`mt-2 text-sm text-blue-700 dark:text-blue-300 leading-relaxed border-l-2 border-blue-400 pl-3 bg-blue-50 dark:bg-blue-950 rounded-r-lg py-2 pr-2 ${isExpanded ? "" : "hidden"}`}
-                    data-print-expand=""
-                  >
-                    💡 {detailComment}
-                  </p>
-                </>
-              )}
             </div>
           );
         })}

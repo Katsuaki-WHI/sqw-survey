@@ -80,135 +80,35 @@ export const CATEGORY_LABELS: Record<string, { ja: string; en: string; icon: str
 // ============================================================
 export const PERSONAL_INSIGHT_COMMENTS: InsightCommentMaster = {
   landscape: {
-    top: {
-      valueComment: `景色（目的と誇り）のスコアが最高レベルです。${DATA_STATS.respondentsDisplay}のデータでは、このスコアの方の95%が幸福度も高い状態にあります。あなたはこのチームで「なぜ働くか」という問いに、自分なりの答えを持っている人です。`,
-      valueCommentEn: `Your Landscape (Purpose & Pride) score is at the highest level. Data from ${DATA_STATS.respondentsDisplay} shows 95% of people at this level also have high happiness. You have found your own answer to "why I work here."`,
-      ctaComment: "この強みが、チームの他のメンバーにどう見えているか知っていますか？有料レポートでは、あなたの誇りがチームの中でどう機能しているかを詳しくお伝えします。",
-      ctaCommentEn: "Do you know how this strength is seen by your teammates? The full report reveals how your sense of pride functions within the team.",
-    },
-    high: {
-      valueComment: "景色（目的と誇り）のスコアが高い状態です。このスコアの方は、データでも幸福度が高い傾向があります。チームの目的や方向性に共感できていることが、あなたの働く力の源になっています。",
-      valueCommentEn: "Your Landscape (Purpose & Pride) score is high. Data shows people at this level tend to have higher happiness. Your ability to resonate with the team's purpose is a source of your energy.",
-      ctaComment: "あなたの目的感がさらに深まると、どんな変化が起きるか。有料レポートで具体的なアクションをお届けします。",
-      ctaCommentEn: "What would change if your sense of purpose deepened further? The full report delivers specific actions.",
-    },
-    mid: {
-      valueComment: `景色（目的と誇り）のスコアは中程度です。${DATA_STATS.respondentsDisplay}のデータでは、このカテゴリが幸福度と最も強く連動しています。「このチームで働く意味」をもう少し明確にできると、幸福度が大きく変わる可能性があります。`,
-      valueCommentEn: `Your Landscape (Purpose & Pride) score is at a middle level. Data from ${DATA_STATS.respondentsDisplay} shows this category has the strongest connection to happiness. Clarifying "the meaning of working in this team" could significantly change your happiness.`,
-      ctaComment: "何があれば「このチームへの誇り」が高まるか、有料レポートで一緒に考えます。",
-      ctaCommentEn: "What would raise your sense of pride in this team? The full report explores this together with you.",
-    },
-    low: {
-      valueComment: "景色（目的と誇り）のスコアが低めです。「このチームで働く意味が見えにくい」という感覚があるかもしれません。データでは、このカテゴリが低いと幸福度にも影響が出やすいことがわかっています。",
-      valueCommentEn: 'Your Landscape (Purpose & Pride) score is low. You may feel that "the meaning of working in this team is unclear." Data shows this category, when low, tends to affect happiness.',
-      ctaComment: "この状態が続くと何が起きるか、そして何が変われば変わるか——有料レポートで詳しくお伝えします。",
-      ctaCommentEn: "What happens if this continues, and what change would make a difference — the full report tells you.",
-    },
-    bottom: {
-      valueComment: "景色（目的と誇り）のスコアが最も低いレベルです。「なぜここで働いているのか」という問いが心の中にあるかもしれません。これは弱さではなく、あなたが本気でこの仕事に向き合っているサインです。",
-      valueCommentEn: 'Your Landscape (Purpose & Pride) score is at the lowest level. You may be asking yourself "why am I working here?" This is not weakness — it\'s a sign that you care deeply about your work.',
-      ctaComment: "あなたの「誇り」を取り戻すための最初の一歩を、有料レポートでお伝えします。",
-      ctaCommentEn: "The full report shows you the first step to reclaiming your sense of pride.",
-    },
+    top: { valueComment: `ワゴンの行き先の景色が、くっきりと輝いています。「なぜここで働くか」という問いに、あなた自身の誇りある答えを持っている状態です。${DATA_STATS.respondentsDisplay}のデータでは、このスコアの方の95%が幸福度も高い状態にあります。`, valueCommentEn: `The landscape ahead of your wagon is shining brightly. You have your own proud answer to "why I work here." Data from ${DATA_STATS.respondentsDisplay} shows 95% of people at this level also have high happiness.`, ctaComment: "", ctaCommentEn: "" },
+    high: { valueComment: "ワゴンの行き先の景色がよく見えており、その方向へ誇りを持って進んでいます。目指す先への共感が、あなたの働く力の源になっています。", valueCommentEn: "The landscape ahead of your wagon is clear, and you're moving toward it with pride. Your resonance with the destination is the source of your working energy.", ctaComment: "", ctaCommentEn: "" },
+    mid: { valueComment: `ワゴンの行き先の景色が、少し霞んで見えているかもしれません。${DATA_STATS.respondentsDisplay}のデータでは、この「景色」カテゴリが幸福度と最も強く連動しています。景色が鮮明になると、ワゴンを押す力が大きく変わります。`, valueCommentEn: `The destination of your wagon may look a little hazy. Data from ${DATA_STATS.respondentsDisplay} shows this Landscape category has the strongest connection to happiness. When the view becomes clearer, your energy to push the wagon changes dramatically.`, ctaComment: "", ctaCommentEn: "" },
+    low: { valueComment: "ワゴンがどこへ向かっているのか、見えにくくなっているかもしれません。霧の中でも前に進もうとしているあなたの力は本物です。データでは、この景色カテゴリを高めることが幸福度に最も大きな影響を与えます。", valueCommentEn: "You may be losing sight of where the wagon is headed. But the strength you show — moving forward even through the fog — is real. Data shows improving this Landscape category has the greatest impact on happiness.", ctaComment: "", ctaCommentEn: "" },
+    bottom: { valueComment: "ワゴンの行き先が全く見えない状態かもしれません。「なぜここで働いているのか」という問いが、心の中にあるかもしれません。それは弱さではなく、あなたが本気でこの旅に向き合っているサインです。", valueCommentEn: `You may not be able to see where the wagon is heading at all. You might be asking "why am I on this journey?" That is not weakness — it is a sign that you care deeply about where you are going.`, ctaComment: "", ctaCommentEn: "" },
   },
 
   road: {
-    top: {
-      valueComment: `道筋（戦略）のスコアが最高レベルです。チームの方向性を支持し、その戦略がパフォーマンスに貢献していると感じています。${DATA_STATS.respondentsDisplay}のデータでも、戦略への共感は幸福度と強く連動しています。`,
-      valueCommentEn: `Your Path (Strategy) score is at the highest level. You support the team direction and feel it contributes to performance. Data from ${DATA_STATS.respondentsDisplay} confirms strategic alignment connects strongly with happiness.`,
-      ctaComment: "この戦略理解が、チームの他のメンバーとどう違うか気になりますか？有料レポートでギャップを可視化します。",
-      ctaCommentEn: "Curious how your strategic understanding differs from teammates? The full report visualizes those gaps.",
-    },
-    high: {
-      valueComment: "道筋（戦略）のスコアが高い状態です。チームの戦略に共感できていることが、日々の仕事の確かさにつながっています。",
-      valueCommentEn: "Your Path (Strategy) score is high. Your alignment with the team strategy creates a sense of confidence in your daily work.",
-      ctaComment: "戦略への共感をさらに深めると、あなたのパフォーマンスはどう変わるか。有料レポートで確認しましょう。",
-      ctaCommentEn: "How would deeper strategic alignment change your performance? Find out in the full report.",
-    },
-    mid: {
-      valueComment: "道筋（戦略）のスコアは中程度です。チームの戦略について「なんとなく理解している」という状態かもしれません。戦略への共感が深まると、仕事のやりがいも変わります。",
-      valueCommentEn: "Your Path (Strategy) score is at a middle level. You may have a vague understanding of the team strategy. Deeper alignment can change your sense of purpose.",
-      ctaComment: "何があれば戦略への共感が深まるか、有料レポートで具体的に探ります。",
-      ctaCommentEn: "What would deepen your strategic alignment? The full report explores this specifically.",
-    },
-    low: {
-      valueComment: "道筋（戦略）のスコアが低めです。チームの戦略や方向性に「本当にこれでいいのか」という疑問があるかもしれません。その疑問は、あなたが仕事を真剣に考えている証です。",
-      valueCommentEn: "Your Path (Strategy) score is low. You may question whether the team strategy is truly right. That questioning is a sign that you take your work seriously.",
-      ctaComment: "その疑問を有料レポートで言語化し、具体的なアクションに変えましょう。",
-      ctaCommentEn: "Let the full report help articulate that question and turn it into action.",
-    },
-    bottom: {
-      valueComment: "道筋（戦略）のスコアが最も低いレベルです。チームの方向性に共感できない状態は、エネルギーの消耗につながりやすいです。あなたの感覚は正直で、大切なシグナルです。",
-      valueCommentEn: "Your Path (Strategy) score is at the lowest level. Not aligning with the team direction can drain energy. Your feelings are honest and important signals.",
-      ctaComment: "この状態を変えるために何が必要か、有料レポートで一緒に考えます。",
-      ctaCommentEn: "The full report helps you figure out what is needed to change this situation.",
-    },
+    top: { valueComment: "ワゴンが走る道が、整備された石畳のようにスムーズです。チームの戦略という「道」を信頼して、迷わず前へ進める状態です。この確信が、日々の仕事の推進力になっています。", valueCommentEn: "The road your wagon travels is smooth, like well-laid cobblestone. You trust the team's strategy as your \"road\" and can move forward without hesitation. This conviction drives your daily work.", ctaComment: "", ctaCommentEn: "" },
+    high: { valueComment: "ワゴンが走る道が見えており、その道を信頼して進んでいます。チームの戦略への共感が、仕事の確かさにつながっています。", valueCommentEn: "You can see the road and trust it as you move forward. Your alignment with the team's strategy creates a sense of confidence in your work.", ctaComment: "", ctaCommentEn: "" },
+    mid: { valueComment: "ワゴンが走る道が、一部舗装されていない部分があるかもしれません。「この方向でいいのかな」という感覚があるかもしれません。道への確信が深まると、ワゴンの進みがずっと軽くなります。", valueCommentEn: `The road your wagon travels may have some unpaved sections. You might feel "is this really the right direction?" When confidence in the road deepens, the wagon moves much more lightly.`, ctaComment: "", ctaCommentEn: "" },
+    low: { valueComment: "ワゴンが走る道に、疑問を感じているかもしれません。「本当にこの道でいいのか」という問いは、あなたが旅を真剣に考えている証です。その疑問は大切なシグナルです。", valueCommentEn: `You may be questioning the road your wagon is on. Asking "is this really the right road?" is a sign that you take the journey seriously. That question is an important signal.`, ctaComment: "", ctaCommentEn: "" },
+    bottom: { valueComment: "ワゴンが走る道が見えず、迷子になっている感覚があるかもしれません。チームの方向性への共感が持てない状態は、大きなエネルギーの消耗につながります。あなたの感覚は正直で、大切なシグナルです。", valueCommentEn: "You may feel lost, unable to see the road the wagon is on. Not finding alignment with the team's direction drains enormous energy. Your feelings are honest and important signals.", ctaComment: "", ctaCommentEn: "" },
   },
 
   rope: {
-    top: {
-      valueComment: "ロープ（リーダーの関わり）のスコアが最高レベルです。リーダーからの適切な指導・承認・目標提示が機能しています。このカテゴリが高い人は、チームへの貢献感も高い傾向があります。",
-      valueCommentEn: "Your Rope (Leadership & Engagement) score is at the highest level. You receive appropriate guidance, recognition, and clear goals from your leader. People with high scores here tend to have a stronger sense of contribution.",
-      ctaComment: "このリーダーとの関係が、あなたの強みとどうつながっているか。有料レポートで詳しく見えます。",
-      ctaCommentEn: "How does your relationship with your leader connect to your strengths? The full report shows you.",
-    },
-    high: {
-      valueComment: "ロープ（リーダーの関わり）のスコアが高い状態です。リーダーとの関係が機能していることが、あなたの仕事の安定感につながっています。",
-      valueCommentEn: "Your Rope (Leadership & Engagement) score is high. Your functional relationship with your leader creates stability in your work.",
-      ctaComment: "リーダーとの関係をさらに活かすためのヒントが、有料レポートにあります。",
-      ctaCommentEn: "The full report has tips for leveraging your leader relationship even further.",
-    },
-    mid: {
-      valueComment: "ロープ（リーダーの関わり）のスコアは中程度です。リーダーからの関わりに「もう少しあってほしい」という感覚があるかもしれません。",
-      valueCommentEn: "Your Rope (Leadership & Engagement) score is at a middle level. You may feel you would like a bit more engagement from your leader.",
-      ctaComment: "リーダーへの伝え方のヒントを、有料レポートでお届けします。",
-      ctaCommentEn: "The full report delivers tips on how to communicate with your leader.",
-    },
-    low: {
-      valueComment: "ロープ（リーダーの関わり）のスコアが低めです。「自分が正しく評価されていない」「目標が不明確」という感覚があるかもしれません。データでは、このカテゴリが低いと幸福度にも影響が出やすいことが確認されています。",
-      valueCommentEn: "Your Rope (Leadership & Engagement) score is low. You may feel unrecognized or unclear about goals. Data confirms this category, when low, tends to affect happiness.",
-      ctaComment: "この状況を改善するための具体的なアクションを、有料レポートでお届けします。",
-      ctaCommentEn: "The full report delivers concrete actions to improve this situation.",
-    },
-    bottom: {
-      valueComment: "ロープ（リーダーの関わり）のスコアが最も低いレベルです。リーダーとの関係に大きな課題を感じているかもしれません。一人で抱え込まず、この状況を言語化することが第一歩です。",
-      valueCommentEn: "Your Rope (Leadership & Engagement) score is at the lowest level. You may feel significant challenges in your relationship with your leader. The first step is putting this situation into words.",
-      ctaComment: "有料レポートで、この状況を変えるための具体的な言葉と行動をお届けします。",
-      ctaCommentEn: "The full report gives you specific words and actions to change this situation.",
-    },
+    top: { valueComment: "ロープがピンと張っており、リーダーの方向感がしっかりと伝わっています。指導・承認・目標提示が機能しており、「自分に期待されていること」も明確に見えています。この安心感が、チームへの貢献感につながっています。", valueCommentEn: `The rope is taut and the leader's direction is being transmitted clearly. Guidance, recognition, and goal-setting are working, and "what is expected of me" is clearly visible. This sense of security connects to your feeling of contribution.`, ctaComment: "", ctaCommentEn: "" },
+    high: { valueComment: "ロープがしっかりと機能しており、リーダーとの関係が安定しています。適切なタイミングでの指導と承認が、あなたの仕事の安定感につながっています。", valueCommentEn: "The rope is working well and your relationship with the leader is stable. Timely guidance and recognition are creating a sense of confidence in your work.", ctaComment: "", ctaCommentEn: "" },
+    mid: { valueComment: "ロープが少したるんでいるかもしれません。「もう少し指導や承認がほしい」「目標がもう少し明確なら」という感覚があるかもしれません。ロープが張れば、ワゴンはもっとスムーズに進みます。", valueCommentEn: `The rope may have a bit of slack. You might feel "I'd like a bit more guidance or recognition" or "clearer goals would help." When the rope is taut again, the wagon will move more smoothly.`, ctaComment: "", ctaCommentEn: "" },
+    low: { valueComment: "ロープが大きくたるんでおり、リーダーとの距離を感じているかもしれません。「評価されていない」「目標が見えない」「期待されていることがわからない」という感覚があるかもしれません。", valueCommentEn: `The rope may be quite slack and you may feel distance from your leader. You may feel "I'm not being recognized," "I can't see the goal," or "I don't know what's expected of me."`, ctaComment: "", ctaCommentEn: "" },
+    bottom: { valueComment: "ロープが機能しておらず、リーダーとワゴンが別々に動いているような状態かもしれません。一人で抱え込まず、この状況を言語化することが第一歩です。", valueCommentEn: "The rope may not be functioning at all — the leader and the wagon may be moving separately. The first step is not carrying this alone, but putting the situation into words.", ctaComment: "", ctaCommentEn: "" },
   },
 
   tire: {
-    top: {
-      valueComment: "タイヤ（仕組み・既成概念）のスコアが最高レベルです。評価の仕組みや自律性、新しいやり方への姿勢が整っています。このカテゴリが高いチームは、変化への適応力も高い傾向があります。",
-      valueCommentEn: "Your Wheels (Structure & Conventions) score is at the highest level. Evaluation systems, autonomy, and openness to new approaches are all working well. Teams with high scores here tend to adapt to change more effectively.",
-      ctaComment: "この強みをさらに活かすアイデアが、有料レポートにあります。",
-      ctaCommentEn: "The full report has ideas for leveraging this strength even further.",
-    },
-    high: {
-      valueComment: "タイヤ（仕組み・既成概念）のスコアが高い状態です。仕事の仕組みが機能しており、自律的に動ける環境が整っています。",
-      valueCommentEn: "Your Wheels (Structure & Conventions) score is high. The work systems are functioning well and you have an environment where you can act autonomously.",
-      ctaComment: "仕組みの強みがどこから来ているか、有料レポートで深掘りします。",
-      ctaCommentEn: "The full report digs deeper into where your structural strengths come from.",
-    },
-    mid: {
-      valueComment: "タイヤ（仕組み・既成概念）のスコアは中程度です。「評価が不明確」「前例に縛られている」という感覚が部分的にあるかもしれません。",
-      valueCommentEn: "Your Wheels (Structure & Conventions) score is at a middle level. You may partially feel that evaluation is unclear or that you are bound by precedent.",
-      ctaComment: "どの仕組みを変えると最も効果的か、有料レポートで特定します。",
-      ctaCommentEn: "The full report identifies which systems to change for maximum impact.",
-    },
-    low: {
-      valueComment: "タイヤ（仕組み・既成概念）のスコアが低めです。「頑張っているのに正当に評価されない」「前例に縛られて動きにくい」という感覚があるかもしれません。",
-      valueCommentEn: "Your Wheels (Structure & Conventions) score is low. You may feel that despite your efforts you are not being evaluated fairly, or that you are constrained by precedent.",
-      ctaComment: "このフラストレーションの正体と、改善のための一歩を有料レポートでお届けします。",
-      ctaCommentEn: "The full report reveals the source of this frustration and your first step toward improvement.",
-    },
-    bottom: {
-      valueComment: "タイヤ（仕組み・既成概念）のスコアが最も低いレベルです。仕組みや慣習が大きな障壁になっている状態かもしれません。このカテゴリが低いと、どれだけ頑張っても報われない感覚につながりやすいです。",
-      valueCommentEn: "Your Wheels (Structure & Conventions) score is at the lowest level. Systems and conventions may be creating major barriers. Low scores here can create a feeling that no matter how hard you try, it does not pay off.",
-      ctaComment: "この状況を変えるために最も効果的なアクションを、有料レポートでお届けします。",
-      ctaCommentEn: "The full report delivers the most effective actions to change this situation.",
-    },
+    top: { valueComment: "ワゴンのタイヤが丸く整っており、スムーズに転がっています。公正な評価・自律的に動ける範囲・前例にとらわれない姿勢——この3つが揃うと、ワゴンの走りは軽やかになります。", valueCommentEn: "Your wagon's wheels are round and smooth, rolling easily. Fair evaluation, room for autonomous action, and freedom from precedent — when these three align, the wagon runs lightly.", ctaComment: "", ctaCommentEn: "" },
+    high: { valueComment: "タイヤがほぼ丸く、ワゴンが比較的スムーズに進んでいます。評価の仕組みが機能しており、自律的に動ける環境が整っています。", valueCommentEn: "Your wheels are nearly round and the wagon moves relatively smoothly. The evaluation system is working and you have room to act autonomously.", ctaComment: "", ctaCommentEn: "" },
+    mid: { valueComment: "タイヤが少し四角くなっているかもしれません。「評価が不明確」「前例に縛られている」という感覚が部分的にあるかもしれません。タイヤが丸くなるほど、ワゴンの走りが軽くなります。", valueCommentEn: "Your wheels may be getting a little square. You may partially feel that evaluation is unclear or that you are bound by precedent. The rounder the wheels become, the more lightly the wagon runs.", ctaComment: "", ctaCommentEn: "" },
+    low: { valueComment: "タイヤがかなり四角くなっており、ワゴンが進むたびにガタガタしているかもしれません。「頑張っているのに正当に評価されない」「前例に縛られて動きにくい」という感覚があるかもしれません。", valueCommentEn: `Your wheels may be quite square, making the wagon bump with every turn. You may feel "I'm not being fairly evaluated despite my efforts" or "I'm constrained by precedent."`, ctaComment: "", ctaCommentEn: "" },
+    bottom: { valueComment: "タイヤが完全に四角くなっており、ワゴンが前に進むのに大きな抵抗がある状態かもしれません。仕組みや慣習が、あなたの力を活かせない状態にしています。", valueCommentEn: "Your wheels may be completely square, creating great resistance to moving forward. Systems and conventions may be preventing your strength from being fully utilized.", ctaComment: "", ctaCommentEn: "" },
   },
 
   body: {
@@ -245,36 +145,11 @@ export const PERSONAL_INSIGHT_COMMENTS: InsightCommentMaster = {
   },
 
   attitude: {
-    top: {
-      valueComment: `押す人の表情（風土・文化）のスコアが最高レベルです。${DATA_STATS.respondentsDisplay}のデータでは、このカテゴリのスコアが高い方の95%以上が幸福度も高い状態にあります。協力・尊重・質への姿勢が整った環境にいることは、とても恵まれた状態です。`,
-      valueCommentEn: `Your Attitude (Culture & Climate) score is at the highest level. Data from ${DATA_STATS.respondentsDisplay} shows over 95% of people at this level also have high happiness. Being in an environment of collaboration, respect, and quality commitment is truly fortunate.`,
-      ctaComment: "この環境をさらに強化するために、あなたにできることが有料レポートに載っています。",
-      ctaCommentEn: "The full report shows what you can do to strengthen this environment further.",
-    },
-    high: {
-      valueComment: "押す人の表情（風土・文化）のスコアが高い状態です。チームの雰囲気や文化が機能しており、協力し合える環境があります。このカテゴリは幸福度と最も強く連動するカテゴリの一つです。",
-      valueCommentEn: "Your Attitude (Culture & Climate) score is high. The team atmosphere and culture are working well with a collaborative environment. This category is one of the strongest drivers of happiness.",
-      ctaComment: "この風土をさらに豊かにするためのヒントが、有料レポートにあります。",
-      ctaCommentEn: "The full report has tips for enriching this culture further.",
-    },
-    mid: {
-      valueComment: "押す人の表情（風土・文化）のスコアは中程度です。「もう少し協力し合えれば」「もう少し認め合えれば」という感覚があるかもしれません。このカテゴリは幸福度に最も大きな影響を与えます。",
-      valueCommentEn: 'Your Attitude (Culture & Climate) score is at a middle level. You may feel "if only we could collaborate more" or "if only we recognized each other more." This category has the greatest impact on happiness.',
-      ctaComment: "風土を変えるための最も効果的な一手を、有料レポートで特定します。",
-      ctaCommentEn: "The full report identifies the most effective move to change the culture.",
-    },
-    low: {
-      valueComment: "押す人の表情（風土・文化）のスコアが低めです。データでは、このカテゴリが低いと81%のメンバーが幸福度も低い状態にあります。チームの雰囲気や関係性に課題を感じているかもしれません。",
-      valueCommentEn: "Your Attitude (Culture & Climate) score is low. Data shows 81% of members with low scores here also have low happiness. You may be experiencing challenges in team atmosphere and relationships.",
-      ctaComment: "この状況を変えるための具体的なアクションを、有料レポートでお届けします。",
-      ctaCommentEn: "The full report delivers concrete actions to change this situation.",
-    },
-    bottom: {
-      valueComment: `押す人の表情（風土・文化）のスコアが最も低いレベルです。データでは、このカテゴリが最低レベルのチームの93.5%が不幸な状態にあります。チームの雰囲気が今の働きにくさの大きな原因になっているかもしれません。`,
-      valueCommentEn: "Your Attitude (Culture & Climate) score is at the lowest level. Data shows 93.5% of teams at the lowest level are in an unhappy state. The team atmosphere may be a major cause of your current difficulty at work.",
-      ctaComment: "まず何から変えればいいか——有料レポートで最優先アクションをお届けします。",
-      ctaCommentEn: "What to change first — the full report delivers your highest priority action.",
-    },
+    top: { valueComment: `ワゴンを押す人たちの表情が、生き生きと輝いています。協力し合い・尊重し合い・意見を言い合える環境——これは簡単には手に入らない財産です。${DATA_STATS.respondentsDisplay}のデータでは、このスコアの方の95%以上が幸福度も高い状態にあります。`, valueCommentEn: `The faces of the people pushing the wagon are bright and alive. An environment of mutual cooperation, respect, and open expression — this is a treasure not easily found. Data from ${DATA_STATS.respondentsDisplay} shows over 95% of people at this level also have high happiness.`, ctaComment: "", ctaCommentEn: "" },
+    high: { valueComment: "ワゴンを押す人たちの表情が穏やかで、チームの雰囲気が良い状態です。協力・尊重・質への姿勢が機能しており、この表情がワゴンを前へ動かす力になっています。このカテゴリは幸福度と最も強く連動します。", valueCommentEn: "The faces of the people pushing the wagon are calm and the team atmosphere is good. Cooperation, respect, and commitment to quality are working — these expressions are what propels the wagon forward. This category has the strongest connection to happiness.", ctaComment: "", ctaCommentEn: "" },
+    mid: { valueComment: "ワゴンを押す人たちの表情が、少し疲れて見えるかもしれません。「もう少し協力し合えれば」「もう少し認め合えれば」という感覚があるかもしれません。このカテゴリは幸福度に最も大きな影響を与えます。表情が変わると、ワゴンの動きが大きく変わります。", valueCommentEn: `The faces of the people pushing the wagon may look a little tired. You might feel "if only we could collaborate more" or "if only we recognized each other more." This category has the greatest impact on happiness. When expressions change, how the wagon moves changes dramatically.`, ctaComment: "", ctaCommentEn: "" },
+    low: { valueComment: "ワゴンを押す人たちの表情が重そうです。データでは、このカテゴリが低いと81%のメンバーが幸福度も低い状態にあります。「認められていない」「意見が言いにくい」という感覚があるかもしれません。", valueCommentEn: `The faces of the people pushing the wagon look heavy. Data shows 81% of members with low scores here also have low happiness. You may feel "I'm not being recognized" or "it's hard to voice my opinions."`, ctaComment: "", ctaCommentEn: "" },
+    bottom: { valueComment: "ワゴンを押す人たちの表情が、今とても苦しそうです。データでは、このカテゴリが最低レベルのチームの93.5%が不幸な状態にあります。この表情が変わるだけで、ワゴンの動きは全く変わります。", valueCommentEn: "The faces of the people pushing the wagon look very strained right now. Data shows 93.5% of teams at the lowest level are in an unhappy state. Simply changing these expressions would completely transform how the wagon moves.", ctaComment: "", ctaCommentEn: "" },
   },
 
   cargo: {
@@ -349,32 +224,32 @@ export const PERSONAL_INSIGHT_COMMENTS: InsightCommentMaster = {
 // ============================================================
 export const TEAM_INSIGHT_COMMENTS: InsightCommentMaster = {
   landscape: {
-    top: { valueComment: `景色（目的と誇り）のチームスコアが最高レベルです。${DATA_STATS.teamsDisplay}のデータで、このスコアのチームの幸福度平均は4.25と非常に高い状態です。チーム全員が「なぜここで働くか」に共通の答えを持っている、最も強い基盤です。`, valueCommentEn: `Your team's Landscape (Purpose & Pride) score is at the highest level. Across ${DATA_STATS.teamsDisplay}, teams at this level average 4.25 in happiness. This is the strongest foundation: every team member shares a common answer to "why we work here."`, ctaComment: "この強みをさらに活かし、チームの成果につなげる方法が有料レポートにあります。", ctaCommentEn: "The full report shows how to leverage this strength further and connect it to team results." },
-    high: { valueComment: "景色（目的と誇り）のチームスコアが高い状態です。チームとしての目的意識が機能しており、メンバーの幸福度にも好影響を与えています。", valueCommentEn: "Your team's Landscape (Purpose & Pride) score is high. The team's sense of purpose is functioning well, positively affecting member happiness.", ctaComment: "この目的意識をさらに深めるための具体的なアクションが、有料レポートにあります。", ctaCommentEn: "The full report has specific actions to deepen this sense of purpose further." },
-    mid: { valueComment: "景色（目的と誇り）のチームスコアは中程度です。このカテゴリはチームの幸福度と最も強く連動します。「このチームで働く意味」をメンバー全員で共有できると、チームのエネルギーが大きく変わります。", valueCommentEn: `Your team's Landscape (Purpose & Pride) score is at a middle level. This category has the strongest connection to team happiness. Sharing "the meaning of working in this team" with all members could significantly change the team's energy.`, ctaComment: "ミッション共有のための具体的なアクションを、有料レポートでお届けします。", ctaCommentEn: "The full report delivers specific actions for sharing the mission." },
-    low: { valueComment: "景色（目的と誇り）のチームスコアが低めです。データでは、このカテゴリが低いチームの幸福度平均は2.43と低い状態にあります。「チームとしての方向性が見えにくい」状態かもしれません。", valueCommentEn: `Your team's Landscape (Purpose & Pride) score is low. Data shows teams with low scores here average 2.43 in happiness. The team may be in a state where "the direction is unclear."`, ctaComment: "チームの目的を再構築するための具体的なアクションを、有料レポートでお届けします。", ctaCommentEn: "The full report delivers specific actions to rebuild the team's purpose." },
-    bottom: { valueComment: "景色（目的と誇り）のチームスコアが最も低いレベルです。このカテゴリが低いチームは、幸福度も成果も大きく影響を受けます。まず「このチームはなぜ存在するのか」を問い直すことが最優先です。", valueCommentEn: `Your team's Landscape (Purpose & Pride) score is at the lowest level. Teams with low scores here experience significant impact on both happiness and performance. The top priority is re-examining "why does this team exist."`, ctaComment: "有料レポートで、チームの再起動に向けた最初の一歩をお届けします。", ctaCommentEn: "The full report delivers the first step toward team renewal." },
+    top: { valueComment: `このチームのワゴンは、行き先の景色がくっきりと輝いています。チーム全員が「なぜここへ向かうか」に誇りある共通の答えを持っている——これがワゴンを力強く前へ動かしています。${DATA_STATS.teamsDisplay}のデータで、このスコアのチームの幸福度平均は4.25です。`, valueCommentEn: `This team's wagon has a destination that shines brightly. Every team member shares a proud common answer to "why are we headed there" — and that is what drives the wagon powerfully forward. Across ${DATA_STATS.teamsDisplay}, teams at this level average 4.25 in happiness.`, ctaComment: "", ctaCommentEn: "" },
+    high: { valueComment: "このチームのワゴンは、行き先の景色がよく見えており、その方向へ誇りを持って進んでいます。チームとしての目的意識が、メンバーの幸福度にも好影響を与えています。", valueCommentEn: "This team's wagon has a clear view of its destination and is moving toward it with pride. The team's sense of purpose is positively affecting member happiness.", ctaComment: "", ctaCommentEn: "" },
+    mid: { valueComment: "このチームのワゴンの行き先が、少し霞んで見えているかもしれません。このカテゴリはチームの幸福度と最も強く連動します。「このチームはなぜここへ向かうのか」を全員で確認できると、ワゴンのエネルギーが大きく変わります。", valueCommentEn: `This team's wagon destination may look a little hazy. This category has the strongest connection to team happiness. When everyone can confirm "why is this team headed there," the wagon's energy changes dramatically.`, ctaComment: "", ctaCommentEn: "" },
+    low: { valueComment: "このチームのワゴンが、どこへ向かっているか見えにくくなっているかもしれません。データでは、このカテゴリが低いチームの幸福度平均は2.43と低い状態にあります。まず景色を取り戻すことが最優先です。", valueCommentEn: "This team's wagon may be losing sight of where it's headed. Data shows teams with low scores here average 2.43 in happiness. Restoring the view is the top priority.", ctaComment: "", ctaCommentEn: "" },
+    bottom: { valueComment: "このチームのワゴンが、行き先を見失っているかもしれません。景色が見えないとき、メンバーはそれぞれ違う方向を向いてしまいます。「このチームはなぜ存在するのか」を問い直すことが最初の一歩です。", valueCommentEn: `This team's wagon may have lost sight of its destination. When the view disappears, members end up looking in different directions. Re-examining "why does this team exist" is the first step.`, ctaComment: "", ctaCommentEn: "" },
   },
   road: {
-    top: { valueComment: "道筋（戦略）のチームスコアが最高レベルです。チームの戦略への共感と、その戦略がパフォーマンスに貢献しているという実感が高い状態です。このカテゴリが高いチームは変化への対応力も高い傾向があります。", valueCommentEn: "Your team's Path (Strategy) score is at the highest level. Team members strongly support the strategy and feel it contributes to performance. Teams with high scores here tend to be more adaptable to change.", ctaComment: "この戦略力をさらに活かすための示唆が、有料レポートにあります。", ctaCommentEn: "The full report has insights for leveraging this strategic strength further." },
-    high: { valueComment: "道筋（戦略）のチームスコアが高い状態です。戦略への共感がチームの推進力になっています。", valueCommentEn: "Your team's Path (Strategy) score is high. Strategic alignment is driving the team forward.", ctaComment: "戦略をさらに浸透させるためのアクションが、有料レポートにあります。", ctaCommentEn: "The full report has actions to further embed the strategy." },
-    mid: { valueComment: "道筋（戦略）のチームスコアは中程度です。戦略への共感に個人差がある可能性があります。全員が「この戦略でいこう」と思える状態になると、チームの推進力が大きく変わります。", valueCommentEn: `Your team's Path (Strategy) score is at a middle level. There may be individual differences in strategic alignment. When everyone can say "let's go with this strategy," the team's momentum changes significantly.`, ctaComment: "戦略共有を加速するための具体的なアクションを、有料レポートでお届けします。", ctaCommentEn: "The full report delivers specific actions to accelerate strategic alignment." },
-    low: { valueComment: "道筋（戦略）のチームスコアが低めです。「この方向でいいのか」という疑問を持っているメンバーが多い可能性があります。", valueCommentEn: `Your team's Path (Strategy) score is low. Many members may be questioning "is this the right direction?"`, ctaComment: "戦略の再確認と共有のための具体的なアクションを、有料レポートでお届けします。", ctaCommentEn: "The full report delivers specific actions for re-confirming and sharing the strategy." },
-    bottom: { valueComment: "道筋（戦略）のチームスコアが最も低いレベルです。チームの方向性への疑問や不信感が広がっている可能性があります。早急な対応が必要な状態です。", valueCommentEn: "Your team's Path (Strategy) score is at the lowest level. Doubts and distrust about the team's direction may be spreading. Urgent action is needed.", ctaComment: "有料レポートで、最優先で取り組むべき戦略的アクションをお届けします。", ctaCommentEn: "The full report delivers the strategic actions to tackle first." },
+    top: { valueComment: "このチームのワゴンが走る道が、しっかりと整備されています。戦略を信頼して、チーム全員が迷わず同じ方向へ進んでいます。この「道への信頼」が、チームの推進力になっています。", valueCommentEn: "The road this team's wagon travels is well-maintained. The team trusts the strategy and everyone is moving confidently in the same direction. This \"trust in the road\" is the team's driving force.", ctaComment: "", ctaCommentEn: "" },
+    high: { valueComment: "このチームのワゴンが走る道がよく見えており、戦略への共感がチームの推進力になっています。整備された道を走れるチームは、変化にも対応しやすい傾向があります。", valueCommentEn: "The road this team's wagon travels is clearly visible and strategic alignment is driving the team forward. Teams that travel on well-maintained roads tend to adapt to change more easily.", ctaComment: "", ctaCommentEn: "" },
+    mid: { valueComment: "このチームのワゴンが走る道が、一部整備されていない部分があるかもしれません。戦略への共感に個人差がある可能性があります。全員が「この道でいこう」と思える状態になると、チームの推進力が大きく変わります。", valueCommentEn: `The road this team's wagon travels may have some unmaintained sections. There may be individual differences in strategic alignment. When everyone can say "let's go with this road," the team's momentum changes significantly.`, ctaComment: "", ctaCommentEn: "" },
+    low: { valueComment: "このチームのワゴンが走る道に、疑問を持っているメンバーが多いかもしれません。「この方向でいいのか」という声がチーム内にあるかもしれません。道への不信は、チームのエネルギーを静かに奪います。", valueCommentEn: `Many members may be questioning the road this team's wagon is on. There may be voices within the team asking "is this really the right direction?" Distrust in the road quietly drains the team's energy.`, ctaComment: "", ctaCommentEn: "" },
+    bottom: { valueComment: "このチームのワゴンが走る道が見えず、迷走しているかもしれません。方向性への疑問や不信感が広がっている可能性があります。道を示すことが急務です。", valueCommentEn: "This team's wagon may be wandering without a visible road. Doubts and distrust about direction may be spreading. Showing the way forward is urgent.", ctaComment: "", ctaCommentEn: "" },
   },
   rope: {
-    top: { valueComment: "ロープ（リーダーの関わり）のチームスコアが最高レベルです。リーダーの指導・承認・目標提示がチーム全体に機能しています。", valueCommentEn: "Your team's Rope (Leadership & Engagement) score is at the highest level. The leader's guidance, recognition, and goal-setting are working effectively across the team.", ctaComment: "このリーダーシップをさらに活かすための示唆が、有料レポートにあります。", ctaCommentEn: "The full report has insights for leveraging this leadership further." },
-    high: { valueComment: "ロープ（リーダーの関わり）のチームスコアが高い状態です。リーダーとメンバーの関係が機能しており、チームの安定感につながっています。", valueCommentEn: "Your team's Rope (Leadership & Engagement) score is high. The leader-member relationship is functioning well, contributing to team stability.", ctaComment: "リーダーシップをさらに強化するためのアクションが、有料レポートにあります。", ctaCommentEn: "The full report has actions to further strengthen leadership." },
-    mid: { valueComment: "ロープ（リーダーの関わり）のチームスコアは中程度です。「もう少しリーダーからの関わりがあれば」というメンバーの声があるかもしれません。", valueCommentEn: `Your team's Rope (Leadership & Engagement) score is at a middle level. Some members may be thinking "if only there were a bit more leader engagement."`, ctaComment: "リーダーの関わり方を改善するための具体的なアクションを、有料レポートでお届けします。", ctaCommentEn: "The full report delivers specific actions to improve leader engagement." },
-    low: { valueComment: "ロープ（リーダーの関わり）のチームスコアが低めです。リーダーとメンバーの間に距離感がある可能性があります。このカテゴリは、チームの幸福度と成果の両方に影響します。", valueCommentEn: "Your team's Rope (Leadership & Engagement) score is low. There may be a distance between the leader and members. This category affects both team happiness and performance.", ctaComment: "リーダーとメンバーの距離を縮めるための具体的なアクションを、有料レポートでお届けします。", ctaCommentEn: "The full report delivers specific actions to close the gap between leader and members." },
-    bottom: { valueComment: "ロープ（リーダーの関わり）のチームスコアが最も低いレベルです。リーダーシップの機能不全がチーム全体に影響している可能性があります。早急な対応が必要な状態です。", valueCommentEn: "Your team's Rope (Leadership & Engagement) score is at the lowest level. Leadership dysfunction may be affecting the entire team. Urgent action is needed.", ctaComment: "有料レポートで、最優先で取り組むべきリーダーシップアクションをお届けします。", ctaCommentEn: "The full report delivers the leadership actions to tackle first." },
+    top: { valueComment: "ロープがピンと張っており、リーダーの力がチーム全体にしっかりと伝わっています。指導・承認・明確な目標・期待の共有——これらが機能しているチームは、安心して前へ進めます。", valueCommentEn: "The rope is taut and the leader's strength is being transmitted effectively throughout the entire team. Guidance, recognition, clear goals, and shared expectations — when these work, the team can move forward with confidence.", ctaComment: "", ctaCommentEn: "" },
+    high: { valueComment: "ロープがしっかりと機能しており、リーダーとメンバーの関係がワゴンの安定感につながっています。適切な指導と承認が、チームの安心感を生み出しています。", valueCommentEn: "The rope is functioning well and the leader-member relationship is contributing to the wagon's stability. Appropriate guidance and recognition are creating a sense of security in the team.", ctaComment: "", ctaCommentEn: "" },
+    mid: { valueComment: "ロープが少したるんでいるかもしれません。「もう少しリーダーからの関わりがあれば」というメンバーの声があるかもしれません。ロープが張れば、ワゴンはもっとスムーズに進みます。", valueCommentEn: `The rope may have some slack. Some members may be thinking "a little more leader engagement would help." When the rope is taut, the wagon will move more smoothly.`, ctaComment: "", ctaCommentEn: "" },
+    low: { valueComment: "ロープが大きくたるんでおり、リーダーとワゴンの間に距離感があるかもしれません。「目標が見えない」「期待されていることがわからない」という声がメンバーから出ているかもしれません。このカテゴリはチームの幸福度と成果の両方に影響します。", valueCommentEn: `The rope may be quite slack with growing distance between the leader and the wagon. Members may be saying "I can't see the goal" or "I don't know what's expected." This category affects both team happiness and performance.`, ctaComment: "", ctaCommentEn: "" },
+    bottom: { valueComment: "ロープが機能しておらず、リーダーとチームが別々に動いている状態かもしれません。リーダーシップの機能不全がチーム全体に影響している可能性があります。早急な対応が必要な状態です。", valueCommentEn: "The rope may not be functioning at all with the leader and team moving separately. Leadership dysfunction may be affecting the entire team. Urgent action is needed.", ctaComment: "", ctaCommentEn: "" },
   },
   tire: {
-    top: { valueComment: "タイヤ（仕組み・既成概念）のチームスコアが最高レベルです。評価の仕組みや自律性、新しいやり方への姿勢が整っており、チームが機動的に動けている状態です。", valueCommentEn: "Your team's Wheels (Structure & Conventions) score is at the highest level. Evaluation systems, autonomy, and openness to new approaches are all in place, allowing the team to move agilely.", ctaComment: "この機動力をさらに高めるための示唆が、有料レポートにあります。", ctaCommentEn: "The full report has insights for further enhancing this agility." },
-    high: { valueComment: "タイヤ（仕組み・既成概念）のチームスコアが高い状態です。仕組みが機能しており、チームが自律的に動けています。", valueCommentEn: "Your team's Wheels (Structure & Conventions) score is high. Systems are functioning and the team can operate autonomously.", ctaComment: "仕組みをさらに改善するためのアクションが、有料レポートにあります。", ctaCommentEn: "The full report has actions to further improve your systems." },
-    mid: { valueComment: "タイヤ（仕組み・既成概念）のチームスコアは中程度です。「評価が不明確」「前例に縛られている」という感覚を持つメンバーがいる可能性があります。", valueCommentEn: "Your team's Wheels (Structure & Conventions) score is at a middle level. Some members may feel evaluation is unclear or that they are bound by precedent.", ctaComment: "仕組みを改善するための具体的なアクションを、有料レポートでお届けします。", ctaCommentEn: "The full report delivers specific actions to improve your systems." },
-    low: { valueComment: "タイヤ（仕組み・既成概念）のチームスコアが低めです。「頑張っているのに報われない」「前例に縛られて動きにくい」という声がチーム内にあるかもしれません。", valueCommentEn: `Your team's Wheels (Structure & Conventions) score is low. There may be voices in the team saying "despite our efforts it does not pay off" or "we are constrained by precedent."`, ctaComment: "仕組みを変えるための最優先アクションを、有料レポートでお届けします。", ctaCommentEn: "The full report delivers the highest priority actions to change your systems." },
-    bottom: { valueComment: "タイヤ（仕組み・既成概念）のチームスコアが最も低いレベルです。仕組みや慣習がチームの足かせになっている可能性があります。早急な改善が必要な状態です。", valueCommentEn: "Your team's Wheels (Structure & Conventions) score is at the lowest level. Systems and conventions may be shackling the team. Urgent improvement is needed.", ctaComment: "有料レポートで、仕組み改革のための最優先アクションをお届けします。", ctaCommentEn: "The full report delivers the highest priority actions for system reform." },
+    top: { valueComment: "このチームのワゴンのタイヤが丸く整っており、スムーズに走っています。公正な評価・自律的に動ける範囲・前例にとらわれない姿勢——この3つが揃ったチームは、変化にも機動的に対応できます。", valueCommentEn: "This team's wagon wheels are round and smooth, rolling easily. Fair evaluation, room for autonomous action, and freedom from precedent — a team with all three can respond agilely to change.", ctaComment: "", ctaCommentEn: "" },
+    high: { valueComment: "このチームのタイヤがほぼ丸く、ワゴンが比較的スムーズに進んでいます。仕組みが機能しており、チームが自律的に動けています。", valueCommentEn: "This team's wheels are nearly round and the wagon moves relatively smoothly. Systems are functioning and the team can operate autonomously.", ctaComment: "", ctaCommentEn: "" },
+    mid: { valueComment: "このチームのタイヤが少し四角くなっているかもしれません。「評価が不明確」「前例に縛られている」と感じているメンバーがいる可能性があります。タイヤが丸くなるほど、チームの動きが軽くなります。", valueCommentEn: "This team's wheels may be getting a little square. Some members may feel evaluation is unclear or that they are bound by precedent. The rounder the wheels become, the more lightly the team moves.", ctaComment: "", ctaCommentEn: "" },
+    low: { valueComment: "このチームのタイヤがかなり四角くなっており、ワゴンが進むたびにガタガタしている状態かもしれません。「頑張っているのに報われない」「前例に縛られて動きにくい」という声がチーム内にあるかもしれません。", valueCommentEn: `This team's wheels may be quite square making the wagon bump along with every turn. There may be voices in the team saying "despite our efforts it doesn't pay off" or "we are constrained by precedent."`, ctaComment: "", ctaCommentEn: "" },
+    bottom: { valueComment: "このチームのタイヤが完全に四角くなっており、ワゴンが前に進むのに大きな抵抗がある状態かもしれません。仕組みや慣習がチームの足かせになっている可能性があります。早急な改善が必要です。", valueCommentEn: "This team's wheels may be completely square creating great resistance to moving forward. Systems and conventions may be shackling the team. Urgent improvement is needed.", ctaComment: "", ctaCommentEn: "" },
   },
   body: {
     top: { valueComment: "このチームのワゴンを押す人たちが、適した場所で・好きな役割で・仲間に応援されながら力強く動いています。適材適所・好き×得意・成長支援の3つが揃ったチームは、困難な課題にも立ち向かえます。", valueCommentEn: "The people pushing this team's wagon are in the right places, doing roles they love, cheered on by teammates. A team with the right people in the right roles, using their passions and strengths, supported to grow — this team can take on any challenge.", ctaComment: "この強みをさらにチームの成果につなげる方法が、有料レポートにあります。", ctaCommentEn: "The full report shows how to connect this strength even further to team results." },
@@ -384,11 +259,11 @@ export const TEAM_INSIGHT_COMMENTS: InsightCommentMaster = {
     bottom: { valueComment: "このチームのワゴンを押す人たちの力が大きく落ちているかもしれません。適材適所でなく・好きや得意が活かせず・応援し合えない状態が続くと、メンバーのエネルギーが静かに消耗していきます。早急な対応が必要な状態です。", valueCommentEn: "The strength of the people pushing this team's wagon may have dropped significantly. When people aren't in the right roles, their passions and strengths aren't utilized, and they can't support each other — team members' energy quietly drains away. Urgent action is needed.", ctaComment: "有料レポートで、チームの活力を取り戻すための最優先アクションをお届けします。", ctaCommentEn: "The full report delivers the highest priority actions to restore team vitality." },
   },
   attitude: {
-    top: { valueComment: `押す人の表情（風土・文化）のチームスコアが最高レベルです。${DATA_STATS.teamsDisplay}のデータで、このカテゴリはチームの幸福度と最も強く連動します（r=0.779）。スコアが高いチームの幸福度平均は4.36です。このチームは最も重要な基盤が整っています。`, valueCommentEn: `Your team's Attitude (Culture & Climate) score is at the highest level. Across ${DATA_STATS.teamsDisplay}, this category has the strongest connection to team happiness (r=0.779). Teams scoring high here average 4.36 in happiness. Your team has its most important foundation in place.`, ctaComment: "この風土をさらに強化し、成果につなげるための示唆が有料レポートにあります。", ctaCommentEn: "The full report has insights for further strengthening this culture and connecting it to results." },
-    high: { valueComment: "押す人の表情（風土・文化）のチームスコアが高い状態です。協力・尊重・質への姿勢が機能しており、チームの幸福度にも好影響を与えています。このカテゴリはチームの幸福度と最も強く連動します。", valueCommentEn: "Your team's Attitude (Culture & Climate) score is high. Collaboration, respect, and commitment to quality are working, positively affecting team happiness. This category has the strongest connection to team happiness.", ctaComment: "この風土をさらに豊かにするためのアクションが、有料レポートにあります。", ctaCommentEn: "The full report has actions to further enrich this culture." },
-    mid: { valueComment: `押す人の表情（風土・文化）のチームスコアは中程度です。${DATA_STATS.teamsDisplay}のデータで、このカテゴリはチームの幸福度と最も強く連動することが確認されています。ここを改善すると、チームの幸福度と成果が同時に上がる可能性があります。`, valueCommentEn: `Your team's Attitude (Culture & Climate) score is at a middle level. Data from ${DATA_STATS.teamsDisplay} confirms this category has the strongest connection to team happiness. Improving this could simultaneously raise both team happiness and performance.`, ctaComment: "風土改善のための最も効果的なアクションを、有料レポートで特定します。", ctaCommentEn: "The full report identifies the most effective actions for culture improvement." },
-    low: { valueComment: "押す人の表情（風土・文化）のチームスコアが低めです。データでは、このスコアのチームの幸福度平均は2.60と低い状態にあります。チームの雰囲気や関係性に大きな課題がある可能性があります。", valueCommentEn: "Your team's Attitude (Culture & Climate) score is low. Data shows teams at this level average 2.60 in happiness. There may be significant challenges in team atmosphere and relationships.", ctaComment: "チームの風土を改善するための具体的なアクションを、有料レポートでお届けします。", ctaCommentEn: "The full report delivers specific actions to improve the team culture." },
-    bottom: { valueComment: `押す人の表情（風土・文化）のチームスコアが最も低いレベルです。データでは、このレベルのチームの93.5%が不幸な状態にあります（幸福度平均1.35）。チームの風土が根本的な課題になっている可能性があります。早急な対応が必要です。`, valueCommentEn: "Your team's Attitude (Culture & Climate) score is at the lowest level. Data shows 93.5% of teams at this level are in an unhappy state (happiness average 1.35). Team culture may be a fundamental challenge. Urgent action is needed.", ctaComment: "有料レポートで、チームの風土を変えるための最優先アクションをお届けします。", ctaCommentEn: "The full report delivers the highest priority actions to change team culture." },
+    top: { valueComment: `このチームのワゴンを押す人たちの表情が、生き生きと輝いています。${DATA_STATS.teamsDisplay}のデータで、このカテゴリはチームの幸福度と最も強く連動します（r=0.779）。スコアが高いチームの幸福度平均は4.36——この表情こそが、ワゴンを動かす最大の力です。`, valueCommentEn: `The faces of the people pushing this team's wagon are bright and alive. Across ${DATA_STATS.teamsDisplay}, this category has the strongest connection to team happiness (r=0.779). Teams scoring high here average 4.36 in happiness — these expressions are the greatest force moving the wagon.`, ctaComment: "", ctaCommentEn: "" },
+    high: { valueComment: "このチームのワゴンを押す人たちの表情が穏やかで、協力・尊重・質への姿勢が機能しています。このカテゴリはチームの幸福度と最も強く連動します。この表情が、ワゴンを前へ進める大きな力になっています。", valueCommentEn: "The faces of the people pushing this team's wagon are calm and collaboration, respect, and quality commitment are working. This category has the strongest connection to team happiness. These expressions are a great force propelling the wagon forward.", ctaComment: "", ctaCommentEn: "" },
+    mid: { valueComment: `このチームのワゴンを押す人たちの表情が、少し疲れて見えるかもしれません。${DATA_STATS.teamsDisplay}のデータで、このカテゴリはチームの幸福度と最も強く連動することが確認されています。表情が変わると、ワゴンの動きが大きく変わります。`, valueCommentEn: `The faces of the people pushing this team's wagon may look a little tired. Data from ${DATA_STATS.teamsDisplay} confirms this category has the strongest connection to team happiness. When these expressions change, how the wagon moves will change dramatically.`, ctaComment: "", ctaCommentEn: "" },
+    low: { valueComment: "このチームのワゴンを押す人たちの表情が重そうです。データでは、このスコアのチームの幸福度平均は2.60と低い状態にあります。表情が変わるだけで、ワゴンの動きは全く変わります。", valueCommentEn: "The faces of the people pushing this team's wagon look heavy. Data shows teams at this level average 2.60 in happiness. Simply changing these expressions would completely transform how the wagon moves.", ctaComment: "", ctaCommentEn: "" },
+    bottom: { valueComment: `このチームのワゴンを押す人たちの表情が、今とても苦しそうです。データでは、このレベルのチームの93.5%が不幸な状態にあります（幸福度平均1.35）。この表情を変えることが、チームの最優先課題です。`, valueCommentEn: "The faces of the people pushing this team's wagon look very strained right now. Data shows 93.5% of teams at this level are in an unhappy state (happiness average 1.35). Changing these expressions is the team's top priority.", ctaComment: "", ctaCommentEn: "" },
   },
   cargo: {
     top: { valueComment: "このチームのワゴンの積荷に、旅に必要な装備が揃っています。「仲間の強み弱みを知っている地図」「外部とのネットワーク」「最新のツールや技術の活用力」——この3つが揃ったチームは、外部の変化にも柔軟に対応できます。", valueCommentEn: `This team's wagon cargo holds all the equipment needed for the journey: a map of each member's strengths and weaknesses, external network connections, and the ability to leverage the latest tools and technologies. A team with all three can flexibly adapt to external changes.`, ctaComment: "この強みをさらに活かすための示唆が、有料レポートにあります。", ctaCommentEn: "The full report has insights for leveraging this strength further." },
