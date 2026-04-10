@@ -5,7 +5,7 @@ import Image from "next/image";
 import type { QuestionCategory } from "@/lib/survey/questions";
 import { CATEGORY_CONFIG } from "@/lib/survey/questions";
 import { getScaleLevel, SCALE_LEVEL_LABELS } from "@/lib/survey/scoring";
-import { getComment, type ScaleLevel as CommentLevel } from "@/lib/survey/comments";
+import { getPersonalInsight, getTeamInsight } from "@/lib/survey/insight-comments";
 import { useLocale } from "@/lib/i18n/context";
 import WagonComposite from "./WagonComposite";
 import WagonIllustration from "./WagonIllustration";
@@ -128,6 +128,7 @@ export default function ResultsView({ data, title, mode }: ResultsViewProps) {
         teamCategories={teamCategories}
         categoryScores={data.categoryScores}
         isEn={isEn}
+        mode={mode}
       />
 
       {/* Insight cards */}
@@ -179,10 +180,12 @@ function CategoryBreakdown({
   teamCategories,
   categoryScores,
   isEn,
+  mode,
 }: {
   teamCategories: QuestionCategory[];
   categoryScores: Record<string, { avg: number; level: string }>;
   isEn: boolean;
+  mode: "individual" | "team";
 }) {
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
 
@@ -206,15 +209,15 @@ function CategoryBreakdown({
           const prefix = CATEGORY_IMAGE_PREFIX[cat];
           const imagePath = `/images/${prefix}_${imageLevel}.png`;
 
-          // Get comment for this category and level
-          const comment = cat !== "management"
-            ? getComment(cat as Exclude<QuestionCategory, "management">, level as CommentLevel)
+          // Get insight comment for this category
+          const insight = cat !== "management"
+            ? (mode === "team" ? getTeamInsight(cat, score.avg) : getPersonalInsight(cat, score.avg))
             : null;
-          const shortComment = comment
-            ? (isEn ? comment.short.en : comment.short.ja)
+          const shortComment = insight
+            ? (isEn ? insight.valueCommentEn : insight.valueComment)
             : "";
-          const detailComment = comment
-            ? (isEn ? comment.detail.en : comment.detail.ja)
+          const detailComment = insight
+            ? (isEn ? insight.ctaCommentEn : insight.ctaComment)
             : "";
           const isExpanded = expanded[cat] ?? false;
 
@@ -272,10 +275,10 @@ function CategoryBreakdown({
                   </button>
                   {/* Screen: show only when expanded. Print: always show via data-print-expand */}
                   <p
-                    className={`mt-2 text-sm text-gray-500 dark:text-gray-400 leading-relaxed border-l-2 border-blue-300 pl-3 ${isExpanded ? "" : "hidden"}`}
+                    className={`mt-2 text-sm text-blue-700 dark:text-blue-300 leading-relaxed border-l-2 border-blue-400 pl-3 bg-blue-50 dark:bg-blue-950 rounded-r-lg py-2 pr-2 ${isExpanded ? "" : "hidden"}`}
                     data-print-expand=""
                   >
-                    {detailComment}
+                    💡 {detailComment}
                   </p>
                 </>
               )}
