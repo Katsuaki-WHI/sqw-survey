@@ -282,7 +282,21 @@ export default function TeamResultsPage() {
                   {isEn ? "Engagement Status" : "エンゲージメント状態"}
                 </h3>
                 <p className="text-sm text-gray-800 dark:text-gray-200 mb-2">{summaryComment.main}</p>
-                <p className="text-xs text-gray-400 dark:text-gray-500">{summaryComment.locked}</p>
+                {summaryComment.locked && <p className="text-xs text-gray-400 dark:text-gray-500">{summaryComment.locked}</p>}
+              </div>
+
+              {/* チームへの示唆セクション全体の最後に1つだけCTA */}
+              <div className="mt-4 p-4 bg-purple-50 dark:bg-purple-950 rounded-lg border border-purple-200 dark:border-purple-800 text-center">
+                <p className="text-sm text-purple-700 dark:text-purple-300 font-medium mb-1">
+                  {isEn
+                    ? "💡 The full AI report goes deeper into all of the above."
+                    : "💡 上記すべての示唆を、AIが深く掘り下げて分析します。"}
+                </p>
+                <p className="text-xs text-purple-500">
+                  {isEn
+                    ? "Recognition gaps · Priority improvements · Specific leadership guidance"
+                    : "認識ギャップの正体・改善優先カテゴリ・リーダーへの具体的示唆"}
+                </p>
               </div>
 
             </div>
