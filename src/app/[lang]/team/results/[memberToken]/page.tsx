@@ -56,6 +56,14 @@ export default function MemberResultsPage() {
         questionScores: resultData.questionScores,
         engagementPoints: resultData.engagementPoints || [],
       });
+
+      // Set page title for PDF save filename
+      const today = new Date();
+      const dateStr = `${today.getFullYear()}${String(today.getMonth() + 1).padStart(2, "0")}${String(today.getDate()).padStart(2, "0")}`;
+      const name = resultData.respondentName || (locale === "en" ? "Member" : "メンバー");
+      document.title = locale === "en"
+        ? `${dateStr}_${name}_PersonalResults`
+        : `${dateStr}_${name}_個人結果`;
     }
 
     if (teamData) {

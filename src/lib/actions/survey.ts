@@ -168,7 +168,7 @@ export async function getMemberResults(memberToken: string) {
 
   const { data: member } = await supabase
     .from("team_members")
-    .select("session_id, team_id")
+    .select("session_id, team_id, respondent_name")
     .eq("member_token", memberToken)
     .single();
 
@@ -205,6 +205,7 @@ export async function getMemberResults(memberToken: string) {
 
   return {
     ...session,
+    respondentName: member.respondent_name || null,
     questionScores,
     engagementPoints,
   };

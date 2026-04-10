@@ -48,6 +48,13 @@ export default function TeamResultsPage() {
     setTeamName(data.team.name);
     setTeamId(data.team.id);
 
+    // Set page title for PDF save filename
+    const today = new Date();
+    const dateStr = `${today.getFullYear()}${String(today.getMonth() + 1).padStart(2, "0")}${String(today.getDate()).padStart(2, "0")}`;
+    document.title = locale === "en"
+      ? `${dateStr}_${data.team.name}_TeamResults`
+      : `${dateStr}_${data.team.name}_チーム結果`;
+
     if (!data.visible) {
       setNotVisible(true);
       setLoading(false);
