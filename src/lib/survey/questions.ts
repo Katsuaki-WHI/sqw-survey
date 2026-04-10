@@ -208,14 +208,14 @@ export const CATEGORY_CONFIG: Record<
   QuestionCategory,
   { label: string; labelEn: string; wagonPart: string; wagonPartEn: string; questionIds: number[] }
 > = {
-  landscape:   { label: "景色（ミッション）", labelEn: "Landscape (Mission)", wagonPart: "景色", wagonPartEn: "Landscape", questionIds: [1, 2, 3] },
+  landscape:   { label: "景色（目的と誇り）", labelEn: "Landscape (Purpose & Pride)", wagonPart: "景色", wagonPartEn: "Landscape", questionIds: [1, 2, 3] },
   road:        { label: "道筋（戦略）", labelEn: "Path (Strategy)", wagonPart: "道筋", wagonPartEn: "Path", questionIds: [4, 5] },
-  rope:        { label: "ロープ（リーダーシップ）", labelEn: "Rope (Leadership)", wagonPart: "ロープ", wagonPartEn: "Rope", questionIds: [6, 7, 8] },
-  tire:        { label: "タイヤ（仕組み）", labelEn: "Wheels (Structure)", wagonPart: "タイヤ", wagonPartEn: "Wheels", questionIds: [9, 10, 11] },
-  body:        { label: "押す人の体（能力・意欲）", labelEn: "Body (Capability & Motivation)", wagonPart: "押す人の体", wagonPartEn: "Body", questionIds: [12, 13, 14] },
-  attitude:    { label: "押す人の態度（風土・文化）", labelEn: "Attitude (Culture & Climate)", wagonPart: "押す人の態度", wagonPartEn: "Attitude", questionIds: [15, 16, 17, 18] },
+  rope:        { label: "ロープ（リーダーの関わり）", labelEn: "Rope (Leadership & Engagement)", wagonPart: "ロープ", wagonPartEn: "Rope", questionIds: [6, 7, 8] },
+  tire:        { label: "タイヤ（仕組み・既成概念）", labelEn: "Wheels (Structure & Conventions)", wagonPart: "タイヤ", wagonPartEn: "Wheels", questionIds: [9, 10, 11] },
+  body:        { label: "押す人の体（能力発揮・意欲）", labelEn: "Body (Capability & Motivation)", wagonPart: "押す人の体", wagonPartEn: "Body", questionIds: [12, 13, 14] },
+  attitude:    { label: "押す人の表情（風土・文化）", labelEn: "Attitude (Culture & Climate)", wagonPart: "押す人の表情", wagonPartEn: "Attitude", questionIds: [15, 16, 17, 18] },
   cargo:       { label: "積荷（リソース・強み）", labelEn: "Cargo (Resources & Strengths)", wagonPart: "積荷", wagonPartEn: "Cargo", questionIds: [19, 20, 21] },
   diversity:   { label: "登場人物の多彩さ（多様性）", labelEn: "Cast of Characters (Diversity)", wagonPart: "登場人物の多彩さ", wagonPartEn: "Cast of Characters", questionIds: [22, 23, 24, 25] },
-  happiness:   { label: "幸福度", labelEn: "Happiness", wagonPart: "幸福度", wagonPartEn: "Happiness", questionIds: [26] },
+  happiness:   { label: "はたらく喜び（幸福度）", labelEn: "Joy of Work (Happiness)", wagonPart: "はたらく喜び", wagonPartEn: "Joy of Work", questionIds: [26] },
   management:  { label: "経営への信頼", labelEn: "Management Trust", wagonPart: "経営", wagonPartEn: "Management", questionIds: [27, 28, 29, 30, 31] },
 };

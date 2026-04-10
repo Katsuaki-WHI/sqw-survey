@@ -148,7 +148,7 @@ export default function ResultsView({ data, title, mode }: ResultsViewProps) {
           <div className="flex flex-col gap-1">
             <div className="flex justify-between text-sm">
               <span className="text-gray-700 dark:text-gray-300">
-                {isEn ? "Management" : "経営"} - {isEn ? "Trust in Management" : "経営陣への信頼"}
+                {isEn ? "Management Trust" : "経営への信頼"}
               </span>
               <span className="text-gray-500 font-medium">
                 {data.managementAverage.toFixed(2)} ({isEn ? SCALE_LEVEL_LABELS[getScaleLevel(data.managementAverage)].en : SCALE_LEVEL_LABELS[getScaleLevel(data.managementAverage)].ja})
@@ -236,7 +236,7 @@ function CategoryBreakdown({
                 <div className="flex-1 min-w-0">
                   <div className="flex justify-between text-sm mb-1">
                     <span className="text-gray-700 dark:text-gray-300 truncate">
-                      {isEn ? config.wagonPartEn : config.wagonPart} - {isEn ? config.labelEn : config.label}
+                      {isEn ? config.labelEn : config.label}
                     </span>
                     <span className="text-gray-500 font-medium shrink-0 ml-2">
                       {score.avg.toFixed(2)} ({isEn ? levelLabel.en : levelLabel.ja})

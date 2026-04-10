@@ -2,15 +2,15 @@
 // カテゴリ名マスターデータ
 // ==============================
 export const CATEGORY_LABELS: Record<string, { ja: string; en: string; icon: string }> = {
-  landscape:  { ja: "景色（ミッション）", en: "Landscape (Mission)", icon: "\uD83C\uDFD4\uFE0F" },
+  landscape:  { ja: "景色（目的と誇り）", en: "Landscape (Purpose & Pride)", icon: "\uD83C\uDFD4\uFE0F" },
   road:       { ja: "道筋（戦略）", en: "Path (Strategy)", icon: "\uD83D\uDDFA\uFE0F" },
-  rope:       { ja: "ロープ（リーダーシップ）", en: "Rope (Leadership)", icon: "\uD83E\uDDED" },
-  tire:       { ja: "タイヤ（仕組み）", en: "Wheels (Structure)", icon: "\u2699\uFE0F" },
-  body:       { ja: "押す人の体（能力・意欲）", en: "Body (Capability & Motivation)", icon: "\uD83D\uDCAA" },
-  attitude:   { ja: "押す人の態度（風土・文化）", en: "Attitude (Culture & Climate)", icon: "\uD83E\uDD1D" },
+  rope:       { ja: "ロープ（リーダーの関わり）", en: "Rope (Leadership & Engagement)", icon: "\uD83E\uDDED" },
+  tire:       { ja: "タイヤ（仕組み・既成概念）", en: "Wheels (Structure & Conventions)", icon: "\u2699\uFE0F" },
+  body:       { ja: "押す人の体（能力発揮・意欲）", en: "Body (Capability & Motivation)", icon: "\uD83D\uDCAA" },
+  attitude:   { ja: "押す人の表情（風土・文化）", en: "Attitude (Culture & Climate)", icon: "\uD83E\uDD1D" },
   cargo:      { ja: "積荷（リソース・強み）", en: "Cargo (Resources & Strengths)", icon: "\uD83C\uDF92" },
   diversity:  { ja: "登場人物の多彩さ（多様性）", en: "Cast of Characters (Diversity)", icon: "\uD83C\uDF08" },
-  happiness:  { ja: "幸福度", en: "Happiness", icon: "\uD83D\uDE0A" },
+  happiness:  { ja: "はたらく喜び（幸福度）", en: "Joy of Work (Happiness)", icon: "\uD83D\uDE0A" },
 };
 
 // ==============================

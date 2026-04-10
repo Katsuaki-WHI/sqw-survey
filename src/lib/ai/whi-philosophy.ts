@@ -99,10 +99,10 @@ export const PERSONAL_REPORT_PROMPT_JA = `
 ・読み終わった後に「よし、やってみよう」と前向きになれる言葉を選ぶ
 ・117,371人のデータという根拠を自然に使い「このスコアパターンの人は〜」という示唆を入れる
 ・カテゴリ名は必ず「ワゴンの部位（カテゴリ名）」の形式で表記する：
-  景色（ミッション）／道筋（戦略）／ロープ（リーダーシップ）／タイヤ（仕組み）
-  押す人の体（能力・意欲）／押す人の態度（風土・文化）／積荷（リソース・強み）
-  登場人物の多彩さ（ダイバーシティ）／幸福度
-  例：「押す人の態度（風土・文化）のスコアが〜」「タイヤ（仕組み）の部分に〜」
+  景色（目的と誇り）／道筋（戦略）／ロープ（リーダーの関わり）／タイヤ（仕組み・既成概念）
+  押す人の体（能力発揮・意欲）／押す人の表情（風土・文化）／積荷（リソース・強み）
+  登場人物の多彩さ（多様性）／はたらく喜び（幸福度）
+  例：「押す人の表情（風土・文化）のスコアが〜」「タイヤ（仕組み・既成概念）の部分に〜」
   カテゴリ名だけを単独で使わないこと。必ずワゴンの部位とセットで表現する。
 ・このレポートは有料の完結版です。さらなる有料サービスへの橋渡し文は含めないこと
 ・伴走サービス案内（3ヶ月パルス・メール伴走）のみ末尾に追加してよい
@@ -226,10 +226,10 @@ The central question: "Are you able to bring your true self and full potential t
 ・Leave the reader feeling: "I want to try this tomorrow"
 ・If qualitative responses are provided, naturally weave them into insights
 ・Always use the format "Wagon Part (Category Name)" when referring to any category:
-  Landscape (Mission) / Path (Strategy) / Rope (Leadership) / Wheels (Structure)
+  Landscape (Purpose & Pride) / Path (Strategy) / Rope (Leadership & Engagement) / Wheels (Structure & Conventions)
   Body (Capability & Motivation) / Attitude (Culture & Climate) / Cargo (Resources & Strengths)
-  Cast of Characters (Diversity) / Happiness
-  Example: "The Attitude (Culture & Climate) part of your wagon..." / "The Wheels (Structure) show..."
+  Cast of Characters (Diversity) / Joy of Work (Happiness)
+  Example: "The Attitude (Culture & Climate) part of your wagon..." / "The Wheels (Structure & Conventions) show..."
   Never use category names alone — always pair with the wagon part name.
 ・This report is the paid complete version. Do NOT include any upsell or bridge-to-paid-service messaging.
 ・Only the optional 3-month accompaniment service notice is permitted at the end.
@@ -334,10 +334,10 @@ export const TEAM_REPORT_PROMPT_JA = `
 ・定性コメントがある場合は「メンバーの声」として自然に織り込む
 ・経営スコアとチームスコアのギャップがある場合は示唆として活用する
 ・カテゴリ名は必ず「ワゴンの部位（カテゴリ名）」の形式で表記する：
-  景色（ミッション）／道筋（戦略）／ロープ（リーダーシップ）／タイヤ（仕組み）
-  押す人の体（能力・意欲）／押す人の態度（風土・文化）／積荷（リソース・強み）
-  登場人物の多彩さ（ダイバーシティ）／幸福度
-  例：「押す人の態度（風土・文化）のスコアが〜」「タイヤ（仕組み）の部分に〜」
+  景色（目的と誇り）／道筋（戦略）／ロープ（リーダーの関わり）／タイヤ（仕組み・既成概念）
+  押す人の体（能力発揮・意欲）／押す人の表情（風土・文化）／積荷（リソース・強み）
+  登場人物の多彩さ（多様性）／はたらく喜び（幸福度）
+  例：「押す人の表情（風土・文化）のスコアが〜」「タイヤ（仕組み・既成概念）の部分に〜」
   カテゴリ名だけを単独で使わないこと。必ずワゴンの部位とセットで表現する。
 ・このレポートは有料の完結版です。さらなる有料サービスへの橋渡し文は含めないこと
 ・伴走サービス案内（3ヶ月パルス・メール伴走）のみ末尾に追加してよい
@@ -355,7 +355,7 @@ export const TEAM_REPORT_PROMPT_JA = `
 # 【セクション1】今のこのチームの姿（ワゴンと連動）
 ワゴンの9つのパーツ（景色・道筋・ロープ・タイヤ・押す人の体・押す人の態度・積荷・多様性・幸福度）と
 カテゴリスコアを紐付けて、今のチームの状態を「ワゴンの絵」として言語化する。
-例：「ワゴンの『景色（ミッション）』の部分が特に力強く、チームとして目指す方向への共感が高い状態です。一方、『タイヤ（仕組み）』の部分にガタつきがあり、ここが走りの重さにつながっているかもしれません。」
+例：「ワゴンの『景色（目的と誇り）』の部分が特に力強く、チームとして目指す方向への共感が高い状態です。一方、『タイヤ（仕組み・既成概念）』の部分にガタつきがあり、ここが走りの重さにつながっているかもしれません。」
 スコアの羅列ではなく、「今このチームで何が起きているか」を物語として描く。
 定性コメントがある場合は「メンバーの声からも〜」として自然に織り込む。
 
@@ -469,7 +469,7 @@ Generate the report following WHI Philosophy and these principles strictly.
 ・Frame gaps as "different perspectives" not "conflict"
 ・Never blame or pressure anyone
 ・Never use jargon without explanation: use plain, accessible language throughout
-・Always connect to the Wagon metaphor (9 categories = 9 wagon parts): use phrases like "the 'Landscape (Mission)' part of your wagon..."
+・Always connect to the Wagon metaphor (9 categories = 9 wagon parts): use phrases like "the 'Landscape (Purpose & Pride)' part of your wagon..."
 ・Provide individualized insights specific to THIS team — no generic advice
 ・Specifically articulate: "the stress/cost this gap is causing the team"
 ・Specifically articulate: "the benefit the team gains when this improves"
@@ -477,10 +477,10 @@ Generate the report following WHI Philosophy and these principles strictly.
 ・If management trust score gaps exist, use as strategic insight
 ・Leave the leader feeling: "I want to try this tomorrow"
 ・Always use the format "Wagon Part (Category Name)" when referring to any category:
-  Landscape (Mission) / Path (Strategy) / Rope (Leadership) / Wheels (Structure)
+  Landscape (Purpose & Pride) / Path (Strategy) / Rope (Leadership & Engagement) / Wheels (Structure & Conventions)
   Body (Capability & Motivation) / Attitude (Culture & Climate) / Cargo (Resources & Strengths)
-  Cast of Characters (Diversity) / Happiness
-  Example: "The Attitude (Culture & Climate) part of your wagon..." / "The Wheels (Structure) show..."
+  Cast of Characters (Diversity) / Joy of Work (Happiness)
+  Example: "The Attitude (Culture & Climate) part of your wagon..." / "The Wheels (Structure & Conventions) show..."
   Never use category names alone — always pair with the wagon part name.
 ・This report is the paid complete version. Do NOT include any upsell or bridge-to-paid-service messaging.
 ・Only the optional 3-month accompaniment service notice is permitted at the end.
@@ -498,7 +498,7 @@ Add one line contextualizing this team vs. 117,371-person / 9,021-team dataset.
 # [Section 1] Your Team Right Now (Connected to the Wagon)
 Connect the 9 wagon parts (Landscape/Mission, Path/Strategy, Rope/Leadership, Wheels/Structure, Body/Capability, Attitude/Culture, Cargo/Resources, Diversity, Happiness) to category scores.
 Paint the current team state as a "wagon story" — not a list of scores.
-Example: "The 'Landscape (Mission)' part of your wagon is strong — your team is aligned on where you're headed. However, the 'Wheels (Structure)' part shows some friction, which may be creating drag on your momentum."
+Example: "The 'Landscape (Purpose & Pride)' part of your wagon is strong — your team is aligned on where you're headed. However, the 'Wheels (Structure & Conventions)' part shows some friction, which may be creating drag on your momentum."
 If qualitative responses exist, include: "Team members' own words also suggest..."
 
 # [Section 2] Your Team at Its Best ("Thriving State")
