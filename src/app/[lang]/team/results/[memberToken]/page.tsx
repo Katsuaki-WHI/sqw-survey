@@ -343,17 +343,6 @@ export default function MemberResultsPage() {
                 </div>
               )}
 
-              {/* Block 3: Team Leader Teaser */}
-              <div className="rounded-lg border border-gray-200 dark:border-gray-700 p-5 bg-gray-50 dark:bg-gray-900">
-                <h3 className="text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">{tt.ctaLeaderTitle}</h3>
-                <p className="text-xs text-gray-500 dark:text-gray-400 mb-3">{tt.ctaLeaderDesc}</p>
-                <button
-                  disabled
-                  className="rounded-full border border-gray-300 dark:border-gray-600 px-5 py-2 text-sm text-gray-400 cursor-not-allowed"
-                >
-                  {tt.ctaLeaderButton}
-                </button>
-              </div>
 
             </div>
           );
