@@ -314,11 +314,23 @@ export default function TeamResultsPage() {
         <div className="w-full max-w-3xl mx-auto mt-8">
 
           {!aiReport && !aiReportLoading && (
-            <div className="rounded-lg border border-purple-200 dark:border-purple-800 bg-purple-50 dark:bg-purple-950 p-4 text-center">
-              <p className="text-xs text-purple-600 dark:text-purple-400 mb-3">{tt.aiReportTeamDesc}</p>
+            <div className="rounded-xl border-2 border-purple-300 dark:border-purple-700 bg-gradient-to-br from-purple-50 to-white dark:from-purple-950 dark:to-gray-900 p-6 shadow-sm">
+              <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-3">{tt.ctaTeamTitle}</h3>
+              <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">{tt.ctaTeamDesc}</p>
+
+              <ul className="text-sm text-gray-700 dark:text-gray-300 space-y-2 mb-4">
+                {[tt.ctaTeamItem1, tt.ctaTeamItem2, tt.ctaTeamItem3, tt.ctaTeamItem4].map((item, i) => (
+                  <li key={i} className="flex items-start gap-2">
+                    <span className="text-purple-500 shrink-0">&#128274;</span>
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+
+              <p className="text-sm text-orange-700 dark:text-orange-400 font-medium mb-5 italic">{tt.ctaTeamUrgency}</p>
+
               <button
                 onClick={async () => {
-                  // Check cache first
                   const cacheRes = await fetch(`/api/ai-report/cache?teamId=${teamId}&reportType=team&language=${locale}`);
                   const cacheData = await cacheRes.json();
                   if (cacheData.cached) {
@@ -327,9 +339,9 @@ export default function TeamResultsPage() {
                   }
                   setShowPurchaseModal(true);
                 }}
-                className="rounded-full bg-purple-600 px-6 py-2 text-sm font-medium text-white hover:bg-purple-500 transition-colors"
+                className="w-full rounded-full bg-purple-600 px-6 py-3 text-base font-bold text-white hover:bg-purple-500 transition-colors shadow-md"
               >
-                {tt.aiReportTeamButton}
+                {tt.ctaTeamButton}
               </button>
             </div>
           )}
